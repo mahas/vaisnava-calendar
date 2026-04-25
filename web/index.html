@@ -2,6 +2,17 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="shortcut icon" href="https://mahasoftware.fr/vaisnavacalendar/favicon.png">  
+    <link rel="apple-touch-icon" href="https://mahasoftware.fr/vaisnavacalendar/favicon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Calendario Vaisnava">  
+
+    <meta property="og:title" content="Calendario Vaisnava">
+    <meta property="og:description" content="Calendario vaisnava con ekādaśī, ayunos y eventos espirituales.">
+    <meta property="og:image" content="https://mahasoftware.fr/vaisnavacalendar/og-image.png">
+    <meta property="og:url" content="https://mahasoftware.fr/vaisnavacalendar/">
+    <meta property="og:type" content="website">
   <title>Calendario Vaisnava</title>
   <style>
   * {
@@ -189,54 +200,87 @@
       max-width: none;
     }
   }
+  
+    .header-calendario {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 25px; /* ← esto hace exactamente lo que quieres */
+      margin-bottom: 15px;
+    }
+    
+    .header-calendario h1 {
+      margin: 0;
+    }
+    
+    .language-buttons {
+      display: flex;
+      gap: 8px;
+      white-space: nowrap;
+    }  
 </style>
 </head>
 <body>
-  <h1>Calendario Vaisnava</h1>
+    <div class="header-calendario">
+      <h1 id="title">Calendario Vaisnava</h1>
+    
+      <div class="language-buttons">
+        <button onclick="setLanguage('es')">ES</button>
+        <button onclick="setLanguage('en')">EN</button>
+      </div>
+    </div>
 
   <div class="card">
-    <h2>Buscar ciudad</h2>
+    <h2 id="searchCityLabel">Buscar ciudad</h2>
     <input id="cityInput" value="Paris" />
     <button onclick="buscarCiudad()">Buscar</button>
 
     <div class="result" id="results"></div>
 
-    <h2>Ciudad seleccionada</h2>
+    <h2 id="selectedCityLabel">Ciudad seleccionada</h2>
     <div id="selected" class="selected-city">Ninguna</div>
     <button id="saveDefaultBtn" onclick="guardarCiudadPorDefecto()" style="display:none;">
     Guardar como ciudad por defecto
     </button>
 
-    <h2>Generar calendario</h2>
-    <label>
-    <input type="checkbox" id="soloAyunos" />
-    Mostrar solo días de ayuno
-    </label>    
+    <h2 id="generateLabel">Generar calendario</h2>
+    <label id="fastFilterLabel">
+      <input type="checkbox" id="soloAyunos" />
+      <span id="fastFilterText">Mostrar solo días de ayuno</span>
+    </label>   
 
-    <label>Año</label>
+    <label id="yearLabel">Año</label>
     <input id="year" type="number" value="2026" />
 
-    <label>Mes</label>
+    <label id="monthLabel">Mes</label>
     <input id="month" type="number" value="4" min="1" max="12" />
 
-    <label>Día</label>
+    <label id="dayLabel">Día</label>
     <input id="day" type="number" value="25" min="1" max="31" />
 
-    <label>Días a calcular</label>
+    <label id="periodLabel">Días a calcular</label>
     <input id="period" type="number" value="1" min="1" />
 
     <br />
-    <button onclick="generarCalendario()">Generar</button>
-    <button onclick="mostrarHoy()">Hoy</button>
-    <button onclick="exportarICS()">Exportar a calendario (.ics)</button>
+    <button onclick="generarCalendario()"  id="generateBtn">Generar</button>
+    <button onclick="mostrarHoy()"  id="todayBtn">Hoy</button>
+    <button onclick="exportarICS()"  id="exportBtn">Exportar a calendario (.ics)</button>
 
-    <h2>Resultado calendario</h2>
+    <h2 id="resultLabel">Resultado calendario</h2>
     <pre id="calendarOutput">Esperando...</pre>
   </div>
 
   <script>
     let selectedCity = null;
     let lastCalendarData = null;
+    const IS_LOCAL =
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "localhost";
+
+    const BASE_URL = IS_LOCAL
+    ? "http://127.0.0.1:8047"
+    : "https://vaisnava-calendar.onrender.com";
 
     window.addEventListener('DOMContentLoaded', () => {
         const hoy = new Date();
@@ -244,6 +288,7 @@
         document.getElementById('year').value = hoy.getFullYear();
         document.getElementById('month').value = hoy.getMonth() + 1;
         document.getElementById('day').value = hoy.getDate();
+        applyTranslations();
 
         cargarCiudadPorDefecto();
         });
@@ -270,7 +315,7 @@
 
     async function buscarCiudad() {
       const city = document.getElementById('cityInput').value;
-      const url = `http://127.0.0.1:8047/find-location?name=${encodeURIComponent(city)}`;
+      const url = `${BASE_URL}/find-location?name=${encodeURIComponent(city)}`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -324,7 +369,7 @@
   const day = document.getElementById('day').value;
   const period = document.getElementById('period').value;
 
-  const url = `http://127.0.0.1:8047/calendar?city=${selectedCity.city}&country=${selectedCity.country}&year=${year}&month=${month}&day=${day}&period=${period}`;
+  const url = `${BASE_URL}/calendar?city=${encodeURIComponent(selectedCity.city)}&country=${encodeURIComponent(selectedCity.country)}&year=${year}&month=${month}&day=${day}&period=${period}`;
 
   const response = await fetch(url);
   const data = await response.json();
@@ -332,18 +377,23 @@
     let html = "";
 
     const soloAyunos = document.getElementById('soloAyunos').checked;
+    const t = translations[currentLang];
 
     data.days.forEach(d => {
     if (soloAyunos && !d.fast) return;
     const fecha = new Date(d.date.year, d.date.month - 1, d.date.day)
-    .toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+  .toLocaleDateString(currentLang === "en" ? "en-US" : "es-ES", {
+      weekday: "short",
+      day: "numeric",
+      month: "short"
+    });
     const hoy = new Date();
     const esHoy =
     d.date.day === hoy.getDate() &&
     d.date.month === (hoy.getMonth() + 1) &&
     d.date.year === hoy.getFullYear();    
 
-    let linea = `<b>${fecha}${esHoy ? " (Hoy)" : ""}</b>`;
+    let linea = `<b>${fecha}${esHoy ? " " + t.todayLabel : ""}</b>`;
 
     if (d.ekadashiName) {
         linea += ` — Ekādaśī: ${d.ekadashiName}`;
@@ -355,7 +405,7 @@
 
     if (d.events && d.events.length > 0) {
       
-        const eventos = d.events.map(e => e.text).join(", ");
+        const eventos = d.events.map(e => translateEventText(e.text)).join(", ");
         linea += `<br><small>${eventos}</small>`;
     }
 
@@ -420,8 +470,8 @@
         titulo = "Ayuno vaisnava";
         }
 
-        if (d.ekadashiName) {
-        titulo = d.ekadashiName;
+        if (d.ekadashiName && d.fast) {
+            linea += ` — Ekādaśī: ${d.ekadashiName}`;
         }
 
         const descripcion = d.events
@@ -478,6 +528,103 @@
 
     generarCalendario();
     }    
+    
+let currentLang = localStorage.getItem("lang") || "es";
+
+const translations = {
+  es: {
+    title: "Calendario Vaisnava",
+    searchCity: "Buscar ciudad",
+    selectedCity: "Ciudad seleccionada",
+    generate: "Generar calendario",
+    fastFilter: "Mostrar solo días de ayuno",
+    year: "Año",
+    month: "Mes",
+    day: "Día",
+    period: "Días a calcular",
+    generateBtn: "Generar",
+    todayBtn: "Hoy",
+    exportBtn: "Exportar a calendario (.ics)",
+    todayLabel: "(Hoy)",
+    result: "Resultado calendario"
+  },
+  en: {
+    title: "Vaishnava Calendar",
+    searchCity: "Search city",
+    selectedCity: "Selected city",
+    generate: "Generate calendar",
+    fastFilter: "Show fasting days only",
+    year: "Year",
+    month: "Month",
+    day: "Day",
+    period: "Days to calculate",
+    generateBtn: "Generate",
+    todayBtn: "Today",
+    exportBtn: "Export to calendar (.ics)",
+    todayLabel: "(Today)",
+    result: "Calendar result"
+  }
+};
+
+function applyTranslations() {
+  const t = translations[currentLang];
+
+  document.getElementById("title").innerText = t.title;
+  document.getElementById("searchCityLabel").innerText = t.searchCity;
+  document.getElementById("selectedCityLabel").innerText = t.selectedCity;
+  document.getElementById("generateLabel").innerText = t.generate;
+
+  document.getElementById("fastFilterText").innerText = t.fastFilter;
+
+  document.getElementById("yearLabel").innerText = t.year;
+  document.getElementById("monthLabel").innerText = t.month;
+  document.getElementById("dayLabel").innerText = t.day;
+  document.getElementById("periodLabel").innerText = t.period;
+
+  document.getElementById("generateBtn").innerText = t.generateBtn;
+  document.getElementById("todayBtn").innerText = t.todayBtn;
+  document.getElementById("exportBtn").innerText = t.exportBtn;
+
+  document.getElementById("resultLabel").innerText = t.result;
+}
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("lang", lang);
+  applyTranslations();
+}
+
+function translateEventText(text) {
+  if (currentLang === "en") return text;
+
+  let t = text;
+
+  // reglas simples
+  t = t.replaceAll("Lord ", "Sri ");
+  t = t.replaceAll("Appearance", "Aparición");
+  t = t.replaceAll("Disappearance", "Desaparición");
+
+  t = t.replaceAll("Fasting for ", "Ayuno por ");
+  t = t.replaceAll("Break fast", "Romper ayuno");
+  t = t.replaceAll("Fast today", "Ayuno hoy");
+  t = t.replaceAll("Fasting is done yesterday", "Ayuno realizado ayer");
+
+  t = t.replaceAll("consort of ", "consorte de ");
+
+  t = t.replaceAll("First day of ", "Primer día de ");
+  t = t.replaceAll("Last day of ", "Último día de ");
+
+  t = t.replaceAll("begins", "comienza");
+  t = t.replaceAll("ends", "termina");
+
+  t = t.replaceAll("fast for one month", "ayuno por un mes");
+
+  t = t.replaceAll("green leafy vegetable", "vegetales de hoja verde");
+  t = t.replaceAll("yogurt", "yogur");
+  t = t.replaceAll("milk", "leche");
+
+  return t;
+}
   </script>
 </body>
 </html>
