@@ -9,4 +9,4 @@
 
     GCAL_PORT = int(os.getenv("PORT", os.getenv("GCAL_SERVER_PORT", 8047)))
 
-    GS.run_server(port=GCAL_PORT)
+    GS.run_server(host="0.0.0.0", port=GCAL_PORT)
