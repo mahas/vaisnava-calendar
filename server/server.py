@@ -9,4 +9,4 @@ import gaurabda.TServer as GS
 
 GCAL_PORT = int(os.environ.get("PORT", 10000))
 
-GS.run_server(port=GCAL_PORT)
+GS.run_server(host="0.0.0.0", port=GCAL_PORT)
