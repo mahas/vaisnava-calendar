@@ -1,0 +1,2674 @@
+{
+    "location": {
+        "city": "",
+        "country": "",
+        "name": "Vrindavan, India",
+        "latitude": 27.583,
+        "longitude": 77.73,
+        "offset": 5.5,
+        "tzid": 188,
+        "tzname": "+5:30 Asia/Calcutta"
+    },
+    "start": {
+        "year": 2026,
+        "month": 4,
+        "day": 1,
+        "hour": 12,
+        "minute": 0,
+        "second": 0,
+        "offset": 0
+    },
+    "count": 65,
+    "days": [
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 1,
+                "hour": -1,
+                "minute": 3,
+                "second": 56,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461131.5277339765,
+                "tithi": 28,
+                "masa": 11,
+                "naksatra": 11,
+                "yoga": 10,
+                "sun": {
+                    "rise_deg": 9.98423153420279,
+                    "noon_deg": 103.30464342845325,
+                    "set_deg": 196.6250553227037,
+                    "rise": "06:09:56.000",
+                    "noon": "12:23:13.000",
+                    "set": "18:36:30.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.219668322895675,
+                "sun_rasi": 11,
+                "moon_rasi": 5,
+                "tithiElapse": 95.97125079003952,
+                "naksatraElapse": 59.556513879011774
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 2,
+                "hour": -1,
+                "minute": 2,
+                "second": 49,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461132.5269628707,
+                "tithi": 29,
+                "masa": 11,
+                "naksatra": 12,
+                "yoga": 11,
+                "sun": {
+                    "rise_deg": 9.706633436272584,
+                    "noon_deg": 103.23068842197269,
+                    "set_deg": 196.75474340767278,
+                    "rise": "06:08:49.000",
+                    "noon": "12:22:55.000",
+                    "set": "18:37:01.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.21970653369956,
+                "sun_rasi": 11,
+                "moon_rasi": 5,
+                "tithiElapse": 93.58867107152378,
+                "naksatraElapse": 54.81116191240485
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 200,
+                    "disp": 23,
+                    "text": "Sri Balarama Rasayatra"
+                },
+                {
+                    "prio": 205,
+                    "disp": 23,
+                    "text": "Sri Krsna Vasanta Rasa"
+                },
+                {
+                    "prio": 220,
+                    "disp": 23,
+                    "text": "Appearance of Radha Kunda, snana dana"
+                },
+                {
+                    "prio": 410,
+                    "disp": 25,
+                    "text": "Sri Vamsivadana Thakura -- Appearance"
+                },
+                {
+                    "prio": 415,
+                    "disp": 25,
+                    "text": "Sri Syamananda Prabhu -- Appearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 3,
+                "hour": 6,
+                "minute": 7,
+                "second": 43,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461133.5261944323,
+                "tithi": 0,
+                "masa": 0,
+                "naksatra": 13,
+                "yoga": 12,
+                "sun": {
+                    "rise_deg": 9.429995598132987,
+                    "noon_deg": 103.1572607795075,
+                    "set_deg": 196.884525960882,
+                    "rise": "06:07:43.000",
+                    "noon": "12:22:37.000",
+                    "set": "18:37:32.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.219744744604988,
+                "sun_rasi": 11,
+                "moon_rasi": 5,
+                "tithiElapse": 89.58455723739056,
+                "naksatraElapse": 48.602189463191436
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 4,
+                "hour": -1,
+                "minute": 0,
+                "second": 37,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461134.5254297466,
+                "tithi": 1,
+                "masa": 0,
+                "naksatra": 14,
+                "yoga": 13,
+                "sun": {
+                    "rise_deg": 9.154708853230407,
+                    "noon_deg": 103.08451241557928,
+                    "set_deg": 197.01431597792816,
+                    "rise": "06:06:37.000",
+                    "noon": "12:22:20.000",
+                    "set": "18:38:03.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.21978295565346,
+                "sun_rasi": 11,
+                "moon_rasi": 6,
+                "tithiElapse": 84.04107707429087,
+                "naksatraElapse": 40.99605909759738
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 5,
+                "hour": -2,
+                "minute": 59,
+                "second": 31,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461135.5246675718,
+                "tithi": 2,
+                "masa": 0,
+                "naksatra": 15,
+                "yoga": 14,
+                "sun": {
+                    "rise_deg": 8.880325781335122,
+                    "noon_deg": 103.01237305302874,
+                    "set_deg": 197.14442032472235,
+                    "rise": "06:05:31.000",
+                    "noon": "12:22:02.000",
+                    "set": "18:38:34.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.219821166797487,
+                "sun_rasi": 11,
+                "moon_rasi": 6,
+                "tithiElapse": 77.08532529632612,
+                "naksatraElapse": 32.122153896799865
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 6,
+                "hour": -2,
+                "minute": 58,
+                "second": 25,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461136.5239089937,
+                "tithi": 3,
+                "masa": 0,
+                "naksatra": 16,
+                "yoga": 15,
+                "sun": {
+                    "rise_deg": 8.607237739917512,
+                    "noon_deg": 102.94099342220244,
+                    "set_deg": 197.27474910448737,
+                    "rise": "06:04:25.000",
+                    "noon": "12:21:45.000",
+                    "set": "18:39:05.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.2198593780786,
+                "sun_rasi": 11,
+                "moon_rasi": 7,
+                "tithiElapse": 68.96017195916855,
+                "naksatraElapse": 22.19156668586244
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 7,
+                "hour": -2,
+                "minute": 57,
+                "second": 20,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461137.523155085,
+                "tithi": 4,
+                "masa": 0,
+                "naksatra": 17,
+                "yoga": 16,
+                "sun": {
+                    "rise_deg": 8.335830505200047,
+                    "noon_deg": 102.87052017061906,
+                    "set_deg": 197.40520983603807,
+                    "rise": "06:03:20.000",
+                    "noon": "12:21:28.000",
+                    "set": "18:39:37.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.2198975895378,
+                "sun_rasi": 11,
+                "moon_rasi": 7,
+                "tithiElapse": 60.01115521567,
+                "naksatraElapse": 11.507809936424351
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 8,
+                "hour": -2,
+                "minute": 56,
+                "second": 15,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461138.522404621,
+                "tithi": 5,
+                "masa": 0,
+                "naksatra": 18,
+                "yoga": 17,
+                "sun": {
+                    "rise_deg": 8.065663544546247,
+                    "noon_deg": 102.80088463187651,
+                    "set_deg": 197.53610571920677,
+                    "rise": "06:02:15.000",
+                    "noon": "12:21:12.000",
+                    "set": "18:40:08.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.21993580112828,
+                "sun_rasi": 11,
+                "moon_rasi": 8,
+                "tithiElapse": 50.66440598679635,
+                "naksatraElapse": 0.46937737180456907
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 9,
+                "hour": -2,
+                "minute": 55,
+                "second": 11,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461139.521658676,
+                "tithi": 6,
+                "masa": 0,
+                "naksatra": 18,
+                "yoga": 18,
+                "sun": {
+                    "rise_deg": 7.797123409705971,
+                    "noon_deg": 102.73223215990934,
+                    "set_deg": 197.66734091011273,
+                    "rise": "06:01:11.000",
+                    "noon": "12:20:55.000",
+                    "set": "18:40:40.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.219974012891115,
+                "sun_rasi": 11,
+                "moon_rasi": 8,
+                "tithiElapse": 41.4694118923383,
+                "naksatraElapse": 89.56333418135962
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 400,
+                    "disp": 25,
+                    "text": "Sri Abhirama Thakura -- Disappearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 10,
+                "hour": -2,
+                "minute": 54,
+                "second": 7,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461140.5209183046,
+                "tithi": 7,
+                "masa": 0,
+                "naksatra": 19,
+                "yoga": 19,
+                "sun": {
+                    "rise_deg": 7.530589674307043,
+                    "noon_deg": 102.66470294717958,
+                    "set_deg": 197.79881622005212,
+                    "rise": "06:00:07.000",
+                    "noon": "12:20:39.000",
+                    "set": "18:41:11.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220012224866608,
+                "sun_rasi": 11,
+                "moon_rasi": 8,
+                "tithiElapse": 33.05440239005675,
+                "naksatraElapse": 79.34763142067602
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 11,
+                "hour": -2,
+                "minute": 53,
+                "second": 3,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461141.520182307,
+                "tithi": 8,
+                "masa": 0,
+                "naksatra": 20,
+                "yoga": 20,
+                "sun": {
+                    "rise_deg": 7.265630557443657,
+                    "noon_deg": 102.59823077699852,
+                    "set_deg": 197.93083099655337,
+                    "rise": "05:59:03.000",
+                    "noon": "12:20:23.000",
+                    "set": "18:41:43.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220050437008897,
+                "sun_rasi": 11,
+                "moon_rasi": 9,
+                "tithiElapse": 26.070875225216206,
+                "naksatraElapse": 70.42357112370716
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 12,
+                "hour": -2,
+                "minute": 52,
+                "second": 0,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461142.5194517407,
+                "tithi": 9,
+                "masa": 0,
+                "naksatra": 21,
+                "yoga": 21,
+                "sun": {
+                    "rise_deg": 7.002626622709299,
+                    "noon_deg": 102.53295441706491,
+                    "set_deg": 198.06328221142053,
+                    "rise": "05:58:00.000",
+                    "noon": "12:20:07.000",
+                    "set": "18:42:15.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22008864935843,
+                "sun_rasi": 11,
+                "moon_rasi": 9,
+                "tithiElapse": 21.20436016034777,
+                "naksatraElapse": 63.40067280280586
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 400,
+                    "disp": 25,
+                    "text": "Srila Vrndavana Dasa Thakura -- Disappearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 13,
+                "hour": -2,
+                "minute": 50,
+                "second": 58,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461143.518727639,
+                "tithi": 10,
+                "masa": 0,
+                "naksatra": 22,
+                "yoga": 22,
+                "sun": {
+                    "rise_deg": 6.741950054145932,
+                    "noon_deg": 102.4690064315984,
+                    "set_deg": 198.19606280905086,
+                    "rise": "05:56:58.000",
+                    "noon": "12:19:52.000",
+                    "set": "18:42:47.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22012686195472,
+                "sun_rasi": 11,
+                "moon_rasi": 10,
+                "tithiElapse": 19.099516835432517,
+                "naksatraElapse": 58.85169087711972
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 20,
+                    "disp": 17,
+                    "text": "Fasting for Varuthini Ekadasi"
+                }
+            ],
+            "fast": 518,
+            "ekadashiType": 257,
+            "ekadashiName": "Varuthini Ekadasi"
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 14,
+                "hour": 5,
+                "minute": 55,
+                "second": 55,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461144.5180088324,
+                "tithi": 11,
+                "masa": 0,
+                "naksatra": 23,
+                "yoga": 23,
+                "sun": {
+                    "rise_deg": 6.483179610199599,
+                    "noon_deg": 102.40632380922224,
+                    "set_deg": 198.3294680082449,
+                    "rise": "05:55:55.000",
+                    "noon": "12:19:37.000",
+                    "set": "18:43:19.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220165074753016,
+                "sun_rasi": 11,
+                "moon_rasi": 10,
+                "tithiElapse": 20.269247250893407,
+                "naksatraElapse": 57.2531695483228
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 90,
+                    "disp": 17,
+                    "text": "Break fast 06:57 - 10:11 (LT)"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": "",
+            "ekadashiParana": {
+                "startTime": 6.9594908729195595,
+                "endTime": 10.195462827303203,
+                "startReason": 2,
+                "endReason": 1
+            }
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 15,
+                "hour": -2,
+                "minute": 48,
+                "second": 54,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461145.5172963575,
+                "tithi": 12,
+                "masa": 0,
+                "naksatra": 24,
+                "yoga": 24,
+                "sun": {
+                    "rise_deg": 6.226688635297848,
+                    "noon_deg": 102.34503753348811,
+                    "set_deg": 198.46338643167837,
+                    "rise": "05:54:54.000",
+                    "noon": "12:19:22.000",
+                    "set": "18:43:51.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22020328779299,
+                "sun_rasi": 0,
+                "moon_rasi": 10,
+                "tithiElapse": 25.05849074195705,
+                "naksatraElapse": 58.90811313310991
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 16,
+                "hour": -2,
+                "minute": 47,
+                "second": 53,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461146.5165912244,
+                "tithi": 13,
+                "masa": 0,
+                "naksatra": 25,
+                "yoga": 25,
+                "sun": {
+                    "rise_deg": 5.972840687775529,
+                    "noon_deg": 102.28527138528204,
+                    "set_deg": 198.59770208278857,
+                    "rise": "05:53:53.000",
+                    "noon": "12:19:08.000",
+                    "set": "18:44:23.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220241501113254,
+                "sun_rasi": 0,
+                "moon_rasi": 11,
+                "tithiElapse": 33.520504073285196,
+                "naksatraElapse": 63.857029410058885
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 17,
+                "hour": -2,
+                "minute": 46,
+                "second": 53,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461147.5158922966,
+                "tithi": 14,
+                "masa": 0,
+                "naksatra": 26,
+                "yoga": 26,
+                "sun": {
+                    "rise_deg": 5.721226763352208,
+                    "noon_deg": 102.22696621985182,
+                    "set_deg": 198.73270567635143,
+                    "rise": "05:52:53.000",
+                    "noon": "12:18:54.000",
+                    "set": "18:44:55.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22027971467035,
+                "sun_rasi": 0,
+                "moon_rasi": 11,
+                "tithiElapse": 45.309578316718735,
+                "naksatraElapse": 71.80369130804642
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 400,
+                    "disp": 25,
+                    "text": "Sri Gadadhara Pandita -- Appearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 18,
+                "hour": 5,
+                "minute": 51,
+                "second": 53,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461148.515201286,
+                "tithi": 15,
+                "masa": 0,
+                "naksatra": 0,
+                "yoga": 1,
+                "sun": {
+                    "rise_deg": 5.472462899030684,
+                    "noon_deg": 102.17030076063996,
+                    "set_deg": 198.86813862224923,
+                    "rise": "05:51:53.000",
+                    "noon": "12:18:40.000",
+                    "set": "18:45:28.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220317928529745,
+                "sun_rasi": 0,
+                "moon_rasi": 0,
+                "tithiElapse": 59.715225206382705,
+                "naksatraElapse": 82.09379941620243
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 19,
+                "hour": -2,
+                "minute": 44,
+                "second": 54,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461149.514517081,
+                "tithi": 16,
+                "masa": 0,
+                "naksatra": 1,
+                "yoga": 2,
+                "sun": {
+                    "rise_deg": 5.226149139932856,
+                    "noon_deg": 102.1152187567172,
+                    "set_deg": 199.00428837350154,
+                    "rise": "05:50:54.000",
+                    "noon": "12:18:27.000",
+                    "set": "18:46:01.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220356142648928,
+                "sun_rasi": 0,
+                "moon_rasi": 0,
+                "tithiElapse": 75.66129974392055,
+                "naksatraElapse": 93.77372006306565
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 20,
+                "hour": -2,
+                "minute": 43,
+                "second": 55,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461150.5138406777,
+                "tithi": 17,
+                "masa": 0,
+                "naksatra": 3,
+                "yoga": 3,
+                "sun": {
+                    "rise_deg": 4.982643909527808,
+                    "noon_deg": 102.06183560454039,
+                    "set_deg": 199.14102729955297,
+                    "rise": "05:49:55.000",
+                    "noon": "12:18:14.000",
+                    "set": "18:46:33.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220394357065988,
+                "sun_rasi": 0,
+                "moon_rasi": 1,
+                "tithiElapse": 91.92007708482102,
+                "naksatraElapse": 5.731086212202197
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 200,
+                    "disp": 23,
+                    "text": "Aksaya Trtiya. Candana Yatra starts. (Continues for 21 days)"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 21,
+                "hour": -2,
+                "minute": 42,
+                "second": 58,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461151.5131730377,
+                "tithi": 19,
+                "masa": 0,
+                "naksatra": 4,
+                "yoga": 4,
+                "sun": {
+                    "rise_deg": 4.742293491546316,
+                    "noon_deg": 102.01025794757125,
+                    "set_deg": 199.27822240359617,
+                    "rise": "05:48:58.000",
+                    "noon": "12:18:02.000",
+                    "set": "18:47:06.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220432571817703,
+                "sun_rasi": 0,
+                "moon_rasi": 1,
+                "tithiElapse": 7.291800678001437,
+                "naksatraElapse": 16.87871956358684
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 965,
+                    "disp": 7,
+                    "text": "Ksaya tithi: Caturthi -- 20 Apr 07:30 to 21 Apr 04:17 (LT)"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 22,
+                "hour": -2,
+                "minute": 42,
+                "second": 1,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461152.512513091,
+                "tithi": 20,
+                "masa": 0,
+                "naksatra": 5,
+                "yoga": 5,
+                "sun": {
+                    "rise_deg": 4.504712761405867,
+                    "noon_deg": 101.96043426980688,
+                    "set_deg": 199.4161557782079,
+                    "rise": "05:48:01.000",
+                    "noon": "12:17:50.000",
+                    "set": "18:47:39.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220470786863142,
+                "sun_rasi": 0,
+                "moon_rasi": 2,
+                "tithiElapse": 20.769295471403737,
+                "naksatraElapse": 26.32503845538192
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 23,
+                "hour": -2,
+                "minute": 41,
+                "second": 4,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461153.511861804,
+                "tithi": 21,
+                "masa": 0,
+                "naksatra": 6,
+                "yoga": 6,
+                "sun": {
+                    "rise_deg": 4.270249352164573,
+                    "noon_deg": 101.91246908852747,
+                    "set_deg": 199.55468882489038,
+                    "rise": "05:47:04.000",
+                    "noon": "12:17:38.000",
+                    "set": "18:48:13.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220509002239282,
+                "sun_rasi": 0,
+                "moon_rasi": 2,
+                "tithiElapse": 31.706281900414623,
+                "naksatraElapse": 33.480992040808566
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 600,
+                    "disp": 27,
+                    "text": "Jahnu Saptami"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 24,
+                "hour": -2,
+                "minute": 40,
+                "second": 9,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461154.5112201036,
+                "tithi": 22,
+                "masa": 0,
+                "naksatra": 7,
+                "yoga": 8,
+                "sun": {
+                    "rise_deg": 4.039237342634959,
+                    "noon_deg": 101.8664573204217,
+                    "set_deg": 199.69367729820846,
+                    "rise": "05:46:09.000",
+                    "noon": "12:17:27.000",
+                    "set": "18:48:46.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220547217981558,
+                "sun_rasi": 0,
+                "moon_rasi": 3,
+                "tithiElapse": 39.81629429719362,
+                "naksatraElapse": 38.0813788928637
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 25,
+                "hour": -2,
+                "minute": 39,
+                "second": 14,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461155.5105869663,
+                "tithi": 23,
+                "masa": 0,
+                "naksatra": 8,
+                "yoga": 9,
+                "sun": {
+                    "rise_deg": 3.8113078295060046,
+                    "noon_deg": 101.82235255436963,
+                    "set_deg": 199.83339727923325,
+                    "rise": "05:45:14.000",
+                    "noon": "12:17:17.000",
+                    "set": "18:49:20.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220585434050825,
+                "sun_rasi": 0,
+                "moon_rasi": 3,
+                "tithiElapse": 45.092114908007375,
+                "naksatraElapse": 40.134558343245885
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 200,
+                    "disp": 23,
+                    "text": "Srimati Sita Devi (consort of Lord Sri Rama) -- Appearance"
+                },
+                {
+                    "prio": 405,
+                    "disp": 25,
+                    "text": "Sri Madhu Pandita -- Disappearance"
+                },
+                {
+                    "prio": 410,
+                    "disp": 25,
+                    "text": "Srimati Jahnava Devi -- Appearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 26,
+                "hour": -2,
+                "minute": 38,
+                "second": 20,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461156.509963323,
+                "tithi": 24,
+                "masa": 0,
+                "naksatra": 9,
+                "yoga": 10,
+                "sun": {
+                    "rise_deg": 3.5867961953223766,
+                    "noon_deg": 101.78024733030077,
+                    "set_deg": 199.97369846527917,
+                    "rise": "05:44:20.000",
+                    "noon": "12:17:07.000",
+                    "set": "18:49:53.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22062365048268,
+                "sun_rasi": 0,
+                "moon_rasi": 4,
+                "tithiElapse": 47.757573322612146,
+                "naksatraElapse": 39.83459286827333
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 27,
+                "hour": -2,
+                "minute": 37,
+                "second": 27,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461157.5093500633,
+                "tithi": 25,
+                "masa": 0,
+                "naksatra": 10,
+                "yoga": 11,
+                "sun": {
+                    "rise_deg": 3.3660228570644044,
+                    "noon_deg": 101.74022381372946,
+                    "set_deg": 200.11442477039452,
+                    "rise": "05:43:27.000",
+                    "noon": "12:16:57.000",
+                    "set": "18:50:27.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220661867311158,
+                "sun_rasi": 0,
+                "moon_rasi": 4,
+                "tithiElapse": 48.13991928265544,
+                "naksatraElapse": 37.46863959260249
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 20,
+                    "disp": 17,
+                    "text": "Fasting for Mohini Ekadasi"
+                }
+            ],
+            "fast": 518,
+            "ekadashiType": 257,
+            "ekadashiName": "Mohini Ekadasi"
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 28,
+                "hour": 5,
+                "minute": 42,
+                "second": 35,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461158.5087462123,
+                "tithi": 26,
+                "masa": 0,
+                "naksatra": 11,
+                "yoga": 12,
+                "sun": {
+                    "rise_deg": 3.148636382874516,
+                    "noon_deg": 101.70224095034273,
+                    "set_deg": 200.25584551781094,
+                    "rise": "05:42:35.000",
+                    "noon": "12:16:48.000",
+                    "set": "18:51:01.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22070008449896,
+                "sun_rasi": 0,
+                "moon_rasi": 5,
+                "tithiElapse": 46.5621402872916,
+                "naksatraElapse": 33.34222241842948
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 90,
+                    "disp": 17,
+                    "text": "Break fast 05:42 - 10:05 (LT)"
+                },
+                {
+                    "prio": 200,
+                    "disp": 23,
+                    "text": "Rukmini Dvadasi"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": "Mohini Ekadasi",
+            "ekadashiParana": {
+                "startTime": 5.7099090921916344,
+                "endTime": 10.090069295190222,
+                "startReason": 4,
+                "endReason": 1
+            }
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 29,
+                "hour": -2,
+                "minute": 35,
+                "second": 44,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461159.5081526623,
+                "tithi": 27,
+                "masa": 0,
+                "naksatra": 12,
+                "yoga": 13,
+                "sun": {
+                    "rise_deg": 2.934958377042175,
+                    "noon_deg": 101.6663782584225,
+                    "set_deg": 200.39779813980283,
+                    "rise": "05:41:44.000",
+                    "noon": "12:16:39.000",
+                    "set": "18:51:35.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220738302080218,
+                "sun_rasi": 0,
+                "moon_rasi": 5,
+                "tithiElapse": 43.339004310179874,
+                "naksatraElapse": 27.731263061482103
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 500,
+                    "disp": 26,
+                    "text": "Sri Jayananda Prabhu -- Disappearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 4,
+                "day": 30,
+                "hour": -2,
+                "minute": 34,
+                "second": 54,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461160.507570261,
+                "tithi": 28,
+                "masa": 0,
+                "naksatra": 13,
+                "yoga": 14,
+                "sun": {
+                    "rise_deg": 2.7252940762893108,
+                    "noon_deg": 101.6327041925746,
+                    "set_deg": 200.54011430885987,
+                    "rise": "05:40:54.000",
+                    "noon": "12:16:31.000",
+                    "set": "18:52:09.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22077652008735,
+                "sun_rasi": 0,
+                "moon_rasi": 5,
+                "tithiElapse": 38.72736800568113,
+                "naksatraElapse": 20.85957912102483
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 100,
+                    "disp": 22,
+                    "text": "Nrsimha Caturdasi: Appearance of Lord Nrsimhadeva",
+                    "fasttype": 7,
+                    "fastsubject": "Lord Nrsimhadeva"
+                },
+                {
+                    "prio": 101,
+                    "disp": 22,
+                    "text": "(Fast today)"
+                }
+            ],
+            "fast": 519,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 1,
+                "hour": -2,
+                "minute": 34,
+                "second": 4,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461161.506998085,
+                "tithi": 29,
+                "masa": 0,
+                "naksatra": 14,
+                "yoga": 15,
+                "sun": {
+                    "rise_deg": 2.5193106163466013,
+                    "noon_deg": 101.6011831884204,
+                    "set_deg": 200.6830557604942,
+                    "rise": "05:40:04.000",
+                    "noon": "12:16:24.000",
+                    "set": "18:52:43.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22081473848503,
+                "sun_rasi": 0,
+                "moon_rasi": 6,
+                "tithiElapse": 32.9011390310864,
+                "naksatraElapse": 12.898502951507496
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 200,
+                    "disp": 23,
+                    "text": "Krsna Phula Dola, Salila Vihara"
+                },
+                {
+                    "prio": 210,
+                    "disp": 23,
+                    "text": "Sri Sri Radha-Ramana Devaji -- Appearance"
+                },
+                {
+                    "prio": 405,
+                    "disp": 25,
+                    "text": "Sri Paramesvari Dasa Thakura -- Disappearance"
+                },
+                {
+                    "prio": 415,
+                    "disp": 25,
+                    "text": "Sri Madhavendra Puri -- Appearance"
+                },
+                {
+                    "prio": 420,
+                    "disp": 25,
+                    "text": "Sri Srinivasa Acarya -- Appearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 2,
+                "hour": 5,
+                "minute": 39,
+                "second": 16,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461162.506436984,
+                "tithi": 0,
+                "masa": 1,
+                "naksatra": 15,
+                "yoga": 16,
+                "sun": {
+                    "rise_deg": 2.317314231228604,
+                    "noon_deg": 101.57188076892989,
+                    "set_deg": 200.82644730663117,
+                    "rise": "05:39:16.000",
+                    "noon": "12:16:17.000",
+                    "set": "18:53:18.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22085295730577,
+                "sun_rasi": 0,
+                "moon_rasi": 6,
+                "tithiElapse": 26.019033147063908,
+                "naksatraElapse": 3.9835235456866513
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 3,
+                "hour": -2,
+                "minute": 32,
+                "second": 28,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461163.5058877594,
+                "tithi": 1,
+                "masa": 1,
+                "naksatra": 15,
+                "yoga": 17,
+                "sun": {
+                    "rise_deg": 2.1195934029614314,
+                    "noon_deg": 101.54485080036766,
+                    "set_deg": 200.97010819777387,
+                    "rise": "05:38:28.000",
+                    "noon": "12:16:10.000",
+                    "set": "18:53:52.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.2208911765802,
+                "sun_rasi": 0,
+                "moon_rasi": 7,
+                "tithiElapse": 18.22917159122497,
+                "naksatraElapse": 94.24061041785254
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 4,
+                "hour": -2,
+                "minute": 31,
+                "second": 42,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461164.505349541,
+                "tithi": 2,
+                "masa": 1,
+                "naksatra": 16,
+                "yoga": 18,
+                "sun": {
+                    "rise_deg": 1.9258347650175356,
+                    "noon_deg": 101.52006322479112,
+                    "set_deg": 201.1142916845647,
+                    "rise": "05:37:42.000",
+                    "noon": "12:16:04.000",
+                    "set": "18:54:27.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220929396275057,
+                "sun_rasi": 0,
+                "moon_rasi": 7,
+                "tithiElapse": 9.678365629102581,
+                "naksatraElapse": 83.81668999435092
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 5,
+                "hour": -2,
+                "minute": 30,
+                "second": 56,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461165.50482366,
+                "tithi": 3,
+                "masa": 1,
+                "naksatra": 17,
+                "yoga": 19,
+                "sun": {
+                    "rise_deg": 1.7365175479223147,
+                    "noon_deg": 101.49759033196018,
+                    "set_deg": 201.25866311599805,
+                    "rise": "05:36:56.000",
+                    "noon": "12:15:59.000",
+                    "set": "18:55:02.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.220967616441236,
+                "sun_rasi": 0,
+                "moon_rasi": 7,
+                "tithiElapse": 0.6030303585269792,
+                "naksatraElapse": 72.909824442565
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 6,
+                "hour": -2,
+                "minute": 30,
+                "second": 12,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461166.5043092826,
+                "tithi": 3,
+                "masa": 1,
+                "naksatra": 18,
+                "yoga": 20,
+                "sun": {
+                    "rise_deg": 1.5513418115843471,
+                    "noon_deg": 101.47740568814436,
+                    "set_deg": 201.40346956470438,
+                    "rise": "05:36:12.000",
+                    "noon": "12:15:54.000",
+                    "set": "18:55:36.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221005837046857,
+                "sun_rasi": 0,
+                "moon_rasi": 8,
+                "tithiElapse": 91.29083585569546,
+                "naksatraElapse": 61.793700645380056
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 7,
+                "hour": -2,
+                "minute": 29,
+                "second": 28,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461167.503807179,
+                "tithi": 4,
+                "masa": 1,
+                "naksatra": 19,
+                "yoga": 21,
+                "sun": {
+                    "rise_deg": 1.3705844883519092,
+                    "noon_deg": 101.45954958373666,
+                    "set_deg": 201.5485146791214,
+                    "rise": "05:35:28.000",
+                    "noon": "12:15:50.000",
+                    "set": "18:56:11.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221044058121375,
+                "sun_rasi": 0,
+                "moon_rasi": 8,
+                "tithiElapse": 82.15586544923808,
+                "naksatraElapse": 50.83366115275183
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 400,
+                    "disp": 25,
+                    "text": "Sri Ramananda Raya -- Disappearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 8,
+                "hour": -2,
+                "minute": 28,
+                "second": 46,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461168.5033180625,
+                "tithi": 5,
+                "masa": 1,
+                "naksatra": 20,
+                "yoga": 22,
+                "sun": {
+                    "rise_deg": 1.1945025205244626,
+                    "noon_deg": 101.44404991169748,
+                    "set_deg": 201.6935973028705,
+                    "rise": "05:34:46.000",
+                    "noon": "12:15:46.000",
+                    "set": "18:56:46.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221082279692055,
+                "sun_rasi": 0,
+                "moon_rasi": 9,
+                "tithiElapse": 73.71695017029411,
+                "naksatraElapse": 40.48933616253194
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 9,
+                "hour": -2,
+                "minute": 28,
+                "second": 5,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461169.5028411574,
+                "tithi": 6,
+                "masa": 1,
+                "naksatra": 21,
+                "yoga": 23,
+                "sun": {
+                    "rise_deg": 1.022816621585763,
+                    "noon_deg": 101.43088552880762,
+                    "set_deg": 201.83895443602947,
+                    "rise": "05:34:05.000",
+                    "noon": "12:15:43.000",
+                    "set": "18:57:21.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221120501729246,
+                "sun_rasi": 0,
+                "moon_rasi": 9,
+                "tithiElapse": 66.56023927282364,
+                "naksatraElapse": 31.303025600416134
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 10,
+                "hour": -2,
+                "minute": 27,
+                "second": 25,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461170.5023771776,
+                "tithi": 7,
+                "masa": 1,
+                "naksatra": 22,
+                "yoga": 24,
+                "sun": {
+                    "rise_deg": 0.8557838667313575,
+                    "noon_deg": 101.4200806356142,
+                    "set_deg": 201.98437740449702,
+                    "rise": "05:33:25.000",
+                    "noon": "12:15:40.000",
+                    "set": "18:57:56.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221158724260242,
+                "sun_rasi": 0,
+                "moon_rasi": 9,
+                "tithiElapse": 61.36127690888982,
+                "naksatraElapse": 23.875399736342118
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 11,
+                "hour": -2,
+                "minute": 26,
+                "second": 46,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461171.501926778,
+                "tithi": 8,
+                "masa": 1,
+                "naksatra": 23,
+                "yoga": 25,
+                "sun": {
+                    "rise_deg": 0.6936400627114931,
+                    "noon_deg": 101.41164676019598,
+                    "set_deg": 202.12965345768046,
+                    "rise": "05:32:46.000",
+                    "noon": "12:15:38.000",
+                    "set": "18:58:31.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22119694731009,
+                "sun_rasi": 0,
+                "moon_rasi": 10,
+                "tithiElapse": 58.81856075708498,
+                "naksatraElapse": 18.827801159595836
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 12,
+                "hour": -2,
+                "minute": 26,
+                "second": 8,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461172.5014892416,
+                "tithi": 9,
+                "masa": 1,
+                "naksatra": 24,
+                "yoga": 26,
+                "sun": {
+                    "rise_deg": 0.5361270241670955,
+                    "noon_deg": 101.40556778955711,
+                    "set_deg": 202.27500855494714,
+                    "rise": "05:32:08.000",
+                    "noon": "12:15:37.000",
+                    "set": "18:59:06.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221235170851376,
+                "sun_rasi": 0,
+                "moon_rasi": 10,
+                "tithiElapse": 59.56666293498447,
+                "naksatraElapse": 16.746092788579503
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 13,
+                "hour": -2,
+                "minute": 25,
+                "second": 32,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461173.501065223,
+                "tithi": 10,
+                "masa": 1,
+                "naksatra": 25,
+                "yoga": 0,
+                "sun": {
+                    "rise_deg": 0.3834802446095491,
+                    "noon_deg": 101.40185130474175,
+                    "set_deg": 202.42022236487395,
+                    "rise": "05:31:32.000",
+                    "noon": "12:15:36.000",
+                    "set": "18:59:40.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221273394909122,
+                "sun_rasi": 0,
+                "moon_rasi": 11,
+                "tithiElapse": 64.13256981341303,
+                "naksatraElapse": 18.09725533267681
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 20,
+                    "disp": 17,
+                    "text": "Fasting for Apara Ekadasi"
+                }
+            ],
+            "fast": 518,
+            "ekadashiType": 257,
+            "ekadashiName": "Apara Ekadasi"
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 14,
+                "hour": 5,
+                "minute": 30,
+                "second": 56,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461174.500655313,
+                "tithi": 11,
+                "masa": 1,
+                "naksatra": 26,
+                "yoga": 1,
+                "sun": {
+                    "rise_deg": 0.23591274028287046,
+                    "noon_deg": 101.40049208182475,
+                    "set_deg": 202.56507142336665,
+                    "rise": "05:30:56.000",
+                    "noon": "12:15:36.000",
+                    "set": "19:00:15.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221311619505926,
+                "sun_rasi": 0,
+                "moon_rasi": 11,
+                "tithiElapse": 72.78582134432625,
+                "naksatraElapse": 23.116581269055203
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 90,
+                    "disp": 17,
+                    "text": "Break fast 05:30 - 10:00 (LT)"
+                },
+                {
+                    "prio": 400,
+                    "disp": 25,
+                    "text": "Srila Vrndavana Dasa Thakura -- Appearance"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": "",
+            "ekadashiParana": {
+                "startTime": 5.515727516018858,
+                "endTime": 10.011931042309609,
+                "startReason": 4,
+                "endReason": 1
+            }
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 15,
+                "hour": -2,
+                "minute": 24,
+                "second": 22,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461175.5002588546,
+                "tithi": 12,
+                "masa": 1,
+                "naksatra": 0,
+                "yoga": 2,
+                "sun": {
+                    "rise_deg": 0.09318768891191809,
+                    "noon_deg": 101.40147869536924,
+                    "set_deg": 202.70976970182656,
+                    "rise": "05:30:22.000",
+                    "noon": "12:15:36.000",
+                    "set": "19:00:50.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22134984461666,
+                "sun_rasi": 0,
+                "moon_rasi": 0,
+                "tithiElapse": 85.37953123059,
+                "naksatraElapse": 31.68660403193078
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 16,
+                "hour": -2,
+                "minute": 23,
+                "second": 49,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461176.499876437,
+                "tithi": 14,
+                "masa": 1,
+                "naksatra": 1,
+                "yoga": 3,
+                "sun": {
+                    "rise_deg": -0.04448270492745365,
+                    "noon_deg": 101.40480175670324,
+                    "set_deg": 202.85408621833392,
+                    "rise": "05:29:49.000",
+                    "noon": "12:15:37.000",
+                    "set": "19:01:24.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221388070263853,
+                "sun_rasi": 1,
+                "moon_rasi": 0,
+                "tithiElapse": 1.306773297453212,
+                "naksatraElapse": 43.253794920660795
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 965,
+                    "disp": 7,
+                    "text": "Ksaya tithi: Caturdasi -- 15 May 08:33 to 16 May 05:13 (LT)"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 17,
+                "hour": 5,
+                "minute": 29,
+                "second": 17,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461177.499508584,
+                "tithi": 15,
+                "masa": 12,
+                "naksatra": 2,
+                "yoga": 4,
+                "sun": {
+                    "rise_deg": -0.17690983271303473,
+                    "noon_deg": 101.41043909403304,
+                    "set_deg": 202.9977880207791,
+                    "rise": "05:29:17.000",
+                    "noon": "12:15:38.000",
+                    "set": "19:01:59.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221426296467552,
+                "sun_rasi": 1,
+                "moon_rasi": 1,
+                "tithiElapse": 19.4828428713679,
+                "naksatraElapse": 56.834637501359886
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 18,
+                "hour": -2,
+                "minute": 22,
+                "second": 46,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461178.499154697,
+                "tithi": 16,
+                "masa": 12,
+                "naksatra": 3,
+                "yoga": 6,
+                "sun": {
+                    "rise_deg": -0.3043090725120461,
+                    "noon_deg": 101.41838356017344,
+                    "set_deg": 203.14107619285892,
+                    "rise": "05:28:46.000",
+                    "noon": "12:15:40.000",
+                    "set": "19:02:33.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22146452320486,
+                "sun_rasi": 1,
+                "moon_rasi": 1,
+                "tithiElapse": 38.45755499175603,
+                "naksatraElapse": 71.13868021298275
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 19,
+                "hour": -2,
+                "minute": 22,
+                "second": 17,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461179.4988152967,
+                "tithi": 17,
+                "masa": 12,
+                "naksatra": 4,
+                "yoga": 7,
+                "sun": {
+                    "rise_deg": -0.4264931635157989,
+                    "noon_deg": 101.42860865176105,
+                    "set_deg": 203.2837104670379,
+                    "rise": "05:28:17.000",
+                    "noon": "12:15:42.000",
+                    "set": "19:03:08.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221502750495667,
+                "sun_rasi": 1,
+                "moon_rasi": 2,
+                "tithiElapse": 56.70654140086491,
+                "naksatraElapse": 84.78670777673179
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 20,
+                "hour": -2,
+                "minute": 21,
+                "second": 49,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461180.498490835,
+                "tithi": 18,
+                "masa": 12,
+                "naksatra": 5,
+                "yoga": 8,
+                "sun": {
+                    "rise_deg": -0.543299446823708,
+                    "noon_deg": 101.44107526892125,
+                    "set_deg": 203.42544998466622,
+                    "rise": "05:27:49.000",
+                    "noon": "12:15:45.000",
+                    "set": "19:03:42.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22154097835728,
+                "sun_rasi": 1,
+                "moon_rasi": 2,
+                "tithiElapse": 72.87832443949718,
+                "naksatraElapse": 96.55511871293552
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 21,
+                "hour": -2,
+                "minute": 21,
+                "second": 22,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461181.498180772,
+                "tithi": 19,
+                "masa": 12,
+                "naksatra": 7,
+                "yoga": 9,
+                "sun": {
+                    "rise_deg": -0.6549219454756745,
+                    "noon_deg": 101.45578008431957,
+                    "set_deg": 203.56648211411482,
+                    "rise": "05:27:22.000",
+                    "noon": "12:15:49.000",
+                    "set": "19:04:15.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221579206769043,
+                "sun_rasi": 1,
+                "moon_rasi": 3,
+                "tithiElapse": 85.98043865053704,
+                "naksatraElapse": 5.5653935656941655
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 22,
+                "hour": -2,
+                "minute": 20,
+                "second": 57,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461182.4978858475,
+                "tithi": 20,
+                "masa": 12,
+                "naksatra": 8,
+                "yoga": 10,
+                "sun": {
+                    "rise_deg": -0.761094836097886,
+                    "noon_deg": 101.47266132484692,
+                    "set_deg": 203.70641748579175,
+                    "rise": "05:26:57.000",
+                    "noon": "12:15:53.000",
+                    "set": "19:04:49.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221617435759235,
+                "sun_rasi": 1,
+                "moon_rasi": 3,
+                "tithiElapse": 95.52645014714898,
+                "naksatraElapse": 11.365151626128878
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 23,
+                "hour": -2,
+                "minute": 20,
+                "second": 33,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461183.497605561,
+                "tithi": 22,
+                "masa": 12,
+                "naksatra": 9,
+                "yoga": 11,
+                "sun": {
+                    "rise_deg": -0.861998033815901,
+                    "noon_deg": 101.49171793884713,
+                    "set_deg": 203.84543391151016,
+                    "rise": "05:26:33.000",
+                    "noon": "12:15:58.000",
+                    "set": "19:05:22.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221655665308727,
+                "sun_rasi": 1,
+                "moon_rasi": 4,
+                "tithiElapse": 1.4359566668705526,
+                "naksatraElapse": 13.89672045098429
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 965,
+                    "disp": 7,
+                    "text": "Ksaya tithi: Saptami -- 22 May 06:26 to 23 May 05:06 (LT)"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 24,
+                "hour": -2,
+                "minute": 20,
+                "second": 10,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461184.4973403076,
+                "tithi": 23,
+                "masa": 12,
+                "naksatra": 10,
+                "yoga": 13,
+                "sun": {
+                    "rise_deg": -0.9574892483139639,
+                    "noon_deg": 101.51289521120182,
+                    "set_deg": 203.98327967071762,
+                    "rise": "05:26:10.000",
+                    "noon": "12:16:03.000",
+                    "set": "19:05:55.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221693895432644,
+                "sun_rasi": 1,
+                "moon_rasi": 4,
+                "tithiElapse": 3.97655095405014,
+                "naksatraElapse": 13.393667136766751
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 25,
+                "hour": -2,
+                "minute": 19,
+                "second": 48,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461185.497090411,
+                "tithi": 24,
+                "masa": 12,
+                "naksatra": 11,
+                "yoga": 14,
+                "sun": {
+                    "rise_deg": -1.0474521484071317,
+                    "noon_deg": 101.53612652879248,
+                    "set_deg": 204.1197052059921,
+                    "rise": "05:25:48.000",
+                    "noon": "12:16:08.000",
+                    "set": "19:06:28.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22173212614334,
+                "sun_rasi": 1,
+                "moon_rasi": 4,
+                "tithiElapse": 3.6022545461047883,
+                "naksatraElapse": 10.257355810157875
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 26,
+                "hour": -2,
+                "minute": 19,
+                "second": 28,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461186.4968554284,
+                "tithi": 25,
+                "masa": 12,
+                "naksatra": 12,
+                "yoga": 15,
+                "sun": {
+                    "rise_deg": -1.1320457740517202,
+                    "noon_deg": 101.56141383718891,
+                    "set_deg": 204.25487344842955,
+                    "rise": "05:25:28.000",
+                    "noon": "12:16:14.000",
+                    "set": "19:07:01.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.2217703574239,
+                "sun_rasi": 1,
+                "moon_rasi": 5,
+                "tithiElapse": 0.8130066308723372,
+                "naksatraElapse": 4.952407213889032
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 27,
+                "hour": -2,
+                "minute": 19,
+                "second": 9,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461187.496635676,
+                "tithi": 25,
+                "masa": 12,
+                "naksatra": 12,
+                "yoga": 16,
+                "sun": {
+                    "rise_deg": -1.2111566010214077,
+                    "noon_deg": 101.5886860974386,
+                    "set_deg": 204.3885287958986,
+                    "rise": "05:25:09.000",
+                    "noon": "12:16:21.000",
+                    "set": "19:07:33.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221808589286393,
+                "sun_rasi": 1,
+                "moon_rasi": 5,
+                "tithiElapse": 96.12391199280346,
+                "naksatraElapse": 97.93515892579556
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 20,
+                    "disp": 17,
+                    "text": "Fasting for Padmini Ekadasi"
+                }
+            ],
+            "fast": 518,
+            "ekadashiType": 257,
+            "ekadashiName": "Padmini Ekadasi"
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 28,
+                "hour": 5,
+                "minute": 24,
+                "second": 51,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461188.4964313954,
+                "tithi": 26,
+                "masa": 12,
+                "naksatra": 13,
+                "yoga": 17,
+                "sun": {
+                    "rise_deg": -1.28469764428986,
+                    "noon_deg": 101.61786103146844,
+                    "set_deg": 204.52041970722672,
+                    "rise": "05:24:51.000",
+                    "noon": "12:16:28.000",
+                    "set": "19:08:04.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221846821740083,
+                "sun_rasi": 1,
+                "moon_rasi": 6,
+                "tithiElapse": 89.99400948663911,
+                "naksatraElapse": 89.61149958942514
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "events": [
+                {
+                    "prio": 90,
+                    "disp": 17,
+                    "text": "Break fast 05:24 - 07:59 (LT)"
+                }
+            ],
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": "",
+            "ekadashiParana": {
+                "startTime": 5.414353490380676,
+                "endTime": 7.990075226873159,
+                "startReason": 4,
+                "endReason": 5
+            }
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 29,
+                "hour": -2,
+                "minute": 18,
+                "second": 35,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461189.4962422014,
+                "tithi": 27,
+                "masa": 12,
+                "naksatra": 14,
+                "yoga": 18,
+                "sun": {
+                    "rise_deg": -1.3528075163571902,
+                    "noon_deg": 101.6489430829998,
+                    "set_deg": 204.6506936823568,
+                    "rise": "05:24:35.000",
+                    "noon": "12:16:35.000",
+                    "set": "19:08:36.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221885054770226,
+                "sun_rasi": 1,
+                "moon_rasi": 6,
+                "tithiElapse": 82.7798255794729,
+                "naksatraElapse": 80.31696522117109
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 30,
+                "hour": -2,
+                "minute": 18,
+                "second": 20,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461190.4960683263,
+                "tithi": 28,
+                "masa": 12,
+                "naksatra": 15,
+                "yoga": 19,
+                "sun": {
+                    "rise_deg": -1.4154025263328371,
+                    "noon_deg": 101.68184567624048,
+                    "set_deg": 204.7790938788138,
+                    "rise": "05:24:20.000",
+                    "noon": "12:16:43.000",
+                    "set": "19:09:06.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221923288385707,
+                "sun_rasi": 1,
+                "moon_rasi": 6,
+                "tithiElapse": 74.78188068427549,
+                "naksatraElapse": 70.31477646297581
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 5,
+                "day": 31,
+                "hour": -2,
+                "minute": 18,
+                "second": 6,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461191.495909928,
+                "tithi": 29,
+                "masa": 12,
+                "naksatra": 16,
+                "yoga": 20,
+                "sun": {
+                    "rise_deg": -1.4724258949155509,
+                    "noon_deg": 101.71647183508975,
+                    "set_deg": 204.90536956509504,
+                    "rise": "05:24:06.000",
+                    "noon": "12:16:51.000",
+                    "set": "19:09:37.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221961522592558,
+                "sun_rasi": 1,
+                "moon_rasi": 7,
+                "tithiElapse": 66.23522189925097,
+                "naksatraElapse": 59.80923764410342
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 6,
+                "day": 1,
+                "hour": 5,
+                "minute": 23,
+                "second": 54,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461192.495766677,
+                "tithi": 0,
+                "masa": 12,
+                "naksatra": 17,
+                "yoga": 20,
+                "sun": {
+                    "rise_deg": -1.523996338775646,
+                    "noon_deg": 101.7528280184087,
+                    "set_deg": 205.02965237559306,
+                    "rise": "05:23:54.000",
+                    "noon": "12:17:00.000",
+                    "set": "19:10:07.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.221999757378192,
+                "sun_rasi": 1,
+                "moon_rasi": 7,
+                "tithiElapse": 57.31359464774689,
+                "naksatraElapse": 48.971369436780066
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 6,
+                "day": 2,
+                "hour": -2,
+                "minute": 17,
+                "second": 43,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461193.49563872,
+                "tithi": 1,
+                "masa": 12,
+                "naksatra": 18,
+                "yoga": 21,
+                "sun": {
+                    "rise_deg": -1.5700607836493212,
+                    "noon_deg": 101.79081318118078,
+                    "set_deg": 205.1516871460109,
+                    "rise": "05:23:43.000",
+                    "noon": "12:17:09.000",
+                    "set": "19:10:36.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.222037992748223,
+                "sun_rasi": 1,
+                "moon_rasi": 8,
+                "tithiElapse": 48.214186028824216,
+                "naksatraElapse": 37.97140084103354
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 6,
+                "day": 3,
+                "hour": -2,
+                "minute": 17,
+                "second": 33,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461194.49552613,
+                "tithi": 2,
+                "masa": 12,
+                "naksatra": 19,
+                "yoga": 22,
+                "sun": {
+                    "rise_deg": -1.6105932073292468,
+                    "noon_deg": 101.83031689183736,
+                    "set_deg": 205.27122699100397,
+                    "rise": "05:23:33.000",
+                    "noon": "12:17:19.000",
+                    "set": "19:11:05.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.222076228705408,
+                "sun_rasi": 1,
+                "moon_rasi": 8,
+                "tithiElapse": 39.169857901769014,
+                "naksatraElapse": 27.011677064168182
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        },
+        {
+            "date": {
+                "year": 2026,
+                "month": 6,
+                "day": 4,
+                "hour": -2,
+                "minute": 17,
+                "second": 25,
+                "offset": 5.5
+            },
+            "astrodata": {
+                "julianDay": 2461195.4954286306,
+                "tithi": 3,
+                "masa": 12,
+                "naksatra": 20,
+                "yoga": 23,
+                "sun": {
+                    "rise_deg": -1.6456930131735081,
+                    "noon_deg": 101.87134717075152,
+                    "set_deg": 205.38838735467655,
+                    "rise": "05:23:25.000",
+                    "noon": "12:17:29.000",
+                    "set": "19:11:33.000"
+                },
+                "gaurabda_year": 540,
+                "ayanamsha": 24.22211446523922,
+                "sun_rasi": 1,
+                "moon_rasi": 8,
+                "tithiElapse": 30.455990305941327,
+                "naksatraElapse": 16.35467843053604
+            },
+            "hasDST": 0,
+            "feasting": 0,
+            "fast": 0,
+            "ekadashiType": 256,
+            "ekadashiName": ""
+        }
+    ]
+}

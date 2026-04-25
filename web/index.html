@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calendario Vaisnava</title>
+  <style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    max-width: 980px;
+    margin: 40px auto;
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fb, #eef2f7);
+    color: #1f2933;
+  }
+
+  h1 {
+    font-size: 42px;
+    margin-bottom: 24px;
+    letter-spacing: -1px;
+  }
+
+  h2 {
+    font-size: 24px;
+    margin-top: 28px;
+    margin-bottom: 16px;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.92);
+    padding: 28px;
+    border-radius: 24px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  input {
+    width: 100%;
+    max-width: 260px;
+    padding: 12px 14px;
+    font-size: 16px;
+    border: 1px solid #d0d7de;
+    border-radius: 12px;
+    background: #fff;
+    margin: 6px 8px 10px 0;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #4f8cff;
+    box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.15);
+  }
+
+  button {
+    padding: 12px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    background: #1f6feb;
+    color: white;
+    cursor: pointer;
+    margin: 6px 8px 10px 0;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  }
+
+  button:hover {
+    background: #155fc4;
+    box-shadow: 0 8px 18px rgba(31, 111, 235, 0.25);
+    transform: translateY(-1px);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  label {
+    display: block;
+    font-weight: 700;
+    margin-top: 14px;
+    margin-bottom: 4px;
+  }
+
+  label input[type="checkbox"] {
+    width: auto;
+    max-width: none;
+    margin-right: 8px;
+  }
+
+  .result {
+    margin-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .city {
+    padding: 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #eef0f3;
+    border-radius: 10px;
+    margin-top: 8px;
+  }
+
+  .city:hover {
+    background: #eef6ff;
+  }
+
+  .selected {
+    background: #dbeafe;
+    color: #0f3d91;
+    font-weight: 700;
+  }
+
+  .selected-city {
+    background: #f3f7fb;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 700;
+    border: 1px solid #e4e9f0;
+  }
+
+  #calendarOutput {
+    margin-top: 20px;
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 18px;
+    max-width: 100%;
+    line-height: 1.55;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    border: 1px solid #e5e7eb;
+  }
+
+  #calendarOutput div,
+  .day-item {
+    padding: 14px 0;
+    border-bottom: 1px solid #eef0f3;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  #calendarOutput div:last-child,
+  .day-item:last-child {
+    border-bottom: none;
+  }
+
+  .day-item strong,
+  #calendarOutput b {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: #111827;
+  }
+
+  .day-item,
+  #calendarOutput small {
+    font-size: 14px;
+    color: #374151;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 24px 0;
+  }
+
+  @media (max-width: 700px) {
+    body {
+      margin: 0;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 34px;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 20px;
+    }
+
+    input,
+    button {
+      width: 100%;
+      max-width: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Calendario Vaisnava</h1>
+
+  <div class="card">
+    <h2>Buscar ciudad</h2>
+    <input id="cityInput" value="Paris" />
+    <button onclick="buscarCiudad()">Buscar</button>
+
+    <div class="result" id="results"></div>
+
+    <h2>Ciudad seleccionada</h2>
+    <div id="selected" class="selected-city">Ninguna</div>
+    <button id="saveDefaultBtn" onclick="guardarCiudadPorDefecto()" style="display:none;">
+    Guardar como ciudad por defecto
+    </button>
+
+    <h2>Generar calendario</h2>
+    <label>
+    <input type="checkbox" id="soloAyunos" />
+    Mostrar solo días de ayuno
+    </label>    
+
+    <label>Año</label>
+    <input id="year" type="number" value="2026" />
+
+    <label>Mes</label>
+    <input id="month" type="number" value="4" min="1" max="12" />
+
+    <label>Día</label>
+    <input id="day" type="number" value="25" min="1" max="31" />
+
+    <label>Días a calcular</label>
+    <input id="period" type="number" value="1" min="1" />
+
+    <br />
+    <button onclick="generarCalendario()">Generar</button>
+    <button onclick="mostrarHoy()">Hoy</button>
+    <button onclick="exportarICS()">Exportar a calendario (.ics)</button>
+
+    <h2>Resultado calendario</h2>
+    <pre id="calendarOutput">Esperando...</pre>
+  </div>
+
+  <script>
+    let selectedCity = null;
+    let lastCalendarData = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const hoy = new Date();
+
+        document.getElementById('year').value = hoy.getFullYear();
+        document.getElementById('month').value = hoy.getMonth() + 1;
+        document.getElementById('day').value = hoy.getDate();
+
+        cargarCiudadPorDefecto();
+        });
+
+    function cargarCiudadPorDefecto() {
+    const saved = localStorage.getItem('gcal_default_city');
+
+    if (!saved) return;
+
+    selectedCity = JSON.parse(saved);
+
+    document.getElementById('selected').innerHTML = `
+        ${selectedCity.name}<br>
+        <small>${selectedCity.tzname}</small>
+    `;
+
+    document.getElementById('cityInput').value = selectedCity.city;
+    document.getElementById('saveDefaultBtn').style.display = 'none';
+
+    if (selectedCity) {
+    generarCalendario();
+    }    
+    }    
+
+    async function buscarCiudad() {
+      const city = document.getElementById('cityInput').value;
+      const url = `http://127.0.0.1:8047/find-location?name=${encodeURIComponent(city)}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = "";
+
+      const cities = data.EQUALS.concat(data.STARTS, data.CONTAINS);
+
+      cities.forEach((c, index) => {
+        const div = document.createElement('div');
+        div.className = 'city';
+        div.textContent = `${c.city} (${c.country})`;
+
+        div.onclick = () => seleccionarCiudad(c, div);
+
+        resultsDiv.appendChild(div);
+      });
+    }
+
+    function seleccionarCiudad(city, element) {
+    selectedCity = city;
+
+    document.querySelectorAll('.city').forEach(el => el.classList.remove('selected'));
+    element.classList.add('selected');
+
+    document.getElementById('selected').innerHTML = `
+        ${city.name}<br>
+        <small>${city.tzname}</small>
+    `;
+
+    document.getElementById('saveDefaultBtn').style.display = 'inline-block';
+    }
+
+    function guardarCiudadPorDefecto() {
+    if (!selectedCity) return;
+
+    localStorage.setItem('gcal_default_city', JSON.stringify(selectedCity));
+    alert(`${selectedCity.name} guardada como ciudad por defecto`);
+    }
+
+
+    async function generarCalendario() {
+  if (!selectedCity) {
+    alert("Selecciona una ciudad primero");
+    return;
+  }
+
+  const year = document.getElementById('year').value;
+  const month = document.getElementById('month').value;
+  const day = document.getElementById('day').value;
+  const period = document.getElementById('period').value;
+
+  const url = `http://127.0.0.1:8047/calendar?city=${selectedCity.city}&country=${selectedCity.country}&year=${year}&month=${month}&day=${day}&period=${period}`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+  lastCalendarData = data;
+    let html = "";
+
+    const soloAyunos = document.getElementById('soloAyunos').checked;
+
+    data.days.forEach(d => {
+    if (soloAyunos && !d.fast) return;
+    const fecha = new Date(d.date.year, d.date.month - 1, d.date.day)
+    .toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+    const hoy = new Date();
+    const esHoy =
+    d.date.day === hoy.getDate() &&
+    d.date.month === (hoy.getMonth() + 1) &&
+    d.date.year === hoy.getFullYear();    
+
+    let linea = `<b>${fecha}${esHoy ? " (Hoy)" : ""}</b>`;
+
+    if (d.ekadashiName) {
+        linea += ` — Ekādaśī: ${d.ekadashiName}`;
+    }
+
+    if (d.fast) {
+        linea += ` (Ayuno)`;
+    }
+
+    if (d.events && d.events.length > 0) {
+      
+        const eventos = d.events.map(e => e.text).join(", ");
+        linea += `<br><small>${eventos}</small>`;
+    }
+
+    html += `<div style="margin-bottom:10px;">${linea}</div>`;
+    });
+
+    document.getElementById('calendarOutput').innerHTML = html;
+}
+
+    function exportarICS() {
+    if (!lastCalendarData) {
+        alert("Primero genera un calendario");
+        return;
+    }
+
+    function limpiarTexto(texto) {
+        return String(texto || "")
+        .replace(/\\/g, "\\\\")
+        .replace(/\n/g, "\\n")
+        .replace(/,/g, "\\,")
+        .replace(/;/g, "\\;");
+    }
+
+    function fechaICS(d) {
+        return `${d.date.year}${String(d.date.month).padStart(2, "0")}${String(d.date.day).padStart(2, "0")}`;
+    }
+
+    function fechaSiguienteICS(d) {
+        const fecha = new Date(d.date.year, d.date.month - 1, d.date.day);
+        fecha.setDate(fecha.getDate() + 1);
+
+        return `${fecha.getFullYear()}${String(fecha.getMonth() + 1).padStart(2, "0")}${String(fecha.getDate()).padStart(2, "0")}`;
+    }
+
+    const ahora = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+    let lineas = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//GCAL Moderno//Calendario Vaisnava//ES",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH"
+    ];
+
+    lastCalendarData.days.forEach((d, index) => {
+        if (!(d.fast || (d.events && d.events.length > 0))) return;
+
+        const inicio = fechaICS(d);
+        const fin = fechaSiguienteICS(d);
+
+        let titulo = "Evento vaisnava";
+
+        if (d.events && d.events.length > 0) {
+        titulo = d.events[0].text;
+        }
+
+        if (d.fast && !d.ekadashiName && d.events && d.events.length > 0) {
+        titulo = d.events[0].text.replace(", (Fast today)", "").replace("(Fast today)", "").trim();
+        }
+
+        if (d.fast && !d.ekadashiName && (!d.events || d.events.length === 0)) {
+        titulo = "Ayuno vaisnava";
+        }
+
+        if (d.ekadashiName) {
+        titulo = d.ekadashiName;
+        }
+
+        const descripcion = d.events
+        ? d.events.map(e => e.text).join(" | ")
+        : "";
+
+        lineas.push(
+        "BEGIN:VEVENT",
+        `UID:gcal-moderno-${inicio}-${index}@local`,
+        `DTSTAMP:${ahora}`,
+        "X-APPLE-DEFAULT-ALARM:FALSE",
+        `DTSTART;VALUE=DATE:${inicio}`,
+        `DTEND;VALUE=DATE:${fin}`,
+        `SUMMARY:${limpiarTexto(titulo)}`,
+        `DESCRIPTION:${limpiarTexto(descripcion)}`
+        );
+
+        if (d.fast) {
+        lineas.push(
+            "BEGIN:VALARM",
+            "ACTION:DISPLAY",
+            `DESCRIPTION:${limpiarTexto("Ayuno mañana: " + titulo)}`,
+            "TRIGGER;RELATED=START:-PT15H",
+            "END:VALARM",
+            "BEGIN:VALARM",
+            "ACTION:DISPLAY",
+            `DESCRIPTION:${limpiarTexto("Ayuno hoy: " + titulo)}`,
+            "TRIGGER;RELATED=START:PT8H",
+            "END:VALARM"
+        );
+        }
+
+        lineas.push("END:VEVENT");
+    });
+
+    lineas.push("END:VCALENDAR");
+
+    const ics = lineas.join("\r\n");
+
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "VaisnavaCalendar.ics";
+    link.click();
+    }
+
+    function mostrarHoy() {
+    const hoy = new Date();
+
+    document.getElementById('year').value = hoy.getFullYear();
+    document.getElementById('month').value = hoy.getMonth() + 1;
+    document.getElementById('day').value = hoy.getDate();
+    document.getElementById('period').value = 1;
+
+    generarCalendario();
+    }    
+  </script>
+</body>
+</html>
