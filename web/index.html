@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="shortcut icon" href="https://mahasoftware.fr/vaisnavacalendar/favicon.png">  
     <link rel="apple-touch-icon" href="https://mahasoftware.fr/vaisnavacalendar/favicon.png">
@@ -22,66 +23,82 @@
   body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     max-width: 980px;
-    margin: 40px auto;
+    margin: 0 auto;
     padding: 24px;
-    background: linear-gradient(135deg, #f5f7fb, #eef2f7);
-    color: #1f2933;
+    min-height: 100vh;
+    background: radial-gradient(circle at top left, #0b1a30, #143550, #1b0a2c, #0b1a30);
+    background-size: 200% 200%;
+    color: #e0f2fe;
   }
 
   h1 {
-    font-size: 42px;
+    font-size: 32px;
     margin-bottom: 24px;
     letter-spacing: -1px;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4);
   }
 
   h2 {
-    font-size: 24px;
+    font-size: 20px;
     margin-top: 28px;
     margin-bottom: 16px;
+    color: #f8fafc;
+    font-weight: 600;
   }
 
   .card {
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     padding: 28px;
     border-radius: 24px;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
-  input {
+  input:not([type="checkbox"]) {
     width: 100%;
     max-width: 260px;
     padding: 12px 14px;
     font-size: 16px;
-    border: 1px solid #d0d7de;
+    border: 1px solid rgba(0, 255, 255, 0.3);
     border-radius: 12px;
-    background: #fff;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ffffff;
     margin: 6px 8px 10px 0;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    color-scheme: dark;
   }
 
-  input:focus {
+  input:not([type="checkbox"]):focus {
     outline: none;
-    border-color: #4f8cff;
-    box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.15);
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
   }
 
   button {
     padding: 12px 18px;
     font-size: 15px;
     font-weight: 600;
-    border: none;
-    border-radius: 12px;
-    background: #1f6feb;
+    border: 1px solid rgba(0, 200, 255, 0.5);
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.2), rgba(0, 100, 255, 0.2));
     color: white;
     cursor: pointer;
     margin: 6px 8px 10px 0;
-    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
   }
 
   button:hover {
-    background: #155fc4;
-    box-shadow: 0 8px 18px rgba(31, 111, 235, 0.25);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(0, 200, 255, 0.4), rgba(0, 120, 255, 0.4));
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
+    transform: translateY(-2px);
+    border-color: #00ffff;
   }
 
   button:active {
@@ -90,51 +107,116 @@
 
   label {
     display: block;
-    font-weight: 700;
+    font-weight: 500;
     margin-top: 14px;
     margin-bottom: 4px;
+    color: #bae6fd;
   }
 
-  label input[type="checkbox"] {
-    width: auto;
-    max-width: none;
-    margin-right: 8px;
+  /* Custom Checkbox */
+  .custom-checkbox {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    font-size: 16px;
+    user-select: none;
+    margin-top: 14px;
+    margin-bottom: 20px;
+    color: #ffffff;
+  }
+
+  .custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+  .checkmark {
+    height: 20px;
+    width: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    border-radius: 6px;
+    margin-right: 12px;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .custom-checkbox:hover input ~ .checkmark {
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+  }
+
+  .custom-checkbox input:checked ~ .checkmark {
+    background-color: #00ffff;
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+  }
+
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+
+  .custom-checkbox input:checked ~ .checkmark:after {
+    display: block;
+  }
+
+  .custom-checkbox .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid black;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
   }
 
   .result {
     margin-top: 16px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .city {
     padding: 14px;
     cursor: pointer;
-    border-bottom: 1px solid #eef0f3;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     margin-top: 8px;
+    background: rgba(255,255,255, 0.05);
+    transition: background 0.2s;
   }
 
   .city:hover {
-    background: #eef6ff;
+    background: rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
   }
 
   .selected {
-    background: #dbeafe;
-    color: #0f3d91;
+    background: rgba(0, 255, 255, 0.2);
+    color: #ffffff;
     font-weight: 700;
+    border: 1px solid #00ffff;
   }
 
   .selected-city {
-    background: #f3f7fb;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
     padding: 16px;
     border-radius: 16px;
-    font-weight: 700;
-    border: 1px solid #e4e9f0;
+    font-weight: 500;
+    border: 1px solid rgba(255,255,255, 0.2);
+    color: #ffffff;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
   }
 
   #calendarOutput {
     margin-top: 20px;
-    background: #ffffff;
+    background-color: rgba(0, 0, 0, 0.4);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.15) 2px, transparent 2px);
+    background-size: 16px 16px;
     padding: 18px;
     border-radius: 18px;
     max-width: 100%;
@@ -142,13 +224,15 @@
     white-space: normal;
     overflow-wrap: break-word;
     word-break: break-word;
-    border: 1px solid #e5e7eb;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    color: #e0f2fe;
   }
 
   #calendarOutput div,
   .day-item {
     padding: 14px 0;
-    border-bottom: 1px solid #eef0f3;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     white-space: normal;
     overflow-wrap: break-word;
     word-break: break-word;
@@ -164,29 +248,31 @@
     display: block;
     font-size: 16px;
     margin-bottom: 4px;
-    color: #111827;
+    color: #00ffff;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
   }
 
   .day-item,
   #calendarOutput small {
     font-size: 14px;
-    color: #374151;
+    color: #bae6fd;
   }
 
   hr {
     border: none;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
     margin: 24px 0;
   }
 
   @media (max-width: 700px) {
     body {
-      margin: 0;
       padding: 16px;
+      margin-top: 0;
     }
 
     h1 {
-      font-size: 34px;
+      font-size: 28px;
+      text-align: center;
     }
 
     .card {
@@ -194,31 +280,68 @@
       border-radius: 20px;
     }
 
-    input,
-    button {
+    input:not([type="checkbox"]), button {
       width: 100%;
       max-width: none;
+      margin-right: 0;
+    }
+
+    .header-calendario {
+      padding: 0;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .date-pickers-container {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .date-field {
+      width: 100%;
     }
   }
   
-    .header-calendario {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 0 25px; /* ← esto hace exactamente lo que quieres */
-      margin-bottom: 15px;
-    }
-    
-    .header-calendario h1 {
-      margin: 0;
-    }
-    
-    .language-buttons {
-      display: flex;
-      gap: 8px;
-      white-space: nowrap;
-    }  
+  .header-calendario {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 5px;
+    margin-bottom: 25px;
+    margin-top: 10px;
+  }
+  
+  .header-calendario h1 {
+    margin: 0;
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    padding: 10px 20px;
+    border-radius: 12px;
+    background: rgba(0, 200, 255, 0.1);
+  }
+  
+  .language-buttons {
+    display: flex;
+    gap: 8px;
+    white-space: nowrap;
+  }  
+
+  .date-pickers-container {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  
+  .date-field {
+    flex: 1;
+    min-width: 180px;
+  }
+  
+  .date-field input {
+    max-width: 100%;
+  }
 </style>
 </head>
 <body>
@@ -234,7 +357,7 @@
   <div class="card">
     <h2 id="searchCityLabel">Buscar ciudad</h2>
     <input id="cityInput" value="Paris" />
-    <button onclick="buscarCiudad()">Buscar</button>
+    <button id="searchBtn" onclick="buscarCiudad()">Buscar</button>
 
     <div class="result" id="results"></div>
 
@@ -245,22 +368,22 @@
     </button>
 
     <h2 id="generateLabel">Generar calendario</h2>
-    <label id="fastFilterLabel">
+    <label class="custom-checkbox" id="fastFilterLabel">
       <input type="checkbox" id="soloAyunos" />
+      <span class="checkmark"></span>
       <span id="fastFilterText">Mostrar solo días de ayuno</span>
     </label>   
 
-    <label id="yearLabel">Año</label>
-    <input id="year" type="number" value="2026" />
-
-    <label id="monthLabel">Mes</label>
-    <input id="month" type="number" value="4" min="1" max="12" />
-
-    <label id="dayLabel">Día</label>
-    <input id="day" type="number" value="25" min="1" max="31" />
-
-    <label id="periodLabel">Días a calcular</label>
-    <input id="period" type="number" value="1" min="1" />
+    <div class="date-pickers-container">
+      <div class="date-field">
+        <label id="startDateLabel">Fecha inicio</label>
+        <input id="startDate" type="date" />
+      </div>
+      <div class="date-field">
+        <label id="endDateLabel">Fecha fin</label>
+        <input id="endDate" type="date" />
+      </div>
+    </div>
 
     <br />
     <button onclick="generarCalendario()"  id="generateBtn">Generar</button>
@@ -283,11 +406,11 @@
     : "https://vaisnava-calendar.onrender.com";
 
     window.addEventListener('DOMContentLoaded', () => {
-        const hoy = new Date();
-
-        document.getElementById('year').value = hoy.getFullYear();
-        document.getElementById('month').value = hoy.getMonth() + 1;
-        document.getElementById('day').value = hoy.getDate();
+        const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
+        
+        document.getElementById('startDate').value = localISOTime;
+        document.getElementById('endDate').value = localISOTime;
         applyTranslations();
 
         cargarCiudadPorDefecto();
@@ -364,10 +487,32 @@
     return;
   }
 
-  const year = document.getElementById('year').value;
-  const month = document.getElementById('month').value;
-  const day = document.getElementById('day').value;
-  const period = document.getElementById('period').value;
+  const startDateStr = document.getElementById('startDate').value;
+  const endDateStr = document.getElementById('endDate').value;
+  
+  if (!startDateStr || !endDateStr) {
+      alert("Selecciona las fechas de inicio y fin");
+      return;
+  }
+
+  // Parse dates safely handling timezone issues
+  const startParts = startDateStr.split('-');
+  const endParts = endDateStr.split('-');
+  
+  const startLocal = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+  const endLocal = new Date(endParts[0], endParts[1] - 1, endParts[2]);
+
+  const year = startLocal.getFullYear();
+  const month = startLocal.getMonth() + 1;
+  const day = startLocal.getDate();
+  
+  const diffTime = endLocal.getTime() - startLocal.getTime();
+  let period = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  
+  if (period <= 0) {
+      alert("La fecha de fin debe ser igual o posterior a la fecha de inicio");
+      return;
+  }
 
   const url = `${BASE_URL}/calendar?city=${encodeURIComponent(selectedCity.city)}&country=${encodeURIComponent(selectedCity.country)}&year=${year}&month=${month}&day=${day}&period=${period}`;
 
@@ -471,7 +616,7 @@
         }
 
         if (d.ekadashiName && d.fast) {
-            linea += ` — Ekādaśī: ${d.ekadashiName}`;
+            titulo += ` — Ekādaśī: ${d.ekadashiName}`;
         }
 
         const descripcion = d.events
@@ -519,12 +664,11 @@
     }
 
     function mostrarHoy() {
-    const hoy = new Date();
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().split('T')[0];
 
-    document.getElementById('year').value = hoy.getFullYear();
-    document.getElementById('month').value = hoy.getMonth() + 1;
-    document.getElementById('day').value = hoy.getDate();
-    document.getElementById('period').value = 1;
+    document.getElementById('startDate').value = localISOTime;
+    document.getElementById('endDate').value = localISOTime;
 
     generarCalendario();
     }    
@@ -535,13 +679,13 @@ const translations = {
   es: {
     title: "Calendario Vaisnava",
     searchCity: "Buscar ciudad",
+    searchBtn: "Buscar",
+    saveDefaultBtn: "Guardar como ciudad por defecto",
     selectedCity: "Ciudad seleccionada",
     generate: "Generar calendario",
     fastFilter: "Mostrar solo días de ayuno",
-    year: "Año",
-    month: "Mes",
-    day: "Día",
-    period: "Días a calcular",
+    startDate: "Fecha inicio",
+    endDate: "Fecha fin",
     generateBtn: "Generar",
     todayBtn: "Hoy",
     exportBtn: "Exportar a calendario (.ics)",
@@ -551,13 +695,13 @@ const translations = {
   en: {
     title: "Vaishnava Calendar",
     searchCity: "Search city",
+    searchBtn: "Search",
+    saveDefaultBtn: "Save as default city",
     selectedCity: "Selected city",
     generate: "Generate calendar",
     fastFilter: "Show fasting days only",
-    year: "Year",
-    month: "Month",
-    day: "Day",
-    period: "Days to calculate",
+    startDate: "Start date",
+    endDate: "End date",
     generateBtn: "Generate",
     todayBtn: "Today",
     exportBtn: "Export to calendar (.ics)",
@@ -571,15 +715,15 @@ function applyTranslations() {
 
   document.getElementById("title").innerText = t.title;
   document.getElementById("searchCityLabel").innerText = t.searchCity;
+  document.getElementById("searchBtn").innerText = t.searchBtn;
   document.getElementById("selectedCityLabel").innerText = t.selectedCity;
+  document.getElementById("saveDefaultBtn").innerText = t.saveDefaultBtn;
   document.getElementById("generateLabel").innerText = t.generate;
 
   document.getElementById("fastFilterText").innerText = t.fastFilter;
 
-  document.getElementById("yearLabel").innerText = t.year;
-  document.getElementById("monthLabel").innerText = t.month;
-  document.getElementById("dayLabel").innerText = t.day;
-  document.getElementById("periodLabel").innerText = t.period;
+  document.getElementById("startDateLabel").innerText = t.startDate;
+  document.getElementById("endDateLabel").innerText = t.endDate;
 
   document.getElementById("generateBtn").innerText = t.generateBtn;
   document.getElementById("todayBtn").innerText = t.todayBtn;
