@@ -18,17 +18,25 @@ This document explains the modern client-side features, caching, layouts, and PW
   - Calculates empty offset blocks dynamically.
   - Populates cells with day numbers, moon phase icons (calculated from `tithi` values: `🌑`, `🌒`, `🌔`, `🌕`, `🌖`, `🌘`), and small indicators representing events (blue), fasts (red), or Ekadashi (gold).
 
-### 3. Detailed Day Dialog Modal
+### 3. Detailed Day Dialog Modal & Calendar Exports
 * **Element**: A native HTML5 `<dialog>` component with custom backdrop blur is used for premium aesthetics.
-* **Dismissal**: Supports standard platform controls (`Esc` key) and a JavaScript fallback for backdrop click "light-dismiss" on browsers lacking native `<dialog closedby="any">` support.
+* **Dismissal**: Supports standard platform controls (`Esc` key) and backdrop click "light-dismiss" fallback.
 * **Timings**: Displays sunrise, sunset, solar noon, lunar phase, masa month, and gaurabda year in a clean grid.
-* **Google Calendar Links**: Clicking the shortcut button constructs a templated URL to directly save the event online.
+* **Google Calendar Links**:
+  - Individual events can be added directly to Google Calendar.
+  - **Combined Events**: If a day contains multiple festivals, a `"Añadir todos a Google Calendar"` button is generated to combine all festivals into a single calendar event, listing each in the event's description.
+  - **Fasting Indicators**: If a day is a fasting day, `(Fast)` or `(Ayuno)` is dynamically appended to the event title.
+  - **Location Details**: Event locations are set automatically to the currently selected city (e.g. `Paris, France`), making scheduling precise for travelers.
+  - **Fasting Timings & Rules**: The event description includes detailed moon phase data, sunrise/sunset, fasting type rules (e.g. *Fast until sunset*), and Ekadashi Parana break-fast time intervals.
 
 ### 4. Custom ICS Exporter & Presets
 * **Presets**: Offers buttons to set ranges quickly for "Este mes", "Mes siguiente", or "Este año".
-* **ICS Options**:
-  - Includes custom alarm offsets in the VEVENT header.
-  - Allows exporting fasting dates exclusively.
+* **iOS / Apple Indication**: Labeling clearly specifies that downloaded `.ics` files are suited for the iOS / Apple ecosystem.
+* **ICS Properties**:
+  - Automatically appends `(Fast)` or `(Ayuno)` to summary titles.
+  - Compiles full day details (astrological coordinates, fasting rules, break fast hours) into the event description.
+  - Applies coordinates location values matching the selected city.
+  - Includes custom alarm offsets in the VEVENT header, or exports fasting dates exclusively.
 
 ---
 

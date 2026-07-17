@@ -62,6 +62,17 @@ The `simplify` function applies the following steps in order:
    - `ou` -> `au` (e.g. *Gouranga* -> *Gauranga*)
 4. Removes all non-alphanumeric characters (spaces, hyphens, punctuation).
 
+### Query Pre-validation (Performance Optimization)
+Before running the calendar generation loop (which takes ~5 seconds), the server performs an early-exit check:
+1. On startup, it loads and indexes all unique simplified festival names (from `events.json`), Ekadashi strings (from `strings.json`), and custom synonyms.
+2. When a search query is received, the server checks if the simplified query is a substring of any entry in this index.
+3. If there is no substring match, the server returns an empty list `matches: []` immediately (in under 5 milliseconds).
+
+### Ekadashi Synonyms Mapping
+To support searches for Ekadashis using any of their alternative or sanskrit names, the server defines a synonyms map:
+* Synonyms include common aliases (e.g., `"Bhima"`, `"Nirjala"`, `"Pandava Nirjala"`, `"Jyestha Shukla"` all map to `"Pandava Nirjala Ekadasi"`).
+* If a query matches any synonym, the corresponding base Ekadashi date is matched and returned as `Base Name (Matched Synonym)` (e.g. `Pandava Nirjala Ekadasi (Bhima)`).
+
 ### Sequential Search Loop
 Rather than calculating a heavy 10-year calendar at once (which takes a long time and uses excessive memory), the server:
 1. Calculates the calendar for 366 days starting from the requested date.
