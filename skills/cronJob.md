@@ -1,30 +1,30 @@
 <!--
-Este archivo sirve como una "Skill" o guía de instrucciones automatizadas (runbook) para que el agente de IA administre el workflow de Keep-Alive en GitHub Actions.
-Cuando el usuario pida seguir estas instrucciones, el agente debe preguntar si desea activar, desactivar o modificar el intervalo del cron, realizar los cambios en el archivo YAML de workflow y subirlos a GitHub.
+This file serves as a "Skill" or automated runbook for the AI agent to manage the Keep-Alive workflow in GitHub Actions.
+When the user asks to follow these instructions, the agent must ask if they want to activate, deactivate, or modify the cron interval, make the corresponding changes to the YAML workflow file, and push them to GitHub.
 -->
 
-# Skill: Administración del Workflow de Keep-Alive
+# Skill: Keep-Alive Workflow Management
 
-Este archivo contiene instrucciones precisas que tú (el agente de IA) debes seguir de manera interactiva para modificar el intervalo de tiempo o activar/desactivar el servicio keep-alive (que evita que el servidor gratuito de Render entre en suspensión).
+This file contains precise instructions that you (the AI agent) must follow interactively to modify the time interval or activate/deactivate the keep-alive service (which prevents the free-tier Render server from spinning down).
 
-## Instrucciones para el Agente (Runbook)
+## Instructions for the Agent (Runbook)
 
-Cuando el usuario te solicite "seguir las instrucciones de `skills/cronJob.md`", debes ejecutar los siguientes pasos de forma secuencial:
+When the user requests you to "follow the instructions in `skills/cronJob.md`", you must execute the following steps sequentially:
 
-### Paso 1: Interactuar con el usuario para determinar la acción
-Pregúntale al usuario a través del chat qué desea realizar. Presenta las siguientes opciones:
-1. **Activar el servicio** (Descomentar el disparador cron en el archivo del workflow).
-2. **Desactivar el servicio** (Comentar el disparador cron en el archivo del workflow).
-3. **Cambiar el intervalo de tiempo** (Modificar los minutos de ejecución del cron).
+### Step 1: Interact with the user to determine the action
+Ask the user via the chat what they want to perform. Present the following options:
+1. **Activate the service** (Uncomment the cron trigger in the workflow file).
+2. **Deactivate the service** (Comment out the cron trigger in the workflow file).
+3. **Change the time interval** (Modify the cron execution minutes).
 
-### Paso 2: Leer el archivo de configuración del workflow
-Abre y lee el contenido del archivo de workflow localizado en:
+### Step 2: Read the workflow configuration file
+Open and read the contents of the workflow file located at:
 `/.github/workflows/keep-alive.yml`
 
-### Paso 3: Modificar el archivo según la opción elegida
+### Step 3: Modify the file based on the chosen option
 
-#### Caso A: Activar el servicio
-Asegúrate de que la sección `schedule` y su respectiva regla `cron` estén descomentadas. El archivo debe quedar con esta estructura en la parte superior:
+#### Case A: Activate the service
+Ensure that the `schedule` section and its respective `cron` rule are uncommented. The file should have this structure at the top:
 ```yaml
 on:
   schedule:
@@ -32,10 +32,10 @@ on:
     - cron: '*/12 * * * *'
   workflow_dispatch:
 ```
-*(Si no estaba comentada, avísale al usuario que ya se encontraba activa).*
+*(If it was not commented out, inform the user that it was already active).*
 
-#### Caso B: Desactivar el servicio
-Desactiva las líneas del programador automático agregando el símbolo `#` al inicio de la sección `schedule` y del `cron`. Debe quedar con esta estructura:
+#### Case B: Deactivate the service
+Deactivate the automatic scheduler lines by prepending a `#` symbol to the beginning of the `schedule` section and the `cron` line. It should have this structure:
 ```yaml
 on:
   # schedule:
@@ -43,21 +43,21 @@ on:
   #   - cron: '*/12 * * * *'
   workflow_dispatch:
 ```
-*(De esta forma, el cron automático no se ejecuta, pero se mantiene la opción `workflow_dispatch` para permitir dispararlo manualmente si se desea).*
+*(This way, the automatic cron does not run, but the `workflow_dispatch` option remains active to allow running it manually if desired).*
 
-#### Caso C: Cambiar el intervalo de tiempo
-1. Pregúntale al usuario por el intervalo en minutos que desea (ej. 14 minutos).
-2. Modifica el valor dentro del cron en el archivo YAML:
-   `- cron: '*/<MINUTOS> * * * *'` (ejemplo: `- cron: '*/14 * * * *'`).
-3. Asegúrate de que las líneas no estén comentadas para que el cambio surta efecto de inmediato.
+#### Case C: Change the time interval
+1. Ask the user for the desired interval in minutes (e.g., 14 minutes).
+2. Modify the value inside the cron rule in the YAML file:
+   `- cron: '*/<MINUTES> * * * *'` (for example: `- cron: '*/14 * * * *'`).
+3. Ensure that the lines are not commented out so that the change takes effect immediately.
 
-### Paso 4: Validar la sintaxis YAML
-Asegúrate de que el formato de indentación y espaciado del archivo `.github/workflows/keep-alive.yml` siga siendo válido tras tu edición.
+### Step 4: Validate YAML syntax
+Ensure that the indentation and spacing format of `.github/workflows/keep-alive.yml` remains valid after your edits.
 
-### Paso 5: Confirmar y subir a GitHub
-Una vez realizados los cambios en el archivo local:
-1. Corre `git status` para verificar la modificación de `.github/workflows/keep-alive.yml`.
-2. Ejecuta `git add .github/workflows/keep-alive.yml`.
-3. Haz un commit con un mensaje claro en español o inglés, según corresponda (ejemplo: `"ci: update keep-alive cron job schedule to 14 minutes"` o `"ci: disable keep-alive cron job schedule"`).
-4. Sube los cambios mediante `git push origin main`.
-5. Confirma en el chat que el cambio se ha subido exitosamente.
+### Step 5: Commit and push to GitHub
+Once the local changes have been made to the file:
+1. Run `git status` to verify the modification of `.github/workflows/keep-alive.yml`.
+2. Run `git add .github/workflows/keep-alive.yml`.
+3. Commit the changes with a clear message in English (e.g., `"ci: update keep-alive cron job schedule to 14 minutes"` or `"ci: disable keep-alive cron job schedule"`).
+4. Push the changes using `git push origin main`.
+5. Confirm in the chat that the change has been successfully pushed.
