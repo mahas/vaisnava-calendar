@@ -1,0 +1,22 @@
+{
+  "name": "Calendario Vaisnava",
+  "short_name": "Vaisnava Cal",
+  "description": "Calendario vaisnava con ekādaśī, ayunos y festivales",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#050c14",
+  "theme_color": "#0d2138",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://mahasoftware.fr/vaisnavacalendar/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://mahasoftware.fr/vaisnavacalendar/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
