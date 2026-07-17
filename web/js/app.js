@@ -687,7 +687,7 @@ function openDayDetailModal(d) {
       const eventsJson = encodeURIComponent(JSON.stringify(d.events));
       eventsHtml += `
         <div style="margin-bottom: 12px; display: flex; justify-content: flex-end;">
-          <button class="secondary" onclick="addToGoogleCalendarAll('${d.date.year}', '${d.date.month}', '${d.date.day}', '${eventsJson}')" style="padding: 6px 12px; font-size: 12.5px; border-radius: 10px; width: 100%;">
+          <button class="secondary" onclick="addToGoogleCalendarAll('${d.date.year}', '${d.date.month}', '${d.date.day}', '${eventsJson}', ${d.fast}, compileDayDetails(${JSON.stringify(d).replace(/"/g, '&quot;')}))" style="padding: 6px 12px; font-size: 12.5px; border-radius: 10px; width: 100%;">
             📅 ${t.addToGoogleAll || "Añadir todos a Google Calendar"}
           </button>
         </div>
@@ -699,7 +699,7 @@ function openDayDetailModal(d) {
         <div class="modal-event-item ${isFast ? "fast-item" : ""}">
           <div>${translateEventText(e.text)}</div>
           <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
-            <button class="secondary" onclick="addToGoogleCalendar('${d.date.year}', '${d.date.month}', '${d.date.day}', '${e.text.replace(/'/g, "\\'")}')" style="padding: 4px 8px; font-size: 11px; border-radius: 8px;">
+            <button class="secondary" onclick="addToGoogleCalendar('${d.date.year}', '${d.date.month}', '${d.date.day}', '${e.text.replace(/'/g, "\\'")}', compileDayDetails(${JSON.stringify(d).replace(/"/g, '&quot;')}), ${d.fast}, '${selectedCity ? selectedCity.city + ", " + selectedCity.country : ""}')" style="padding: 4px 8px; font-size: 11px; border-radius: 8px;">
               ➕ Google Calendar
             </button>
           </div>
@@ -820,9 +820,9 @@ function renderSearchResults(matches) {
         <div class="badges-container">${badgeHtml}</div>
       </div>
       <div class="search-match-event-text">${translateEventText(m.matching_event)}</div>
-      ${otherEvents ? `<div class="search-match-other-events"><i>Otros eventos:</i> ${otherEvents}</div>` : ""}
+      ${otherEvents ? `<div class="search-match-other-events"><i>${currentLang === "en" ? "Other events:" : "Otros eventos:"}</i> ${otherEvents}</div>` : ""}
       <div class="search-match-actions">
-        <button class="secondary" onclick="addToGoogleCalendar('${m.date.year}', '${m.date.month}', '${m.date.day}', '${m.matching_event.replace(/'/g, "\\'")}')">
+        <button class="secondary" onclick="addToGoogleCalendar('${m.date.year}', '${m.date.month}', '${m.date.day}', '${m.matching_event.replace(/'/g, "\\'")}', compileDayDetails(${JSON.stringify(m).replace(/"/g, '&quot;')}), ${m.fast}, '${selectedCity ? selectedCity.city + ", " + selectedCity.country : ""}')">
           ➕ Google Calendar
         </button>
         <button onclick="exportarICSUnDia(${JSON.stringify(m).replace(/"/g, '&quot;')})">
@@ -838,7 +838,7 @@ function renderSearchResults(matches) {
 }
 
 // Redirect helpers for Google Calendar
-function addToGoogleCalendar(year, month, day, title, details = "Calculado según el Calendario Vaisnava.") {
+function addToGoogleCalendar(year, month, day, title, details = "", fastType = 0, location = "") {
   // Format values safely
   const y = String(year);
   const m = String(month).padStart(2, "0");
@@ -853,17 +853,87 @@ function addToGoogleCalendar(year, month, day, title, details = "Calculado segú
   const ed = String(endDate.getDate()).padStart(2, "0");
   const endDateStr = `${ey}${em}${ed}`;
   
-  const text = translateEventText(title);
+  let text = translateEventText(title);
+  if (fastType && fastType !== 0) {
+    text += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+  }
   
-  const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(text)}&dates=${startDateStr}/${endDateStr}&details=${encodeURIComponent(translateEventText(details))}&sf=true&output=xml`;
+  let gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(text)}&dates=${startDateStr}/${endDateStr}&details=${encodeURIComponent(details)}&sf=true&output=xml`;
+  if (location) {
+    gcalUrl += `&location=${encodeURIComponent(location)}`;
+  }
   window.open(gcalUrl, "_blank");
 }
 
-function addToGoogleCalendarAll(year, month, day, eventsJson) {
+function addToGoogleCalendarAll(year, month, day, eventsJson, fastType, details) {
   const events = JSON.parse(decodeURIComponent(eventsJson));
-  const combinedTitle = currentLang === "en" ? "Vaishnava Festivals" : "Festivales Vaisnavas";
-  const details = events.map((e, idx) => `${idx + 1}. ${translateEventText(e.text)}`).join("\n");
-  addToGoogleCalendar(year, month, day, combinedTitle, details);
+  let combinedTitle = currentLang === "en" ? "Vaishnava Festivals" : "Festivales Vaisnavas";
+  if (fastType && fastType !== 0) {
+    combinedTitle += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+  }
+  addToGoogleCalendar(year, month, day, combinedTitle, details, 0, selectedCity ? `${selectedCity.city}, ${selectedCity.country}` : "");
+}
+
+function getFastDescription(fastType) {
+  if (!fastType) return "";
+  const fastDescriptions = {
+    513: currentLang === "en" ? "Fast until noon" : "Ayuno hasta el mediodía",
+    514: currentLang === "en" ? "Fast until sunset" : "Ayuno hasta la puesta del sol",
+    515: currentLang === "en" ? "Fast until moonrise" : "Ayuno hasta la salida de la luna",
+    516: currentLang === "en" ? "Fast until dusk" : "Ayuno hasta el anochecer",
+    517: currentLang === "en" ? "Fast until midnight" : "Ayuno hasta la medianoche",
+    518: currentLang === "en" ? "Ekadashi Fasting" : "Ayuno de Ekadashi",
+    519: currentLang === "en" ? "Fast all day" : "Ayuno durante todo el día"
+  };
+  return fastDescriptions[fastType] || (currentLang === "en" ? "Fasting Day" : "Día de Ayuno");
+}
+
+function compileDayDetails(d) {
+  const t = translations[currentLang];
+  let lines = [];
+  
+  if (selectedCity) {
+    lines.push(`${t.selectedCity}: ${selectedCity.city}, ${selectedCity.country}`);
+  }
+  
+  const tithiName = d.ekadashiName ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
+  lines.push(`${t.tithiLabel}: ${tithiName}`);
+  lines.push(`${t.masaLabel}: ${getMasaName(d.astrodata.masa)}`);
+  lines.push(`${t.gaurabdaLabel}: ${d.astrodata.gaurabda_year}`);
+  
+  const sunrise = d.astrodata.sun.rise.substring(0, 5);
+  const sunset = d.astrodata.sun.set.substring(0, 5);
+  lines.push(`${t.sunriseLabel}: ${sunrise} | ${t.sunsetLabel}: ${sunset}`);
+  
+  if (d.fast && d.fast !== 0) {
+    lines.push(`⚠️ ${getFastDescription(d.fast)}`);
+  }
+  
+  if (d.ekadashiParana) {
+    const startH = Math.floor(d.ekadashiParana.startTime);
+    const startM = Math.floor((d.ekadashiParana.startTime % 1) * 60);
+    const startTimeStr = `${String(startH).padStart(2, "0")}:${String(startM).padStart(2, "0")}`;
+    
+    let paranaStr = "";
+    if (d.ekadashiParana.endTime >= 0) {
+      const endH = Math.floor(d.ekadashiParana.endTime);
+      const endM = Math.floor((d.ekadashiParana.endTime % 1) * 60);
+      const endTimeStr = `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
+      paranaStr = `${startTimeStr} - ${endTimeStr}`;
+    } else {
+      paranaStr = `after ${startTimeStr}`;
+    }
+    lines.push(`⏰ Parana (Break fast): ${paranaStr}`);
+  }
+  
+  if (d.events && d.events.length > 0) {
+    lines.push(`\n${t.modalEventsTitle}:`);
+    d.events.forEach(e => {
+      lines.push(`- ${translateEventText(e.text)}`);
+    });
+  }
+  
+  return lines.join("\n");
 }
 
 // Custom ICS exporter for calendar range
@@ -897,7 +967,7 @@ function exportarICS() {
     const nextDate = new Date(d.date.year, d.date.month - 1, d.date.day + 1);
     const end = `${nextDate.getFullYear()}${String(nextDate.getMonth() + 1).padStart(2, "0")}${String(nextDate.getDate()).padStart(2, "0")}`;
 
-    let title = "Evento vaisnava";
+    let title = "Evento Vaisnava";
     if (d.events && d.events.length > 0) {
       title = d.events[0].text;
     }
@@ -905,13 +975,18 @@ function exportarICS() {
       title = d.events[0].text.replace(", (Fast today)", "").replace("(Fast today)", "").trim();
     }
     if (d.fast && !d.ekadashiName && (!d.events || d.events.length === 0)) {
-      title = "Ayuno vaisnava";
+      title = "Ayuno Vaisnava";
     }
     if (d.ekadashiName && d.fast) {
       title += ` — Ekādaśī: ${d.ekadashiName}`;
     }
 
-    const description = d.events ? d.events.map(e => e.text).join(" | ") : "";
+    if (d.fast && d.fast !== 0) {
+      title += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+    }
+
+    const description = compileDayDetails(d);
+    const location = selectedCity ? `${selectedCity.city}, ${selectedCity.country}` : "";
 
     lines.push(
       "BEGIN:VEVENT",
@@ -921,8 +996,12 @@ function exportarICS() {
       `DTSTART;VALUE=DATE:${start}`,
       `DTEND;VALUE=DATE:${end}`,
       `SUMMARY:${limpiarTexto(translateEventText(title))}`,
-      `DESCRIPTION:${limpiarTexto(translateEventText(description))}`
+      `DESCRIPTION:${limpiarTexto(description)}`
     );
+
+    if (location) {
+      lines.push(`LOCATION:${limpiarTexto(location)}`);
+    }
 
     if (incluirAlarmas && d.fast) {
       lines.push(
@@ -959,14 +1038,19 @@ function exportarICSUnDia(d) {
   const nextDate = new Date(d.date.year, d.date.month - 1, d.date.day + 1);
   const end = `${nextDate.getFullYear()}${String(nextDate.getMonth() + 1).padStart(2, "0")}${String(nextDate.getDate()).padStart(2, "0")}`;
 
-  let title = d.ekadashiName ? `Ekādaśī: ${d.ekadashiName}` : "Evento vaisnava";
+  let title = d.ekadashiName ? `Ekādaśī: ${d.ekadashiName}` : "Evento Vaisnava";
   if (d.matching_event) {
     title = d.matching_event;
   } else if (d.events && d.events.length > 0) {
     title = d.events[0].text;
   }
 
-  const description = d.events ? d.events.map(e => e.text).join(" | ") : (d.matching_event || "");
+  if (d.fast && d.fast !== 0) {
+    title += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+  }
+
+  const description = compileDayDetails(d);
+  const location = selectedCity ? `${selectedCity.city}, ${selectedCity.country}` : "";
 
   lines.push(
     "BEGIN:VEVENT",
@@ -976,8 +1060,12 @@ function exportarICSUnDia(d) {
     `DTSTART;VALUE=DATE:${start}`,
     `DTEND;VALUE=DATE:${end}`,
     `SUMMARY:${limpiarTexto(translateEventText(title))}`,
-    `DESCRIPTION:${limpiarTexto(translateEventText(description))}`
+    `DESCRIPTION:${limpiarTexto(description)}`
   );
+
+  if (location) {
+    lines.push(`LOCATION:${limpiarTexto(location)}`);
+  }
 
   if (d.fast) {
     lines.push(

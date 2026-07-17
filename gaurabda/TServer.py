@@ -481,9 +481,11 @@ def searchEvent():
                 if not already_matched:
                     matches.append({
                         'date': date_val,
+                        'astrodata': day_dict.get('astrodata'),
                         'ekadashiName': ekadashi_name,
                         'fast': day_dict.get('fast', 0),
                         'events': day_dict.get('events', []),
+                        'ekadashiParana': day_dict.get('ekadashiParana'),
                         'matching_event': matched_text
                     })
                     if len(matches) >= count:
