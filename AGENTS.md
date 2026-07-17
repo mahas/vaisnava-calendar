@@ -63,7 +63,7 @@ The backend is powered by a Flask web server that wraps the custom mathematical 
 * **Platform**: The production server is deployed on a free tier of Render (`https://vaisnava-calendar.onrender.com`).
 * **Spin-down Timeout**: Free-tier Render instances spin down after 15 minutes of inactivity.
 * **Cold Start Delay**: Waking up a spun-down instance can take **up to 50 seconds**.
-* **Frontend Handling**: The loading overlay displays a progress bar, a ticking timer warning the user about the cold start, and a `/ping` mechanism.
+* **Frontend Handling**: The loading overlay displays a progress bar and a ticking timer.
 
 ---
 

@@ -26,14 +26,15 @@ const translations = {
     endDate: "Fecha de fin",
     generateBtn: "Generar Calendario",
     todayBtn: "Hoy",
-    exportBtn: "Descargar .ics",
+    exportBtn: "Descargar .ics (iOS / Apple)",
     todayLabel: "(Hoy)",
     result: "Fechas Generadas",
     loadingCity: "Buscando ciudad...",
     loadingCalendar: "Calculando fechas astrológicas...",
     loadingSearch: "Buscando próximas fechas...",
-    serverNotice: "El servidor gratuito de Render entra en reposo tras 15 min. Si es la primera petición, puede tomar hasta 50s en responder.",
+    serverNotice: "",
     elapsed: "Tiempo de espera: {sec}s",
+    addToGoogleAll: "Añadir todos a Google Calendar",
     errorCity: "Ciudad no encontrada o error de red. Intenta con otra.",
     errorCalendar: "Error al generar. Intenta de nuevo.",
     errorSearch: "Error al buscar el evento.",
@@ -87,14 +88,15 @@ const translations = {
     endDate: "End Date",
     generateBtn: "Generate Calendar",
     todayBtn: "Today",
-    exportBtn: "Download .ics",
+    exportBtn: "Download .ics (iOS / Apple)",
     todayLabel: "(Today)",
     result: "Generated Dates",
     loadingCity: "Searching city...",
     loadingCalendar: "Calculating astronomical dates...",
     loadingSearch: "Searching upcoming dates...",
-    serverNotice: "Render free tier instance spins down after 15 min of inactivity. Cold start can take up to 50 seconds.",
+    serverNotice: "",
     elapsed: "Elapsed time: {sec}s",
+    addToGoogleAll: "Add all to Google Calendar",
     errorCity: "City not found or network error. Please try again.",
     errorCalendar: "Failed to generate calendar. Please try again.",
     errorSearch: "Failed to search for the event.",
@@ -681,6 +683,16 @@ function openDayDetailModal(d) {
   // Populate events/festivals
   let eventsHtml = "";
   if (d.events && d.events.length > 0) {
+    if (d.events.length > 1) {
+      const eventsJson = encodeURIComponent(JSON.stringify(d.events));
+      eventsHtml += `
+        <div style="margin-bottom: 12px; display: flex; justify-content: flex-end;">
+          <button class="secondary" onclick="addToGoogleCalendarAll('${d.date.year}', '${d.date.month}', '${d.date.day}', '${eventsJson}')" style="padding: 6px 12px; font-size: 12.5px; border-radius: 10px; width: 100%;">
+            📅 ${t.addToGoogleAll || "Añadir todos a Google Calendar"}
+          </button>
+        </div>
+      `;
+    }
     d.events.forEach(e => {
       const isFast = e.text.toLowerCase().includes("fast");
       eventsHtml += `
@@ -826,7 +838,7 @@ function renderSearchResults(matches) {
 }
 
 // Redirect helpers for Google Calendar
-function addToGoogleCalendar(year, month, day, title) {
+function addToGoogleCalendar(year, month, day, title, details = "Calculado según el Calendario Vaisnava.") {
   // Format values safely
   const y = String(year);
   const m = String(month).padStart(2, "0");
@@ -842,10 +854,16 @@ function addToGoogleCalendar(year, month, day, title) {
   const endDateStr = `${ey}${em}${ed}`;
   
   const text = translateEventText(title);
-  const details = "Calculado según el Calendario Vaisnava.";
   
-  const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(text)}&dates=${startDateStr}/${endDateStr}&details=${encodeURIComponent(details)}&sf=true&output=xml`;
+  const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(text)}&dates=${startDateStr}/${endDateStr}&details=${encodeURIComponent(translateEventText(details))}&sf=true&output=xml`;
   window.open(gcalUrl, "_blank");
+}
+
+function addToGoogleCalendarAll(year, month, day, eventsJson) {
+  const events = JSON.parse(decodeURIComponent(eventsJson));
+  const combinedTitle = currentLang === "en" ? "Vaishnava Festivals" : "Festivales Vaisnavas";
+  const details = events.map((e, idx) => `${idx + 1}. ${translateEventText(e.text)}`).join("\n");
+  addToGoogleCalendar(year, month, day, combinedTitle, details);
 }
 
 // Custom ICS exporter for calendar range
@@ -1068,7 +1086,6 @@ let loaderSeconds = 0;
 function showLoader(titleKey) {
   const t = translations[currentLang];
   document.getElementById("loadingTitle").innerText = t[titleKey] || "Loading...";
-  document.getElementById("serverNoticeText").innerText = t.serverNotice;
   
   const progressBar = document.getElementById("progressBar");
   const timerText = document.getElementById("timerText");

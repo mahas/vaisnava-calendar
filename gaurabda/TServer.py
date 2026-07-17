@@ -5,6 +5,7 @@ import flask
 import logging
 import io
 import threading
+import json
 import unicodedata
 import re
 from collections import OrderedDict
@@ -43,6 +44,35 @@ class SimpleCache:
 calendar_cache = SimpleCache(maxsize=100)
 search_cache = SimpleCache(maxsize=100)
 
+EKADASHI_SYNONYMS = {
+    "varuthini": ["varuthini", "vaisakhakrishna", "caitrakrishna"],
+    "mohini": ["mohini", "vaisakhashukla"],
+    "apara": ["apara", "jyesthakrishna"],
+    "pandavanirjala": ["nirjala", "bhima", "bhimanirjala", "pandava", "jyesthashukla"],
+    "yogini": ["yogini", "asadhakrishna"],
+    "sayana": ["sayana", "devashayana", "harisayana", "asadhashukla"],
+    "kamika": ["kamika", "sravanakrishna"],
+    "pavitraropana": ["pavitraropana", "pavitra", "sravanashukla"],
+    "annada": ["annada", "aja", "bhadrapadakrishna"],
+    "parsva": ["parsva", "parivartini", "vamana", "bhadrapadashukla"],
+    "indira": ["indira", "asvinakrishna"],
+    "pasankusa": ["pasankusa", "padmanabha", "asvinashukla"],
+    "rama": ["rama", "kartikakrishna"],
+    "utthana": ["utthana", "devotthana", "prabodhini", "kartikashukla"],
+    "utpanna": ["utpanna", "margasirsakrishna"],
+    "moksada": ["moksada", "mokshada", "margasirsashukla"],
+    "saphala": ["saphala", "pausakrishna"],
+    "putrada": ["putrada", "pausashukla"],
+    "sattila": ["sattila", "sattila", "maghakrishna"],
+    "bhaimi": ["bhaimi", "jaya", "varaha", "maghashukla"],
+    "vijaya": ["vijaya", "phalgunakrishna"],
+    "amalaki": ["amalaki", "amalakivrata", "phalgunashukla"],
+    "papamocani": ["papamocani", "papamochani", "caitrakrishna"],
+    "kamada": ["kamada", "caitrashukla"],
+    "parama": ["parama", "adhikakrishna", "purusottamakrishna"],
+    "padmini": ["padmini", "adhikashukla", "purusottamashukla"]
+}
+
 def simplify(text):
     if not text:
         return ""
@@ -58,6 +88,51 @@ def simplify(text):
     text = text.replace("ou", "au")
     text = re.sub(r'[^a-z0-9]', '', text)
     return text
+
+# Global list of possible names for query validation
+ALL_POSSIBLE_SIMPLIFIED_NAMES = []
+ALL_POSSIBLE_NAMES_LOADED = False
+load_lock = threading.Lock()
+
+def ensure_possible_names_loaded():
+    global ALL_POSSIBLE_SIMPLIFIED_NAMES, ALL_POSSIBLE_NAMES_LOADED
+    if ALL_POSSIBLE_NAMES_LOADED:
+        return
+    with load_lock:
+        if ALL_POSSIBLE_NAMES_LOADED:
+            return
+        
+        names = []
+        
+        # Load strings.json
+        strings_path = os.path.join(os.path.dirname(__file__), 'res', 'strings.json')
+        if os.path.exists(strings_path):
+            try:
+                with open(strings_path, 'rt', encoding='utf-8') as f:
+                    data = json.load(f)
+                    for val in data.values():
+                        names.append(simplify(val))
+            except Exception as e:
+                print("Error loading strings.json for validation:", e)
+                
+        # Load events.json
+        events_path = os.path.join(os.path.dirname(__file__), 'res', 'events.json')
+        if os.path.exists(events_path):
+            try:
+                with open(events_path, 'rt', encoding='utf-8') as f:
+                    data = json.load(f)
+                    for item in data:
+                        names.append(simplify(item.get('text', '')))
+            except Exception as e:
+                print("Error loading events.json for validation:", e)
+                
+        # Add all synonyms
+        for synonyms in EKADASHI_SYNONYMS.values():
+            for syn in synonyms:
+                names.append(simplify(syn))
+                
+        ALL_POSSIBLE_SIMPLIFIED_NAMES = list(set([n for n in names if n]))
+        ALL_POSSIBLE_NAMES_LOADED = True
 
 app = flask.Flask(__name__)
 
@@ -320,6 +395,30 @@ def searchEvent():
     if cached_val is not None:
         return jsonify(cached_val)
 
+    # Pre-validation step for early empty return (Instant Response for typos / non-existent)
+    ensure_possible_names_loaded()
+    simplified_query = simplify(query)
+    is_possible = False
+    for name in ALL_POSSIBLE_SIMPLIFIED_NAMES:
+        if simplified_query in name:
+            is_possible = True
+            break
+            
+    if not is_possible:
+        response_data = {
+            'query': query,
+            'location': {
+                'city': loca['city'],
+                'country': loca['country'],
+                'latitude': loca['latitude'],
+                'longitude': loca['longitude'],
+                'tzname': loca['tzname']
+            },
+            'matches': []
+        }
+        search_cache.set(cache_key, response_data)
+        return jsonify(response_data)
+
     location = loca.get('location')
     if location is None:
         location = GCLocation(data={
@@ -330,7 +429,6 @@ def searchEvent():
             'tzname': loca['tzname']
         })
 
-    simplified_query = simplify(query)
     matches = []
     current_date = GCGregorianDate(year=start_year, month=start_month, day=start_day)
 
@@ -346,9 +444,24 @@ def searchEvent():
             ekadashi_name = day_dict.get('ekadashiName', '')
             matched_text = None
             
-            if ekadashi_name and simplified_query in simplify(ekadashi_name):
-                matched_text = ekadashi_name
-            else:
+            # Check ekadashi name and synonyms
+            if ekadashi_name:
+                simp_ekadashi = simplify(ekadashi_name)
+                if simplified_query in simp_ekadashi:
+                    matched_text = ekadashi_name
+                else:
+                    # Check synonyms list
+                    for base, synonyms in EKADASHI_SYNONYMS.items():
+                        if base in simp_ekadashi:
+                            for syn in synonyms:
+                                if simplified_query in simplify(syn):
+                                    matched_text = f"{ekadashi_name} ({syn.title()})"
+                                    break
+                            if matched_text:
+                                break
+
+            # If not matched by Ekadashi name, check events
+            if not matched_text:
                 events = day_dict.get('events', [])
                 for ev in events:
                     ev_text = ev.get('text', '')
