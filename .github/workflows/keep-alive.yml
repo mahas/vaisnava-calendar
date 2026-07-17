@@ -1,0 +1,16 @@
+name: Keep Alive Render Server
+
+on:
+  schedule:
+    # Runs every 12 minutes to keep the Render free-tier container active
+    # (Render suspends free-tier containers after 15 minutes of inactivity)
+    - cron: '*/12 * * * *'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Server
+        run: |
+          curl -s -f https://vaisnava-calendar.onrender.com/ping || echo "Ping failed, but continuing workflow"
