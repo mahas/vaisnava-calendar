@@ -1753,10 +1753,10 @@ function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.className = `toast-message ${type}`;
   
-  let icon = "ℹ️";
-  if (type === "success") icon = "✅";
-  if (type === "error") icon = "❌";
-  if (type === "warning") icon = "⚠️";
+  let icon = "ℹ";
+  if (type === "success") icon = "✓";
+  if (type === "error") icon = "✕";
+  if (type === "warning") icon = "!";  
   
   toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-text">${message}</span>`;
   container.appendChild(toast);
