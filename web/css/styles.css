@@ -1150,6 +1150,14 @@ dialog::backdrop {
   gap: 12px;
 }
 
+/* Wrapper for view selector + date range button, right side of nav bar */
+.nav-bar-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 .month-navigation {
   display: flex;
   align-items: center;
@@ -1191,7 +1199,7 @@ dialog::backdrop {
 /* Calendar Toolbar */
 .calendar-toolbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
@@ -1223,22 +1231,45 @@ dialog::backdrop {
     width: 100%;
     margin-left: 0;
   }
+
+  /* Keep nav bar as a single horizontal row on mobile */
   .calendar-nav-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
   }
+
+  /* Month title + arrows fill available space */
   .month-navigation {
+    flex: 1;
     justify-content: space-between;
   }
+
+  /* Reduce current period font on very small screens */
+  .current-period-title {
+    font-size: 15px;
+    min-width: 0;
+  }
+
+  /* Right-side controls: tighten up */
+  .nav-bar-controls {
+    gap: 6px;
+  }
+
+  /* View selector buttons: smaller on mobile */
+  .view-selector button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  /* Collapse date range button to icon-only on mobile */
+  #datesBtnText {
+    display: none;
+  }
+
+  /* Hide the export toolbar entirely — exports accessible via 🗓️ panel */
   .calendar-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    padding: 12px;
-  }
-  .toolbar-actions {
-    justify-content: space-between;
+    display: none;
   }
 }
 

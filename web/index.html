@@ -74,13 +74,25 @@
           <span id="currentPeriodLabel" class="current-period-title">Cargando...</span>
           <button class="nav-arrow" onclick="navigateMonth(1)">▶</button>
         </div>
-        <button id="toggleDateSettingsBtn" class="secondary mini-btn" onclick="toggleDateSettings()">
-          <span id="datesBtnText">Otros rangos de fechas</span> 🗓️
-        </button>
+        <div class="nav-bar-controls">
+          <div class="view-selector">
+            <button id="btnListView" onclick="setCalendarView('list')">Lista</button>
+            <button id="btnGridView" class="active" onclick="setCalendarView('grid')">Calendario</button>
+          </div>
+          <button id="toggleDateSettingsBtn" class="secondary mini-btn" onclick="toggleDateSettings()">
+            <span id="datesBtnText">Otros rangos de fechas</span> 🗓️
+          </button>
+        </div>
       </div>
 
       <!-- Collapsible Date & Advanced Settings Panel -->
       <div id="dateSettingsPanel" class="collapsible-panel">
+        <!-- Fasting filter (moved here so it's accessible on mobile) -->
+        <label class="custom-checkbox" style="margin: 0 0 14px 0;">
+          <input type="checkbox" id="soloAyunos" onchange="renderCalendar()" />
+          <span class="checkmark"></span>
+          <span id="fastFilterText">Mostrar solo días de ayuno</span>
+        </label>
         <!-- Presets -->
         <div class="presets-container">
           <button onclick="applyPreset('thisMonth')" id="btnPresetThisMonth" class="secondary">Este Mes</button>
@@ -126,28 +138,15 @@
         </div>
       </div>
 
-      <!-- Calendar Toolbar -->
+      <!-- Calendar Toolbar: export actions visible on desktop, hidden on mobile -->
       <div class="calendar-toolbar">
-        <label class="custom-checkbox" style="margin: 0;">
-          <input type="checkbox" id="soloAyunos" onchange="renderCalendar()" />
-          <span class="checkmark"></span>
-          <span id="fastFilterText">Mostrar solo días de ayuno</span>
-        </label>
-        
-        <div class="toolbar-actions">
-          <div class="export-button-group">
-            <button onclick="exportarICS()" id="exportBtn" class="secondary mini-btn" style="padding: 6px 12px; width: auto; margin: 0;">
-              Descargar .ics (iOS / Apple)
-            </button>
-            <button onclick="exportarAGoogleCalendar()" id="exportGoogleBtn" class="secondary mini-btn" style="padding: 6px 12px; width: auto; margin: 0;">
-              Exportar a Google Calendar
-            </button>
-          </div>
-          
-          <div class="view-selector">
-            <button id="btnListView" onclick="setCalendarView('list')">Lista</button>
-            <button id="btnGridView" class="active" onclick="setCalendarView('grid')">Calendario</button>
-          </div>
+        <div class="export-button-group">
+          <button onclick="exportarICS()" id="exportBtn" class="secondary mini-btn" style="padding: 6px 12px; width: auto; margin: 0;">
+            Descargar .ics (iOS / Apple)
+          </button>
+          <button onclick="exportarAGoogleCalendar()" id="exportGoogleBtn" class="secondary mini-btn" style="padding: 6px 12px; width: auto; margin: 0;">
+            Exportar a Google Calendar
+          </button>
         </div>
       </div>
 
