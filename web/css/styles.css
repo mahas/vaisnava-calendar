@@ -814,20 +814,32 @@ dialog::backdrop {
 }
 
 .modal-close-btn {
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0 4px;
-  line-height: 1;
+  background: none !important;
+  border: none !important;
+  color: var(--color-text-muted) !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  margin: 0 !important;
 }
 
-.modal-close-btn:hover {
-  color: #ffffff;
-  background: none;
-  box-shadow: none;
-  transform: none;
+.modal-close-btn:hover,
+.modal-close-btn:focus,
+.modal-close-btn:active {
+  color: #ffffff !important;
+  background: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  outline: none !important;
 }
 
 .modal-body {
