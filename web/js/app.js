@@ -2,7 +2,7 @@
 let selectedCity = null;
 let lastCalendarData = null;
 let currentLang = localStorage.getItem("lang") || "es";
-let currentView = "list"; // 'list' or 'grid'
+let currentView = "grid"; // 'list' or 'grid'
 const clientCache = {}; // Cache key -> calendar data
 
 const IS_LOCAL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
@@ -27,6 +27,7 @@ const translations = {
     generateBtn: "Generar Calendario",
     todayBtn: "Hoy",
     exportBtn: "Descargar .ics (iOS / Apple)",
+    exportGoogleBtn: "Exportar a Google Calendar",
     todayLabel: "(Hoy)",
     result: "Fechas Generadas",
     loadingCity: "Buscando ciudad...",
@@ -39,7 +40,7 @@ const translations = {
     errorCalendar: "Error al generar. Intenta de nuevo.",
     errorSearch: "Error al buscar el evento.",
     viewList: "Lista",
-    viewGrid: "Cuadrícula",
+    viewGrid: "Calendario",
     searchQueryLabel: "Nombre del evento (ej: sat tila, nrisimha)",
     searchQueryPlaceholder: "Escribe el nombre del evento...",
     searchCountLabel: "Ocurrencias",
@@ -49,7 +50,7 @@ const translations = {
     modalEventsTitle: "Eventos y Festivales",
     addToGoogle: "Añadir a Google Calendar",
     closeModal: "Cerrar",
-    exportSettingsLabel: "Ajustes de Exportación (.ics) ⚙️",
+    exportSettingsLabel: "Configurar descarga de Calendario (.ics)",
     includeAlarmsLabel: "Incluir alarmas de ayuno",
     alarmHoursLabel: "Anticipación de alarma",
     onlyFastsExportLabel: "Exportar solo días de ayuno",
@@ -69,8 +70,10 @@ const translations = {
     ekadashiBadge: "Ekadasi",
     todayBadge: "Hoy",
     presetThisMonth: "Este Mes",
-    presetNextMonth: "Mes Siguiente",
-    presetThisYear: "Este Año"
+    presetThisYear: "Este Año",
+    changeBtn: "Cambiar ciudad",
+    datesBtn: "Otros rangos de fechas",
+    exportDesc: "El archivo .ics descargado se puede importar directamente en Google Calendar, Apple Calendar (iOS/macOS), Outlook y otros calendarios."
   },
   en: {
     title: "Vaishnava Calendar",
@@ -89,6 +92,7 @@ const translations = {
     generateBtn: "Generate Calendar",
     todayBtn: "Today",
     exportBtn: "Download .ics (iOS / Apple)",
+    exportGoogleBtn: "Export to Google Calendar",
     todayLabel: "(Today)",
     result: "Generated Dates",
     loadingCity: "Searching city...",
@@ -101,7 +105,7 @@ const translations = {
     errorCalendar: "Failed to generate calendar. Please try again.",
     errorSearch: "Failed to search for the event.",
     viewList: "List",
-    viewGrid: "Grid",
+    viewGrid: "Calendar",
     searchQueryLabel: "Event name (e.g. sat tila, nrisimha)",
     searchQueryPlaceholder: "Enter event name...",
     searchCountLabel: "Occurrences",
@@ -111,7 +115,7 @@ const translations = {
     modalEventsTitle: "Events & Festivals",
     addToGoogle: "Add to Google Calendar",
     closeModal: "Close",
-    exportSettingsLabel: "Export Settings (.ics) ⚙️",
+    exportSettingsLabel: "Calendar download options (.ics)",
     includeAlarmsLabel: "Include fasting alarms",
     alarmHoursLabel: "Alarm timing",
     onlyFastsExportLabel: "Export fasting days only",
@@ -131,10 +135,32 @@ const translations = {
     ekadashiBadge: "Ekadasi",
     todayBadge: "Today",
     presetThisMonth: "This Month",
-    presetNextMonth: "Next Month",
-    presetThisYear: "This Year"
+    presetThisYear: "This Year",
+    changeBtn: "Change city",
+    datesBtn: "Other date ranges",
+    exportDesc: "The downloaded .ics file can be imported directly into Google Calendar, Apple Calendar (iOS/macOS), Outlook, and other calendar apps."
   }
 };
+
+let installTimer = null;
+let deferredPrompt = null;
+
+// Catch beforeinstallprompt
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  // Show install button if not standalone
+  showInstallButton();
+});
+
+function showInstallButton() {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (!isStandalone) {
+    const installBtn = document.getElementById("installAppBtn");
+    if (installBtn) installBtn.style.display = "inline-flex";
+  }
+}
 
 // DOM Content Loaded initialization
 window.addEventListener("DOMContentLoaded", () => {
@@ -143,14 +169,17 @@ window.addEventListener("DOMContentLoaded", () => {
   initEventListeners();
   initPWA();
   cargarCiudadPorDefecto();
+  initInstallSystem();
 });
 
-// Set default input date range to today
+// Set default input date range to current month
 function initDates() {
-  const tzoffset = new Date().getTimezoneOffset() * 60000;
-  const localDateStr = new Date(Date.now() - tzoffset).toISOString().split("T")[0];
-  document.getElementById("startDate").value = localDateStr;
-  document.getElementById("endDate").value = localDateStr;
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  
+  document.getElementById("startDate").value = formatDateString(firstDay);
+  document.getElementById("endDate").value = formatDateString(lastDay);
 }
 
 // Detect language or load from localStorage
@@ -303,13 +332,14 @@ function hideAutocomplete() {
 
 function seleccionarCiudadAutocomplete(city) {
   selectedCity = city;
-  document.getElementById("cityInput").value = `${city.city} (${city.country})`;
-  
-  const textContainer = document.getElementById("selected");
-  textContainer.innerHTML = `${city.city}, ${city.country}<br><small>${city.tzname}</small>`;
+  actualizarDisplayCiudad();
   
   document.getElementById("saveDefaultBtn").style.display = "inline-block";
   hideAutocomplete();
+  
+  // Collapse the city search panel on selection
+  document.getElementById("citySearchPanel").classList.remove("active");
+  document.getElementById("toggleCitySearchBtn").classList.remove("active");
   
   // Auto-generate on selecting a city
   generarCalendario();
@@ -318,20 +348,63 @@ function seleccionarCiudadAutocomplete(city) {
 // Load default city from localStorage
 function cargarCiudadPorDefecto() {
   const saved = localStorage.getItem("gcal_default_city");
-  if (!saved) return;
+  if (!saved) {
+    // If no default city, expand the search panel
+    document.getElementById("citySearchPanel").classList.add("active");
+    document.getElementById("toggleCitySearchBtn").classList.add("active");
+    actualizarDisplayCiudad();
+    return;
+  }
   
   selectedCity = JSON.parse(saved);
-  document.getElementById("selected").innerHTML = `${selectedCity.city}, ${selectedCity.country}<br><small>${selectedCity.tzname}</small>`;
-  document.getElementById("cityInput").value = `${selectedCity.city} (${selectedCity.country})`;
+  actualizarDisplayCiudad();
   document.getElementById("saveDefaultBtn").style.display = "none";
+  document.getElementById("citySearchPanel").classList.remove("active");
+  document.getElementById("toggleCitySearchBtn").classList.remove("active");
   
+  cargarCalendarioAlInicio();
+}
+
+// Check cache and load, otherwise calculate
+function cargarCalendarioAlInicio() {
+  if (!selectedCity) return;
+  
+  const startDateStr = document.getElementById("startDate").value;
+  const endDateStr = document.getElementById("endDate").value;
+  const cacheKey = `${selectedCity.city}-${selectedCity.country}-${startDateStr}-${endDateStr}`;
+  
+  // 1. Check localStorage first
+  const localCached = localStorage.getItem("gcal_last_calendar");
+  if (localCached) {
+    try {
+      const cached = JSON.parse(localCached);
+      if (cached.city === selectedCity.city &&
+          cached.country === selectedCity.country &&
+          cached.startDate === startDateStr &&
+          cached.endDate === endDateStr &&
+          cached.data) {
+        
+        lastCalendarData = cached.data;
+        clientCache[cacheKey] = cached.data; // warm in-memory cache
+        actualizarPeriodoLabel();
+        renderCalendar();
+        console.log("Loaded calendar from localStorage cache for", cacheKey);
+        return;
+      }
+    } catch (e) {
+      console.error("Error reading localStorage cache", e);
+    }
+  }
+  
+  // 2. If not cached, calculate
+  console.log("No localStorage cache match. Fetching calendar...");
   generarCalendario();
 }
 
 function guardarCiudadPorDefecto() {
   if (!selectedCity) return;
   localStorage.setItem("gcal_default_city", JSON.stringify(selectedCity));
-  alert(translations[currentLang].savedDefaultMsg);
+  showToast(translations[currentLang].savedDefaultMsg, "success");
   document.getElementById("saveDefaultBtn").style.display = "none";
 }
 
@@ -371,7 +444,7 @@ function formatDateString(date) {
 // Core calendar API trigger
 async function generarCalendario() {
   if (!selectedCity) {
-    alert(currentLang === "en" ? "Select a city first" : "Selecciona una ciudad primero");
+    showToast(currentLang === "en" ? "Select a city first" : "Selecciona una ciudad primero", "warning");
     return;
   }
 
@@ -379,7 +452,7 @@ async function generarCalendario() {
   const endDateStr = document.getElementById("endDate").value;
   
   if (!startDateStr || !endDateStr) {
-    alert(currentLang === "en" ? "Select start and end dates" : "Selecciona las fechas de inicio y fin");
+    showToast(currentLang === "en" ? "Select start and end dates" : "Selecciona las fechas de inicio y fin", "warning");
     return;
   }
 
@@ -397,17 +470,41 @@ async function generarCalendario() {
   const period = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
   
   if (period <= 0) {
-    alert(currentLang === "en" ? "End date must be equal or after start date" : "La fecha de fin debe ser igual o posterior a la fecha de inicio");
+    showToast(currentLang === "en" ? "End date must be equal or after start date" : "La fecha de fin debe ser igual o posterior a la fecha de inicio", "warning");
     return;
   }
 
+  // Update Period Label dynamically
+  actualizarPeriodoLabel();
+
   const cacheKey = `${selectedCity.city}-${selectedCity.country}-${startDateStr}-${endDateStr}`;
   
-  // Clientside caching lookup
+  // 1. Clientside in-memory caching lookup
   if (clientCache[cacheKey]) {
     lastCalendarData = clientCache[cacheKey];
     renderCalendar();
     return;
+  }
+
+  // 2. Clientside localStorage caching lookup
+  const localCached = localStorage.getItem("gcal_last_calendar");
+  if (localCached) {
+    try {
+      const cached = JSON.parse(localCached);
+      if (cached.city === selectedCity.city &&
+          cached.country === selectedCity.country &&
+          cached.startDate === startDateStr &&
+          cached.endDate === endDateStr &&
+          cached.data) {
+        
+        lastCalendarData = cached.data;
+        clientCache[cacheKey] = cached.data; // warm in-memory cache
+        renderCalendar();
+        return;
+      }
+    } catch (e) {
+      console.error("Error reading localStorage cache", e);
+    }
   }
 
   showLoader("loadingCalendar");
@@ -419,11 +516,21 @@ async function generarCalendario() {
     const data = await response.json();
     
     lastCalendarData = data;
-    clientCache[cacheKey] = data; // store in cache
+    clientCache[cacheKey] = data; // store in memory cache
+    
+    // Save to localStorage cache
+    localStorage.setItem("gcal_last_calendar", JSON.stringify({
+      city: selectedCity.city,
+      country: selectedCity.country,
+      startDate: startDateStr,
+      endDate: endDateStr,
+      data: data
+    }));
+    
     renderCalendar();
   } catch (error) {
     console.error("Error generating calendar:", error);
-    alert(translations[currentLang].errorCalendar);
+    showToast(translations[currentLang].errorCalendar, "error");
   } finally {
     hideLoader();
   }
@@ -736,22 +843,18 @@ function getMasaName(masaId) {
   return names[masaId] || `Masa ${masaId}`;
 }
 
-// Trigger quick date views
-function mostrarHoy() {
-  initDates();
-  generarCalendario();
-}
+
 
 // Event live searching API caller
 async function buscarEventoSiguiente() {
   if (!selectedCity) {
-    alert(currentLang === "en" ? "Select a city first" : "Selecciona una ciudad primero");
+    showToast(currentLang === "en" ? "Select a city first" : "Selecciona una ciudad primero", "warning");
     return;
   }
 
   const query = document.getElementById("searchQueryInput").value.trim();
   if (!query) {
-    alert(currentLang === "en" ? "Please enter an event name" : "Por favor, escribe el nombre de un evento");
+    showToast(currentLang === "en" ? "Please enter an event name" : "Por favor, escribe el nombre de un evento", "warning");
     return;
   }
 
@@ -770,7 +873,7 @@ async function buscarEventoSiguiente() {
     renderSearchResults(data.matches);
   } catch (error) {
     console.error("Error searching event:", error);
-    alert(translations[currentLang].errorSearch);
+    showToast(translations[currentLang].errorSearch, "error");
   } finally {
     hideLoader();
   }
@@ -862,7 +965,14 @@ function addToGoogleCalendar(year, month, day, title, details = "", fastType = 0
   if (location) {
     gcalUrl += `&location=${encodeURIComponent(location)}`;
   }
-  window.open(gcalUrl, "_blank");
+  // Use anchor with target=_blank + rel=noopener to force external browser in PWA standalone mode
+  const extLink = document.createElement("a");
+  extLink.href = gcalUrl;
+  extLink.target = "_blank";
+  extLink.rel = "noopener noreferrer";
+  document.body.appendChild(extLink);
+  extLink.click();
+  document.body.removeChild(extLink);
 }
 
 function addToGoogleCalendarAll(year, month, day, eventsJson, fastType, details) {
@@ -939,7 +1049,7 @@ function compileDayDetails(d) {
 // Custom ICS exporter for calendar range
 function exportarICS() {
   if (!lastCalendarData) {
-    alert(currentLang === "en" ? "Generate a calendar first" : "Primero genera un calendario");
+    showToast(currentLang === "en" ? "Generate a calendar first" : "Primero genera un calendario", "warning");
     return;
   }
 
@@ -1091,6 +1201,99 @@ function descargarICSFile(icsContent, filename) {
   link.click();
 }
 
+// Export the current calendar month to Google Calendar
+// Opens individual Google Calendar event creation URLs for each day that has events.
+// A combined multi-event import via a single URL is not supported by the Google Calendar web API;
+// the standard workflow is: download .ics → import in Google Calendar settings.
+// This function provides a shortcut by opening the Google Calendar import page directly.
+function exportarAGoogleCalendar() {
+  if (!lastCalendarData) {
+    showToast(currentLang === "en" ? "Generate a calendar first" : "Primero genera un calendario", "warning");
+    return;
+  }
+
+  // Build a temporary .ics blob, then guide the user to Google Calendar import
+  const incluirAlarmas = document.getElementById("icsIncludeAlarms").checked;
+  const alarmaHoras = parseInt(document.getElementById("icsAlarmHours").value) || 15;
+  const soloAyunosExport = document.getElementById("icsOnlyFasts").checked;
+
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//GCAL Moderno//Calendario Vaisnava//ES",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH"
+  ];
+
+  const ahora = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+  lastCalendarData.days.forEach((d, index) => {
+    if (soloAyunosExport && !d.fast) return;
+    if (!(d.fast || (d.events && d.events.length > 0))) return;
+
+    const start = `${d.date.year}${String(d.date.month).padStart(2, "0")}${String(d.date.day).padStart(2, "0")}`;
+    const nextDate = new Date(d.date.year, d.date.month - 1, d.date.day + 1);
+    const end = `${nextDate.getFullYear()}${String(nextDate.getMonth() + 1).padStart(2, "0")}${String(nextDate.getDate()).padStart(2, "0")}`;
+
+    let title = "Evento Vaisnava";
+    if (d.events && d.events.length > 0) title = d.events[0].text;
+    if (d.fast && !d.ekadashiName && d.events && d.events.length > 0) {
+      title = d.events[0].text.replace(", (Fast today)", "").replace("(Fast today)", "").trim();
+    }
+    if (d.fast && !d.ekadashiName && (!d.events || d.events.length === 0)) title = "Ayuno Vaisnava";
+    if (d.ekadashiName && d.fast) title += ` — Ekādaśī: ${d.ekadashiName}`;
+    if (d.fast && d.fast !== 0) title += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+
+    const description = compileDayDetails(d);
+    const location = selectedCity ? `${selectedCity.city}, ${selectedCity.country}` : "";
+
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:gcal-moderno-${start}-${index}@local`,
+      `DTSTAMP:${ahora}`,
+      `DTSTART;VALUE=DATE:${start}`,
+      `DTEND;VALUE=DATE:${end}`,
+      `SUMMARY:${limpiarTexto(translateEventText(title))}`,
+      `DESCRIPTION:${limpiarTexto(description)}`
+    );
+    if (location) lines.push(`LOCATION:${limpiarTexto(location)}`);
+    if (incluirAlarmas && d.fast) {
+      lines.push("BEGIN:VALARM", "ACTION:DISPLAY",
+        `DESCRIPTION:${limpiarTexto("Recordatorio: " + translateEventText(title))}`,
+        `TRIGGER;RELATED=START:-PT${alarmaHoras}H`, "END:VALARM");
+    }
+    lines.push("END:VEVENT");
+  });
+
+  lines.push("END:VCALENDAR");
+  const icsContent = lines.join("\r\n");
+
+  // Download the file and then open Google Calendar import page
+  const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "VaisnavaCalendar_Google.ics";
+  link.click();
+
+  // After a short delay open Google Calendar import page in external browser
+  // Using an anchor element with noopener ensures the OS browser opens outside the PWA.
+  setTimeout(() => {
+    const extLink = document.createElement("a");
+    extLink.href = "https://calendar.google.com/calendar/r/settings/export";
+    extLink.target = "_blank";
+    extLink.rel = "noopener noreferrer";
+    document.body.appendChild(extLink);
+    extLink.click();
+    document.body.removeChild(extLink);
+    showToast(
+      currentLang === "en"
+        ? "File downloaded. Import it in Google Calendar → Settings → Import."
+        : "Archivo descargado. Impórtalo en Google Calendar → Configuración → Importar.",
+      "info"
+    );
+  }, 800);
+}
+
 function limpiarTexto(texto) {
   return String(texto || "")
     .replace(/\\/g, "\\\\")
@@ -1113,8 +1316,14 @@ function applyTranslations() {
   document.getElementById("startDateLabel").innerText = t.startDate;
   document.getElementById("endDateLabel").innerText = t.endDate;
   document.getElementById("generateBtn").innerText = t.generateBtn;
-  document.getElementById("todayBtn").innerText = t.todayBtn;
   document.getElementById("exportBtn").innerText = t.exportBtn;
+  document.getElementById("exportGoogleBtn").innerText = t.exportGoogleBtn;
+  document.getElementById("changeCityText").innerText = t.changeBtn;
+  document.getElementById("datesBtnText").innerText = t.datesBtn;
+  const installBtn = document.getElementById("installAppBtn");
+  if (installBtn) {
+    installBtn.innerText = currentLang === "en" ? "Install App" : "Instalar App";
+  }
   document.getElementById("resultLabel").innerText = t.result;
 
   // Tab translations
@@ -1129,6 +1338,7 @@ function applyTranslations() {
 
   // Export customization settings
   document.getElementById("toggleExportSettings").innerText = t.exportSettingsLabel;
+  document.getElementById("exportSettingsDesc").innerText = t.exportDesc;
   document.getElementById("labelIncludeAlarms").innerText = t.includeAlarmsLabel;
   document.getElementById("labelAlarmHours").innerText = t.alarmHoursLabel;
   document.getElementById("labelOnlyFastsExport").innerText = t.onlyFastsExportLabel;
@@ -1233,4 +1443,335 @@ function initPWA() {
       .then(reg => console.log("PWA Service Worker registered", reg))
       .catch(err => console.error("PWA Service Worker registration failed", err));
   }
+}
+
+// Toggle city search panel visibility
+function toggleCitySearch() {
+  const panel = document.getElementById("citySearchPanel");
+  const btn = document.getElementById("toggleCitySearchBtn");
+  panel.classList.toggle("active");
+  btn.classList.toggle("active");
+  
+  // Close dates panel if open
+  document.getElementById("dateSettingsPanel").classList.remove("active");
+  document.getElementById("toggleDateSettingsBtn").classList.remove("active");
+}
+
+// Toggle date settings panel visibility
+function toggleDateSettings() {
+  const panel = document.getElementById("dateSettingsPanel");
+  const btn = document.getElementById("toggleDateSettingsBtn");
+  panel.classList.toggle("active");
+  btn.classList.toggle("active");
+  
+  // Close city search panel if open
+  document.getElementById("citySearchPanel").classList.remove("active");
+  document.getElementById("toggleCitySearchBtn").classList.remove("active");
+}
+
+// Update Location bar text and timezone details
+function actualizarDisplayCiudad() {
+  const cityNameText = document.getElementById("selectedCityName");
+  const cityTzText = document.getElementById("selectedCityTz");
+  const selectedText = document.getElementById("selected");
+  const cityInput = document.getElementById("cityInput");
+  
+  if (selectedCity) {
+    cityNameText.innerText = `${selectedCity.city}, ${selectedCity.country}`;
+    cityTzText.innerText = selectedCity.tzname;
+    selectedText.innerHTML = `${selectedCity.city}, ${selectedCity.country}<br><small>${selectedCity.tzname}</small>`;
+    cityInput.value = `${selectedCity.city} (${selectedCity.country})`;
+  } else {
+    const t = translations[currentLang];
+    cityNameText.innerText = t.noCitySelected;
+    cityTzText.innerText = "";
+    selectedText.innerText = t.noCitySelected;
+    cityInput.value = "";
+  }
+}
+
+// Navigate calendar by month offset
+function navigateMonth(direction) {
+  const startInput = document.getElementById("startDate");
+  const currentVal = startInput.value;
+  if (!currentVal) return;
+  
+  const parts = currentVal.split("-");
+  const year = parseInt(parts[0]);
+  const month = parseInt(parts[1]) - 1; // 0-indexed month
+  
+  // Calculate first and last day of target month
+  const targetDate = new Date(year, month + direction, 1);
+  const firstDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+  const lastDay = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
+  
+  document.getElementById("startDate").value = formatDateString(firstDay);
+  document.getElementById("endDate").value = formatDateString(lastDay);
+  
+  generarCalendario();
+}
+
+// Update the navigation bar title representing current period
+function actualizarPeriodoLabel() {
+  const startDateStr = document.getElementById("startDate").value;
+  const endDateStr = document.getElementById("endDate").value;
+  if (!startDateStr || !endDateStr) return;
+  
+  const startParts = startDateStr.split("-");
+  const endParts = endDateStr.split("-");
+  const startLocal = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+  const endLocal = new Date(endParts[0], endParts[1] - 1, endParts[2]);
+  
+  let labelText = "";
+  if (startLocal.getFullYear() === endLocal.getFullYear() && startLocal.getMonth() === endLocal.getMonth()) {
+    labelText = startLocal.toLocaleDateString(currentLang === "en" ? "en-US" : "es-ES", {
+      month: "long",
+      year: "numeric"
+    });
+  } else {
+    const startStr = startLocal.toLocaleDateString(currentLang === "en" ? "en-US" : "es-ES", { month: "short", year: "numeric" });
+    const endStr = endLocal.toLocaleDateString(currentLang === "en" ? "en-US" : "es-ES", { month: "short", year: "numeric" });
+    labelText = `${startStr} - ${endStr}`;
+  }
+  labelText = labelText.charAt(0).toUpperCase() + labelText.slice(1);
+  document.getElementById("currentPeriodLabel").textContent = labelText;
+}
+
+// Initialize PWA Installation Prompts and Rules
+function initInstallSystem() {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isStandalone) {
+    console.log("App is running in standalone mode (already installed).");
+    return;
+  }
+  
+  // Show the header install button if in browser mode (will toggle dynamically if prompt is available)
+  showInstallButton();
+  
+  // Check if user has already accepted or if they rejected recently (within 2 months)
+  const installAccepted = localStorage.getItem("gcal_install_accepted");
+  if (installAccepted === "true") return;
+  
+  const rejectedAt = localStorage.getItem("gcal_install_rejected_at");
+  if (rejectedAt) {
+    const twoMonthsMs = 60 * 24 * 60 * 60 * 1000;
+    if (Date.now() - parseInt(rejectedAt) < twoMonthsMs) {
+      console.log("Installation suggestion prompt recently rejected. Next automatic prompt in due time.");
+      return;
+    }
+  }
+  
+  // Setup 20 seconds timer to suggest installation
+  console.log("Scheduling installation suggestion prompt in 20 seconds...");
+  installTimer = setTimeout(() => {
+    mostrarPropuestaInstalacion();
+  }, 20000);
+}
+
+// Display custom installation suggestion dialog
+function mostrarPropuestaInstalacion() {
+  // If the loader is active (performing calculations), defer the prompt by 5 seconds
+  const loader = document.getElementById("loadingOverlay");
+  if (loader && loader.classList.contains("active")) {
+    console.log("Loader is active (calculating). Deferring PWA install suggestion prompt by 5 seconds...");
+    setTimeout(mostrarPropuestaInstalacion, 5000);
+    return;
+  }
+
+  const modal = document.getElementById("pwaInstallModal");
+  if (!modal) return;
+  
+  document.getElementById("installModalTitle").innerText = currentLang === "en" ? "Install App" : "Instalar App";
+  document.getElementById("installModalCloseBtn").innerText = currentLang === "en" ? "Close" : "Cerrar";
+  
+  const body = document.getElementById("pwaInstallBody");
+  body.innerHTML = `
+    <p style="margin-bottom: 16px; font-size: 15px; line-height: 1.4; color: var(--color-text-primary);">
+      ${currentLang === "en" 
+        ? "Would you like to install the Vaishnava Calendar for quick access and offline availability?" 
+        : "¿Te gustaría instalar el Calendario Vaisnava para un acceso rápido y uso sin conexión?"}
+    </p>
+    <div style="display: flex; gap: 12px; margin-top: 20px;">
+      <button id="btnConfirmInstall" onclick="iniciarProcesoInstalacion()" style="flex: 1; padding: 10px 16px; font-size: 14px;">
+        ${currentLang === "en" ? "Install" : "Instalar"}
+      </button>
+      <button class="secondary" onclick="rechazarInstalacion()" style="flex: 1; padding: 10px 16px; font-size: 14px;">
+        ${currentLang === "en" ? "Later" : "Más tarde"}
+      </button>
+    </div>
+  `;
+  
+  modal.showModal();
+}
+
+// Start device-specific installation flow
+function iniciarProcesoInstalacion() {
+  const modal = document.getElementById("pwaInstallModal");
+  if (modal) modal.close();
+  
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+  
+  if (isIOS) {
+    mostrarInstruccionesIOS();
+  } else if (deferredPrompt) {
+    // Non-iOS device where native installer is available
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === "accepted") {
+        console.log("User accepted PWA installation prompt.");
+        localStorage.setItem("gcal_install_accepted", "true");
+        const installBtn = document.getElementById("installAppBtn");
+        if (installBtn) installBtn.style.display = "none";
+      } else {
+        console.log("User dismissed PWA installation prompt.");
+        rechazarInstalacion();
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    // Unsupported browser or native prompt failed, show instructions
+    mostrarInstruccionesGenerales();
+  }
+}
+
+// Save rejection status for 2 months
+function rechazarInstalacion() {
+  localStorage.setItem("gcal_install_rejected_at", Date.now().toString());
+  const modal = document.getElementById("pwaInstallModal");
+  if (modal) modal.close();
+  console.log("PWA Installation suggestion dismissed. Next prompt scheduled in 2 months.");
+}
+
+// Show iOS-specific Safari Home Screen instructions
+function mostrarInstruccionesIOS() {
+  const modal = document.getElementById("pwaInstallModal");
+  if (!modal) return;
+  
+  document.getElementById("installModalTitle").innerText = currentLang === "en" ? "Install on iOS" : "Instalar en iOS";
+  document.getElementById("installModalCloseBtn").innerText = currentLang === "en" ? "Close" : "Cerrar";
+  
+  const body = document.getElementById("pwaInstallBody");
+  
+  const shareIconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ffff" stroke-width="2" style="vertical-align: middle; margin: 0 4px; filter: drop-shadow(0 0 4px rgba(0,255,255,0.4));"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M12 2v15M12 2l-4 4M12 2l4 4"/></svg>`;
+  const addIconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ffff" stroke-width="2" style="vertical-align: middle; margin: 0 4px; filter: drop-shadow(0 0 4px rgba(0,255,255,0.4));"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
+  
+  body.innerHTML = `
+    <div style="font-size: 14.5px; display: flex; flex-direction: column; gap: 16px; color: var(--color-text-primary); line-height: 1.5;">
+      <p style="margin-bottom: 8px;">
+        ${currentLang === "en" 
+          ? "To install this application on your iOS device, follow these simple steps using <strong>Safari</strong> browser:"
+          : "Para instalar esta aplicación en tu iPhone o iPad, sigue estos sencillos pasos usando el navegador <strong>Safari</strong>:"}
+      </p>
+      
+      <div style="display: flex; gap: 12px; align-items: center; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05);">
+        <div style="background: rgba(0, 255, 255, 0.15); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; color: var(--color-cyan); border: 1px solid var(--color-cyan); flex-shrink: 0;">1</div>
+        <div style="flex-grow: 1;">
+          ${currentLang === "en"
+            ? `Tap the <strong>Share</strong> button ${shareIconSvg} in the navigation bar.`
+            : `Presiona el botón de <strong>Compartir</strong> ${shareIconSvg} en la barra de navegación.`}
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 12px; align-items: center; background: rgba(255,255,255,0.03); padding: 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05);">
+        <div style="background: rgba(0, 255, 255, 0.15); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; color: var(--color-cyan); border: 1px solid var(--color-cyan); flex-shrink: 0;">2</div>
+        <div style="flex-grow: 1;">
+          ${currentLang === "en"
+            ? `Scroll and select <strong>Add to Home Screen</strong> ${addIconSvg}.`
+            : `Busca y selecciona <strong>Añadir a la pantalla de inicio</strong> ${addIconSvg}.`}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  modal.showModal();
+}
+
+// Show manual installation fallback instructions for desktop/other browsers
+function mostrarInstruccionesGenerales() {
+  const modal = document.getElementById("pwaInstallModal");
+  if (!modal) return;
+  
+  document.getElementById("installModalTitle").innerText = currentLang === "en" ? "Install App" : "Instalar App";
+  document.getElementById("installModalCloseBtn").innerText = currentLang === "en" ? "Close" : "Cerrar";
+  
+  const body = document.getElementById("pwaInstallBody");
+  body.innerHTML = `
+    <div style="font-size: 14.5px; display: flex; flex-direction: column; gap: 14px; color: var(--color-text-primary); line-height: 1.5;">
+      <p>
+        ${currentLang === "en" 
+          ? "To install this application on your current browser:" 
+          : "Para instalar esta aplicación en tu navegador actual:"}
+      </p>
+      
+      <ul style="padding-left: 20px; display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
+        <li>
+          <strong>Google Chrome / MS Edge:</strong> ${currentLang === "en" 
+            ? "Look for the install icon <span style='color: var(--color-cyan); font-weight: bold;'>⤓</span> in the address bar." 
+            : "Busca el ícono de instalación <span style='color: var(--color-cyan); font-weight: bold;'>⤓</span> en la barra de direcciones."}
+        </li>
+        <li>
+          <strong>Mozilla Firefox:</strong> ${currentLang === "en" 
+            ? "Click on the browser menu (three bars) and select 'Install'." 
+            : "Haz clic en el menú del navegador (tres rayas) y selecciona 'Instalar'."}
+        </li>
+        <li>
+          <strong>Safari (macOS):</strong> ${currentLang === "en" 
+            ? "Go to <strong>File</strong> > <strong>Add to Dock...</strong>" 
+            : "Ve a <strong>Archivo</strong> > <strong>Añadir al Dock...</strong>"}
+        </li>
+      </ul>
+    </div>
+  `;
+  
+  modal.showModal();
+}
+
+// Voluntary installation trigger from header button
+function promptAppInstallation() {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isStandalone) {
+    showToast(currentLang === "en" ? "App is already installed" : "La aplicación ya está instalada", "info");
+    return;
+  }
+  
+  // Clear automatic timer if triggered manually
+  if (installTimer) clearTimeout(installTimer);
+  
+  iniciarProcesoInstalacion();
+}
+
+// Display modern toast notifications
+function showToast(message, type = "info") {
+  let container = document.getElementById("toastContainer");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toastContainer";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+  
+  const toast = document.createElement("div");
+  toast.className = `toast-message ${type}`;
+  
+  let icon = "ℹ️";
+  if (type === "success") icon = "✅";
+  if (type === "error") icon = "❌";
+  if (type === "warning") icon = "⚠️";
+  
+  toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-text">${message}</span>`;
+  container.appendChild(toast);
+  
+  // Trigger slide-in animation
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 50);
+  
+  // Slide-out and remove after 4 seconds
+  setTimeout(() => {
+    toast.classList.remove("show");
+    toast.classList.add("hide");
+    setTimeout(() => {
+      toast.remove();
+    }, 400);
+  }, 4000);
 }

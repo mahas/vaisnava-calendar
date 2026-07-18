@@ -25,6 +25,7 @@
   <div class="header-calendario">
     <h1 id="title">Calendario Vaisnava</h1>
     <div class="language-buttons">
+      <button id="installAppBtn" class="install-app-btn" style="display: none;" onclick="promptAppInstallation()">Instalar App</button>
       <button onclick="setLanguage('es')">ES</button>
       <button onclick="setLanguage('en')">EN</button>
     </div>
@@ -36,86 +37,121 @@
       <button class="tab-button active" data-tab="tabCalendarContent" id="tabCalendar">Calendario</button>
       <button class="tab-button" data-tab="tabSearchEventsContent" id="tabSearchEvents">Buscar Evento</button>
     </div>
-
-    <!-- Common City Selection -->
-    <h2 id="searchCityLabel">Buscar ciudad</h2>
-    <div class="autocomplete-container">
-      <input id="cityInput" type="text" autocomplete="off" placeholder="Escribe ciudad... ej. Vrindavan" />
-      <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+    <!-- Compact Location Display & Change button -->
+    <div class="location-bar">
+      <div class="location-info">
+        <span class="icon">📍</span>
+        <span id="selectedCityName">Ninguna ciudad seleccionada</span>
+        <small id="selectedCityTz" class="tz-label"></small>
+      </div>
+      <button id="toggleCitySearchBtn" class="secondary mini-btn" onclick="toggleCitySearch()">
+        <span id="changeCityText">Cambiar ciudad</span>
+      </button>
     </div>
 
-    <h2 id="selectedCityLabel">Ciudad seleccionada</h2>
-    <div id="selected" class="selected-city">Ninguna ciudad seleccionada</div>
-    <button id="saveDefaultBtn" onclick="guardarCiudadPorDefecto()" style="display:none; margin-bottom: 16px;">
-      Fijar por defecto
-    </button>
+    <!-- Collapsible Location Search Panel -->
+    <div id="citySearchPanel" class="collapsible-panel">
+      <h2 id="searchCityLabel" style="margin-top: 0; font-size: 16px;">Buscar ciudad</h2>
+      <div class="autocomplete-container" style="max-width: 100%; margin-bottom: 12px;">
+        <input id="cityInput" type="text" autocomplete="off" placeholder="Escribe ciudad... ej. Vrindavan" />
+        <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+      </div>
+      <h2 id="selectedCityLabel" style="display:none;">Ciudad seleccionada</h2>
+      <div id="selected" class="selected-city" style="margin-bottom: 12px; font-size: 14px; padding: 12px;">Ninguna ciudad seleccionada</div>
+      <button id="saveDefaultBtn" onclick="guardarCiudadPorDefecto()" style="display:none; margin-bottom: 0; width: 100%;">
+        Fijar por defecto
+      </button>
+    </div>
 
     <!-- Tab 1: Generate Calendar -->
     <div id="tabCalendarContent" class="tab-content active">
-      <h2 id="generateLabel">Calendario</h2>
+      <h2 id="generateLabel" style="display:none;">Calendario</h2>
       
-      <label class="custom-checkbox">
-        <input type="checkbox" id="soloAyunos" onchange="renderCalendar()" />
-        <span class="checkmark"></span>
-        <span id="fastFilterText">Mostrar solo días de ayuno</span>
-      </label>   
-
-      <!-- Presets -->
-      <div class="presets-container">
-        <button onclick="applyPreset('thisMonth')" id="btnPresetThisMonth" class="secondary">Este Mes</button>
-        <button onclick="applyPreset('nextMonth')" id="btnPresetNextMonth" class="secondary">Mes Siguiente</button>
-        <button onclick="applyPreset('thisYear')" id="btnPresetThisYear" class="secondary">Este Año</button>
-      </div>
-
-      <div class="date-pickers-container">
-        <div class="date-field">
-          <label id="startDateLabel">Fecha inicio</label>
-          <input id="startDate" type="date" />
+      <!-- Calendar Navigation Bar -->
+      <div class="calendar-nav-bar">
+        <div class="month-navigation">
+          <button class="nav-arrow" onclick="navigateMonth(-1)">◀</button>
+          <span id="currentPeriodLabel" class="current-period-title">Cargando...</span>
+          <button class="nav-arrow" onclick="navigateMonth(1)">▶</button>
         </div>
-        <div class="date-field">
-          <label id="endDateLabel">Fecha fin</label>
-          <input id="endDate" type="date" />
+        <button id="toggleDateSettingsBtn" class="secondary mini-btn" onclick="toggleDateSettings()">
+          <span id="datesBtnText">Otros rangos de fechas</span> 🗓️
+        </button>
+      </div>
+
+      <!-- Collapsible Date & Advanced Settings Panel -->
+      <div id="dateSettingsPanel" class="collapsible-panel">
+        <!-- Presets -->
+        <div class="presets-container">
+          <button onclick="applyPreset('thisMonth')" id="btnPresetThisMonth" class="secondary">Este Mes</button>
+          <button onclick="applyPreset('thisYear')" id="btnPresetThisYear" class="secondary">Este Año</button>
+        </div>
+
+        <div class="date-pickers-container">
+          <div class="date-field">
+            <label id="startDateLabel">Fecha inicio</label>
+            <input id="startDate" type="date" />
+          </div>
+          <div class="date-field">
+            <label id="endDateLabel">Fecha fin</label>
+            <input id="endDate" type="date" />
+          </div>
+        </div>
+
+        <button onclick="generarCalendario()" id="generateBtn" style="width: 100%; margin-bottom: 12px;">Generar Calendario</button>
+
+        <!-- Custom ICS Export Settings -->
+        <div class="export-settings-btn" id="toggleExportSettings" style="margin-top: 8px;">Ajustes de Exportación (.ics)</div>
+        <div class="export-settings-panel" id="exportSettingsPanel">
+          <p id="exportSettingsDesc" class="export-settings-desc"></p>
+          <label class="custom-checkbox">
+            <input type="checkbox" id="icsIncludeAlarms" checked />
+            <span class="checkmark"></span>
+            <span id="labelIncludeAlarms">Incluir alarmas de ayuno</span>
+          </label>
+          <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+            <span id="labelAlarmHours" style="font-size:14px; color: var(--color-text-muted);">Anticipación de alarma</span>
+            <select id="icsAlarmHours" class="alarm-time-select">
+              <option value="0" id="optAlarm0">Mismo día</option>
+              <option value="12" id="optAlarm12">12 horas antes</option>
+              <option value="15" id="optAlarm15" selected>15 horas antes</option>
+              <option value="24" id="optAlarm24">1 día antes</option>
+            </select>
+          </div>
+          <label class="custom-checkbox">
+            <input type="checkbox" id="icsOnlyFasts" />
+            <span class="checkmark"></span>
+            <span id="labelOnlyFastsExport">Exportar solo días de ayuno</span>
+          </label>
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button onclick="generarCalendario()" id="generateBtn">Generar Calendario</button>
-        <button onclick="mostrarHoy()" id="todayBtn" class="secondary">Hoy</button>
-        <button onclick="exportarICS()" id="exportBtn" class="secondary">Descargar .ics</button>
-      </div>
-
-      <!-- Custom ICS Export Settings -->
-      <div class="export-settings-btn" id="toggleExportSettings">Ajustes de Exportación (.ics) ⚙️</div>
-      <div class="export-settings-panel" id="exportSettingsPanel">
-        <label class="custom-checkbox">
-          <input type="checkbox" id="icsIncludeAlarms" checked />
+      <!-- Calendar Toolbar -->
+      <div class="calendar-toolbar">
+        <label class="custom-checkbox" style="margin: 0;">
+          <input type="checkbox" id="soloAyunos" onchange="renderCalendar()" />
           <span class="checkmark"></span>
-          <span id="labelIncludeAlarms">Incluir alarmas de ayuno</span>
+          <span id="fastFilterText">Mostrar solo días de ayuno</span>
         </label>
-        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
-          <span id="labelAlarmHours" style="font-size:14px; color: var(--color-text-muted);">Anticipación de alarma</span>
-          <select id="icsAlarmHours" class="alarm-time-select">
-            <option value="0" id="optAlarm0">Mismo día</option>
-            <option value="12" id="optAlarm12">12 horas antes</option>
-            <option value="15" id="optAlarm15" selected>15 horas antes</option>
-            <option value="24" id="optAlarm24">1 día antes</option>
-          </select>
+        
+        <div class="toolbar-actions">
+          <div class="export-button-group">
+            <button onclick="exportarICS()" id="exportBtn" class="secondary mini-btn" style="padding: 6px 12px; width: auto; margin: 0;">
+              Descargar .ics (iOS / Apple)
+            </button>
+            <button onclick="exportarAGoogleCalendar()" id="exportGoogleBtn" class="secondary mini-btn" style="padding: 6px 12px; width: auto; margin: 0;">
+              Exportar a Google Calendar
+            </button>
+          </div>
+          
+          <div class="view-selector">
+            <button id="btnListView" onclick="setCalendarView('list')">Lista</button>
+            <button id="btnGridView" class="active" onclick="setCalendarView('grid')">Calendario</button>
+          </div>
         </div>
-        <label class="custom-checkbox">
-          <input type="checkbox" id="icsOnlyFasts" />
-          <span class="checkmark"></span>
-          <span id="labelOnlyFastsExport">Exportar solo días de ayuno</span>
-        </label>
       </div>
 
-      <!-- View layout selector -->
-      <div class="view-controls">
-        <h2 id="resultLabel" style="margin: 0; border: none; padding: 0;">Fechas Generadas</h2>
-        <div class="view-selector">
-          <button id="btnListView" class="active" onclick="setCalendarView('list')">Lista</button>
-          <button id="btnGridView" onclick="setCalendarView('grid')">Cuadrícula</button>
-        </div>
-      </div>
+      <h2 id="resultLabel" style="display:none;">Fechas Generadas</h2>
       
       <div id="calendarOutput"></div>
     </div>
@@ -160,6 +196,20 @@
       </div>
     </div>
     <div class="modal-footer" id="modalFooter"></div>
+  </dialog>
+
+  <!-- PWA Install Modal Dialog -->
+  <dialog id="pwaInstallModal" closedby="any" aria-labelledby="installModalTitle">
+    <div class="modal-header">
+      <h3 id="installModalTitle">Instalar Aplicación</h3>
+      <button class="modal-close-btn" onclick="document.getElementById('pwaInstallModal').close()">&times;</button>
+    </div>
+    <div class="modal-body" id="pwaInstallBody">
+      <!-- Dynamic PWA installation content based on device -->
+    </div>
+    <div class="modal-footer" style="margin-top: 20px; display: flex; justify-content: flex-end;">
+      <button onclick="document.getElementById('pwaInstallModal').close()" id="installModalCloseBtn" style="padding: 8px 14px; font-size: 13px; border-radius: 14px;">Cerrar</button>
+    </div>
   </dialog>
 
   <!-- Loading Overlay -->
