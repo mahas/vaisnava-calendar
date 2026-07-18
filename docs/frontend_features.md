@@ -84,12 +84,41 @@ API calendar results are cached in memory. A search query URL-like pattern is us
 
 ## UX Interaction Patterns
 
-### Date Range Selector Button
-* The button `#toggleDateSettingsBtn` (label: *"Otros rangos de fechas"* / *"Other date ranges"*) uses a calendar icon 🗓️ (not a gear ⚙️).
-* It toggles the `#dateSettingsPanel` collapsible panel and gains/loses the `.mini-btn.active` CSS class in sync with the panel state.
-* Presets available: *This Month*, *This Year*, plus manual start/end date pickers.
+### Calendar Navigation Bar Layout
+
+The `.calendar-nav-bar` is a single flex row containing three logical groups:
+
+```
+[ ◀  Month Year  ▶ ]    [ Lista | Calendario ]  [ 🗓️ ]
+   .month-navigation          .view-selector    #toggleDateSettingsBtn
+         ←──── flex: 1 ────→  └────── .nav-bar-controls ──────────┘
+```
+
+* **`.month-navigation`**: Previous/next arrow buttons and the month/year title (`#currentPeriodLabel`). Gets `flex: 1` on mobile so it fills available width.
+* **`.nav-bar-controls`**: A `flex-shrink: 0` wrapper on the right that holds the view toggle and the 🗓️ date-range button side by side.
+* **`.view-selector`**: Switches between List and Grid calendar view. Buttons call `setCalendarView('list')` and `setCalendarView('grid')`. The active button carries the `.active` class.
+* **`#toggleDateSettingsBtn`** (`#datesBtnText` + 🗓️ emoji): Opens/closes `#dateSettingsPanel`. On mobile (`≤640px`) `#datesBtnText` is hidden so only the emoji shows — keeping the button compact without losing discoverability.
+
+### Mobile Layout — Calendar as Protagonist (`≤640px`)
+
+The calendar grid (`#calendarOutput`) must be the **first content element** the user sees below the location bar on mobile. No extra control rows are allowed between `.calendar-nav-bar` and the calendar.
+
+| Element | Desktop | Mobile |
+|---|---|---|
+| `.calendar-nav-bar` | `flex-direction: row` | `flex-direction: row` (unchanged) |
+| `#datesBtnText` (button label) | Visible ("Other date ranges") | Hidden — emoji 🗓️ only |
+| `.calendar-toolbar` | Visible (export buttons) | `display: none` |
+| `#soloAyunos` (fasting filter) | Inside `#dateSettingsPanel` | Inside `#dateSettingsPanel` |
+
+**Export buttons on mobile**: The `.calendar-toolbar` is hidden on mobile. Users access the `.ics` and Google Calendar export buttons by tapping 🗓️ → expanding "Ajustes de Exportación (.ics)" inside `#dateSettingsPanel`.
+
+**Fasting filter**: The `#soloAyunos` checkbox lives exclusively inside `#dateSettingsPanel` (above the presets). **Do not duplicate this element** in the toolbar or anywhere else; the JS reads its state by `id` and there must be exactly one instance.
+
+### Date Range Selector (`#toggleDateSettingsBtn`)
+* Label: *"Otros rangos de fechas"* / *"Other date ranges"* with 🗓️ emoji (no gear ⚙️).
+* Toggles `#dateSettingsPanel` and synchronises the `.mini-btn.active` CSS class.
+* Panel contents: fasting filter checkbox, preset buttons (This Month, This Year), date pickers, Generate button, and the collapsible export settings sub-panel.
 
 ### City Search Button Active State
-* The button `#toggleCitySearchBtn` similarly toggles `.mini-btn.active` in sync with `#citySearchPanel`.
+* `#toggleCitySearchBtn` toggles `.mini-btn.active` in sync with `#citySearchPanel`.
 * The class is also managed programmatically when a city is selected from autocomplete or loaded from `localStorage`, ensuring the button always reflects actual panel visibility.
-

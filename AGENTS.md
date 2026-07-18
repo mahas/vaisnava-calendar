@@ -142,3 +142,12 @@ The webpage automatically detects if it is running on `localhost` or `127.0.0.1`
 * The buttons that toggle the city search panel (`#toggleCitySearchBtn`) and the date range panel (`#toggleDateSettingsBtn`) dynamically receive/lose the CSS class `.mini-btn.active` in sync with their panels.
 * The active state applies a cyan glow border and background (`var(--color-cyan-glow)`) to clearly communicate which panel is currently open.
 * **Rule**: Always keep button active state synchronized with its panel: add `.active` when opening, remove it when closing or when the other panel is opened.
+
+### 5. Mobile Layout — Calendar as Protagonist
+* **Core Principle**: On mobile the calendar grid is the primary UI element. All secondary controls must not add visual rows between the location bar and the calendar.
+* **Single nav-bar row** (`.calendar-nav-bar`): The month navigator, the List/Grid view selector, and the 🗓️ date-range button all live in **one horizontal flex row** at `≤640px`. The CSS overrides `flex-direction: column` with `flex-direction: row`.
+* **`.nav-bar-controls`** is a flex wrapper (right side of the nav bar) that groups the `.view-selector` toggle and `#toggleDateSettingsBtn` together.
+* **Date-range button text hidden on mobile**: `#datesBtnText` is `display: none` at `≤640px`, leaving only the 🗓️ emoji. Do not add text back inside this span for mobile — keep it icon-only.
+* **`.calendar-toolbar` hidden on mobile** (`display: none` at `≤640px`). The export buttons it contains are accessible on mobile by opening the `#dateSettingsPanel` (🗓️ button) and expanding the export settings section. Do not add non-export controls to the toolbar.
+* **Fasting filter** (`#soloAyunos`) lives inside `#dateSettingsPanel`, **not** in the toolbar. There is a single checkbox element; do not duplicate it.
+* **Rule**: Never add new always-visible UI rows between `.calendar-nav-bar` and `#calendarOutput` on mobile. Any secondary control must go inside a collapsible panel.
