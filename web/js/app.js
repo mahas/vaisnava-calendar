@@ -197,6 +197,12 @@ const EKADASI_MAPPING = {
 // Mapa semántico de entidades (autores/personajes) validadas en BhaktiLib
 const SEMANTIC_ENTITIES = {
   "radharani": { type: "autor", slug: "srimati-radharani" },
+  "krishna": { type: "autor", slug: "krishna" },
+  "krsna": { type: "autor", slug: "krishna" },
+  "bhagavad-gita": { type: "tema", slug: "bhagavad-gita" },
+  "gita": { type: "tema", slug: "bhagavad-gita" },
+  "vamana": { type: "autor", slug: "vamana" },
+  "varaha": { type: "autor", slug: "varaha" },
   "prabhupada": { type: "autor", slug: "srila-prabhupada" },
   "caitanya": { type: "autor", slug: "sri-caitanya-mahaprabhu" },
   "chaitanya": { type: "autor", slug: "sri-caitanya-mahaprabhu" },
@@ -321,7 +327,7 @@ function showInstallButton() {
 // DOM Content Loaded initialization
 window.addEventListener("DOMContentLoaded", () => {
   // Purge old calendar cache if cache version changes
-  const GCAL_CACHE_VERSION = "v6";
+  const GCAL_CACHE_VERSION = "v8";
   if (localStorage.getItem("gcal_cache_version") !== GCAL_CACHE_VERSION) {
     localStorage.removeItem("gcal_last_calendar");
     localStorage.setItem("gcal_cache_version", GCAL_CACHE_VERSION);
@@ -450,13 +456,29 @@ function initEventListeners() {
 
 // City predictive suggestions fetching
 async function fetchCitySuggestions(query) {
+  const dropdown = document.getElementById("autocompleteDropdown");
+  dropdown.innerHTML = "";
+  
+  // Show immediate feedback to user during server cold-starts
+  const loadingItem = document.createElement("div");
+  loadingItem.className = "autocomplete-item loading-suggestion";
+  loadingItem.style.color = "var(--color-text-muted)";
+  loadingItem.style.fontStyle = "italic";
+  loadingItem.innerText = currentLang === "en" 
+    ? "Searching (waking server if needed)..." 
+    : "Buscando (despertando servidor si es necesario)...";
+  dropdown.appendChild(loadingItem);
+  dropdown.classList.add("active");
+
   const url = `${BASE_URL}/find-location?name=${encodeURIComponent(query)}`;
   try {
     const response = await fetch(url);
-    if (!response.ok) return;
+    if (!response.ok) {
+      dropdown.innerHTML = "";
+      return;
+    }
     const data = await response.json();
     
-    const dropdown = document.getElementById("autocompleteDropdown");
     dropdown.innerHTML = "";
     
     const cities = data.EQUALS.concat(data.STARTS, data.CONTAINS);
@@ -1445,7 +1467,10 @@ function descargarICSFile(icsContent, filename) {
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = filename;
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
 }
 
 // Export the current calendar month to Google Calendar
@@ -1527,7 +1552,10 @@ function exportarAGoogleCalendar() {
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = "VaisnavaCalendar_Google.ics";
+  document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
 
   // After a short delay open Google Calendar import page in external browser
   // Using an anchor element with noopener ensures the OS browser opens outside the PWA.

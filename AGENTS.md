@@ -156,9 +156,26 @@ The webpage automatically detects if it is running on `localhost` or `127.0.0.1`
 The application integrates with the BhaktiLib encyclopedic database (`https://bhaktilib.com`) to cross-reference Vaishnava dates, holy days, and personalities.
 * **Ekadashi Story Linking**: Daily detail cards for Ekadashis render an orange/gold translucent banner (`.bhaktilib-ekadasi-banner`) containing an action button that redirects users directly to the specific chapter inside the Spanish edition of the book *"Ekadasi, el día del Señor Hari"* via Epub.js CFI parameters.
 * **CFI Mapping (`EKADASI_MAPPING`)**: Maps the canonical names of the 26 Ekadashis to their corresponding exact spine indices (e.g. `utpanna` -> `epubcfi(/6/18!/4/2)`, `yogini` -> `epubcfi(/6/46!/4/2)`).
-* **Semantic Entities (`SEMANTIC_ENTITIES`)**: Links keywords inside calendar event descriptions (e.g. `"Prabhupada"`, `"Nityananda"`, `"Caitanya"`) to verified WordPress author permalinks on BhaktiLib (e.g. `/autor/srila-prabhupada/`, `/autor/sri-caitanya-mahaprabhu/`). Matching is case-insensitive and ignores accents.
+* **Semantic Entities (`SEMANTIC_ENTITIES`)**: Links keywords inside calendar event descriptions (e.g. `"Prabhupada"`, `"Nityananda"`, `"Caitanya"`, `"Radharani"`, `"Krishna"`, `"Vamana"`, `"Varaha"`, `"Bhagavad-gita"`) to verified WordPress author or topic permalinks on BhaktiLib (e.g. `/autor/srila-prabhupada/`, `/autor/sri-caitanya-mahaprabhu/`, `/autor/srimati-radharani/`, `/autor/krishna/`, `/autor/vamana/`, `/autor/varaha/`, `/tema/bhagavad-gita/`). Matching is case-insensitive and ignores accents.
 * **Customization Skill (`semantic-sync`)**: Future expansions of mapped concepts are automated via a localized agent skill in `.agents/skills/semantic-sync/`.
   * `SKILL.md`: Instructs agents on normalization rules (mapping core concepts like `"Caturmasya"` instead of long event strings) and multilinguality configurations.
   * `toAdd.md`: User inbox where new terms or direct reader links (including multilingüe entries: `es`, `en`, `fr`) can be written to trigger automation.
   * `pending-entities.md`: Clean conceptual checklist of remaining unmapped calendar events to be synchronized.
+
+### 7. Clickable Event Search Results
+* **Card Interactivity**: Each search result card (`.search-match-card`) in the "Search Event" tab is fully clickable. Clicking anywhere on the card (excluding clicks inside calendar action buttons) will open the daily detail modal dialog for that date.
+* **Visual Hover States**: Interactive hover states are applied using CSS (`cursor: pointer`, border color highlights, and scale translations: `transform: translateY(-2px)`) to visually signal that the card is clickable.
+
+### 8. Client-side Cache Invalidation
+* **Version Control**: A global version flag (`GCAL_CACHE_VERSION`) is checked on `DOMContentLoaded`.
+* **Flow**: If the stored version does not match the active one, the app automatically deletes `"gcal_last_calendar"` from `localStorage` and clears in-memory caches, forcing a fresh API fetch to load updated backend rules.
+
+### 9. Safari/iOS Standalone Download Anchor Appending
+* **Webview Security**: Safari/iOS PWA standalone webviews block programmatic `.click()` events on anchor elements that are not attached to the DOM.
+* **Rule**: When creating download anchors (e.g. for downloading `.ics` files in `descargarICSFile` and `exportarAGoogleCalendar`), they **must** be temporarily appended to the document body (`document.body.appendChild(link)`) before clicking, and removed immediately afterwards (`document.body.removeChild(link)`).
+
+### 10. Predictive City Search Loading Feedback
+* **Instant Placeholder**: Typing inside the city input immediately renders a loading item (`"Buscando..."` / `"Searching (waking server if needed)..."`) inside the autocomplete dropdown before the fetch request is sent.
+* **Purpose**: Provides instant feedback to the user, managing expectation during Render free-tier cold starts (up to 50 seconds delay).
+
 
