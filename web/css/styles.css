@@ -27,7 +27,7 @@ body {
   font-family: var(--font-sans);
   max-width: 1024px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)) 16px;
   min-height: 100vh;
   background: var(--bg-gradient);
   background-size: 200% 200%;
@@ -720,6 +720,15 @@ button.secondary:hover {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.search-match-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .search-match-card.ekadashi {
@@ -1059,7 +1068,7 @@ dialog::backdrop {
 
 @media (max-width: 640px) {
   body {
-    padding: 16px 8px;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 8px calc(16px + env(safe-area-inset-bottom, 0px)) 8px;
   }
   
   .header-calendario {
@@ -1248,13 +1257,20 @@ dialog::backdrop {
   .calendar-nav-bar {
     flex-direction: row;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
   }
 
   /* Month title + arrows fill available space */
   .month-navigation {
     flex: 1;
     justify-content: space-between;
+    gap: 8px;
+  }
+
+  .nav-arrow {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
   }
 
   /* Reduce current period font on very small screens */
@@ -1265,18 +1281,29 @@ dialog::backdrop {
 
   /* Right-side controls: tighten up */
   .nav-bar-controls {
-    gap: 6px;
+    gap: 4px;
   }
 
   /* View selector buttons: smaller on mobile */
   .view-selector button {
-    padding: 4px 8px;
-    font-size: 12px;
+    padding: 4px 6px;
+    font-size: 11px;
   }
 
   /* Collapse date range button to icon-only on mobile */
   #datesBtnText {
     display: none;
+  }
+
+  #toggleDateSettingsBtn {
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border-radius: 8px;
   }
 
   /* Hide the export toolbar entirely — exports accessible via 🗓️ panel */

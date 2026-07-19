@@ -45,7 +45,7 @@ gss_default = [
     [1, 1, "DPAK", "Paksa Info"],#39 paksa info
     [0, 0, "FDIW", "First Day in Week"],#40 first day in week
     [0, 0, "DRAS", "Rasi"], #41 moon rasi for each calendar day
-    [0, 0, "OSFA", "Old Style Fasting text"], #42 old style fasting text
+    [1, 1, "OSFA", "Old Style Fasting text"], #42 old style fasting text
     [0, 0, "MLNT", "Name of month - type"], #43 month type name 0-vaisnava,1-bengal,2-hindu,3-vedic
     # END GCAL 1.4.3
     [0, 0, "EDBL", "Editable Default Events"], #44 editable default events

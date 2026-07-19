@@ -5,7 +5,7 @@ let currentLang = localStorage.getItem("lang") || "es";
 let currentView = "grid"; // 'list' or 'grid'
 const clientCache = {}; // Cache key -> calendar data
 
-const IS_LOCAL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+const IS_LOCAL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" || window.location.protocol === "file:";
 const BASE_URL = IS_LOCAL ? "http://127.0.0.1:8047" : "https://vaisnava-calendar.onrender.com";
 
 // translation catalog
@@ -196,6 +196,7 @@ const EKADASI_MAPPING = {
 
 // Mapa semántico de entidades (autores/personajes) validadas en BhaktiLib
 const SEMANTIC_ENTITIES = {
+  "radharani": { type: "autor", slug: "srimati-radharani" },
   "prabhupada": { type: "autor", slug: "srila-prabhupada" },
   "caitanya": { type: "autor", slug: "sri-caitanya-mahaprabhu" },
   "chaitanya": { type: "autor", slug: "sri-caitanya-mahaprabhu" },
@@ -217,6 +218,61 @@ function navigateToBhaktiLib(url) {
   document.body.appendChild(extLink);
   extLink.click();
   document.body.removeChild(extLink);
+}
+
+// Preprocesamiento de eventos para combinar dobletes de ayuno y festivales
+function preprocessDayEvents(events) {
+  if (!events || events.length === 0) return events;
+  
+  // Expresión regular para detectar descripciones de ayuno separadas
+  const fastingRegex = /^\((Fast|Fasting)\s+.*?\)$/i;
+  
+  const fastingIndices = [];
+  for (let i = 0; i < events.length; i++) {
+    if (fastingRegex.test(events[i].text.trim())) {
+      fastingIndices.push(i);
+    }
+  }
+  
+  if (fastingIndices.length === 0) return events;
+  
+  const newEvents = [];
+  const processedFastingIndices = new Set();
+  
+  for (let i = 0; i < events.length; i++) {
+    if (fastingIndices.includes(i)) {
+      continue;
+    }
+    
+    let mergedText = events[i].text;
+    const nextIndex = i + 1;
+    // Combinar el ayuno si el siguiente evento es una nota de ayuno
+    if (nextIndex < events.length && fastingIndices.includes(nextIndex) && !processedFastingIndices.has(nextIndex)) {
+      mergedText = `${events[i].text} ${events[nextIndex].text}`;
+      processedFastingIndices.add(nextIndex);
+    }
+    
+    newEvents.push({
+      ...events[i],
+      text: mergedText
+    });
+  }
+  
+  // Agregar cualquier nota de ayuno que no se pudo combinar
+  for (const idx of fastingIndices) {
+    if (!processedFastingIndices.has(idx)) {
+      newEvents.push(events[idx]);
+    }
+  }
+  
+  return newEvents;
+}
+
+function preprocessCalendarData(data) {
+  if (!data || !data.days) return;
+  data.days.forEach(d => {
+    d.events = preprocessDayEvents(d.events);
+  });
 }
 
 // Obtener la CFI de un Ekadasi a partir de su nombre
@@ -264,6 +320,13 @@ function showInstallButton() {
 
 // DOM Content Loaded initialization
 window.addEventListener("DOMContentLoaded", () => {
+  // Purge old calendar cache if cache version changes
+  const GCAL_CACHE_VERSION = "v6";
+  if (localStorage.getItem("gcal_cache_version") !== GCAL_CACHE_VERSION) {
+    localStorage.removeItem("gcal_last_calendar");
+    localStorage.setItem("gcal_cache_version", GCAL_CACHE_VERSION);
+    for (const key in clientCache) delete clientCache[key];
+  }
   initDates();
   initLanguage();
   initEventListeners();
@@ -434,7 +497,10 @@ function seleccionarCiudadAutocomplete(city) {
   selectedCity = city;
   actualizarDisplayCiudad();
   
-  document.getElementById("saveDefaultBtn").style.display = "inline-block";
+  // Auto-save city to localStorage
+  localStorage.setItem("gcal_default_city", JSON.stringify(selectedCity));
+  
+  document.getElementById("saveDefaultBtn").style.display = "none";
   hideAutocomplete();
   
   // Collapse the city search panel on selection
@@ -484,6 +550,7 @@ function cargarCalendarioAlInicio() {
           cached.endDate === endDateStr &&
           cached.data) {
         
+        preprocessCalendarData(cached.data);
         lastCalendarData = cached.data;
         clientCache[cacheKey] = cached.data; // warm in-memory cache
         actualizarPeriodoLabel();
@@ -581,6 +648,7 @@ async function generarCalendario() {
   
   // 1. Clientside in-memory caching lookup
   if (clientCache[cacheKey]) {
+    preprocessCalendarData(clientCache[cacheKey]);
     lastCalendarData = clientCache[cacheKey];
     renderCalendar();
     return;
@@ -597,6 +665,7 @@ async function generarCalendario() {
           cached.endDate === endDateStr &&
           cached.data) {
         
+        preprocessCalendarData(cached.data);
         lastCalendarData = cached.data;
         clientCache[cacheKey] = cached.data; // warm in-memory cache
         renderCalendar();
@@ -615,6 +684,7 @@ async function generarCalendario() {
     if (!response.ok) throw new Error("Network response error");
     const data = await response.json();
     
+    preprocessCalendarData(data);
     lastCalendarData = data;
     clientCache[cacheKey] = data; // store in memory cache
     
@@ -665,7 +735,7 @@ function renderListView(days, container) {
     
     const isToday = checkIsToday(d.date);
     if (isToday) card.classList.add("today");
-    if (d.ekadashiName) card.classList.add("ekadashi");
+    if (d.ekadashiName && d.fast) card.classList.add("ekadashi");
     if (d.fast) card.classList.add("fasting");
 
     // Click handler to open details modal
@@ -684,11 +754,11 @@ function renderListView(days, container) {
     
     let badgeHtml = "";
     if (isToday) badgeHtml += `<span class="badge today-badge">${translations[currentLang].todayBadge}</span>`;
-    if (d.ekadashiName) badgeHtml += `<span class="badge ekadashi-badge">${translations[currentLang].ekadashiBadge}</span>`;
+    if (d.ekadashiName && d.fast) badgeHtml += `<span class="badge ekadashi-badge">${translations[currentLang].ekadashiBadge}</span>`;
     if (d.fast) badgeHtml += `<span class="badge fast">${translations[currentLang].fastingBadge}</span>`;
 
     let titleText = weekdayStr;
-    if (d.ekadashiName) {
+    if (d.ekadashiName && d.fast) {
       titleText += ` — Ekādaśī: ${d.ekadashiName}`;
     }
 
@@ -780,7 +850,7 @@ function renderGridView(days, container) {
       
       const isToday = checkIsToday(d.date);
       if (isToday) cell.classList.add("today");
-      if (d.ekadashiName) cell.classList.add("ekadashi");
+      if (d.ekadashiName && d.fast) cell.classList.add("ekadashi");
       if (d.fast) cell.classList.add("fasting");
 
       cell.addEventListener("click", () => {
@@ -790,8 +860,8 @@ function renderGridView(days, container) {
       // Indicators dots
       let dotsHtml = "";
       if (d.fast) dotsHtml += `<span class="grid-dot fast-dot" title="Fast"></span>`;
-      if (d.ekadashiName) dotsHtml += `<span class="grid-dot ekadashi-dot" title="Ekadashi"></span>`;
-      if (d.events && d.events.length > 0 && !d.ekadashiName) {
+      if (d.ekadashiName && d.fast) dotsHtml += `<span class="grid-dot ekadashi-dot" title="Ekadashi"></span>`;
+      if (d.events && d.events.length > 0 && !(d.ekadashiName && d.fast)) {
         dotsHtml += `<span class="grid-dot" title="Events"></span>`;
       }
 
@@ -853,7 +923,7 @@ function openDayDetailModal(d) {
   document.getElementById("modalTitle").innerText = fullDateStr;
   
   // Populate astronomical details
-  const tithiName = d.ekadashiName ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
+  const tithiName = (d.ekadashiName && d.fast) ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
   const gaurabdaYear = d.astrodata.gaurabda_year;
   const masaName = getMasaName(d.astrodata.masa);
   const sunrise = d.astrodata.sun.rise.substring(0, 5);
@@ -889,7 +959,7 @@ function openDayDetailModal(d) {
 
   // Construir el banner de Ekadasi si aplica
   let ekadasiBannerHtml = "";
-  if (d.ekadashiName) {
+  if (d.ekadashiName && d.fast) {
     const cleanEkadasiName = d.ekadashiName.replace(/ekadasi|ekādaśī/gi, "").trim();
     const cfiVal = getEkadasiCfi(cleanEkadasiName);
     
@@ -1023,6 +1093,12 @@ async function buscarEventoSiguiente() {
     if (!response.ok) throw new Error("Search API error");
     const data = await response.json();
     
+    if (data.matches) {
+      data.matches.forEach(m => {
+        m.events = preprocessDayEvents(m.events);
+      });
+    }
+    
     renderSearchResults(data.matches);
   } catch (error) {
     console.error("Error searching event:", error);
@@ -1050,7 +1126,13 @@ function renderSearchResults(matches) {
     const card = document.createElement("div");
     card.className = "search-match-card";
     
-    if (m.ekadashiName) card.classList.add("ekadashi");
+    // Haz clicable la tarjeta para abrir los detalles del día
+    card.addEventListener("click", (e) => {
+      if (e.target.closest("button")) return;
+      openDayDetailModal(m);
+    });
+    
+    if (m.ekadashiName && m.fast) card.classList.add("ekadashi");
     if (m.fast) card.classList.add("fasting");
 
     const matchDate = new Date(m.date.year, m.date.month - 1, m.date.day);
@@ -1067,7 +1149,7 @@ function renderSearchResults(matches) {
       .join(", ");
 
     let badgeHtml = "";
-    if (m.ekadashiName) badgeHtml += `<span class="badge ekadashi-badge">${t.ekadashiBadge}</span>`;
+    if (m.ekadashiName && m.fast) badgeHtml += `<span class="badge ekadashi-badge">${t.ekadashiBadge}</span>`;
     if (m.fast) badgeHtml += `<span class="badge fast">${t.fastingBadge}</span>`;
 
     card.innerHTML = `
@@ -1111,7 +1193,11 @@ function addToGoogleCalendar(year, month, day, title, details = "", fastType = 0
   
   let text = translateEventText(title);
   if (fastType && fastType !== 0) {
-    text += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+    const fastDesc = getFastDescription(fastType);
+    const lowerText = text.toLowerCase();
+    if (!lowerText.includes("ayuno") && !lowerText.includes("fast")) {
+      text += ` (${fastDesc.toLowerCase()})`;
+    }
   }
   
   let gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(text)}&dates=${startDateStr}/${endDateStr}&details=${encodeURIComponent(details)}&sf=true&output=xml`;
@@ -1132,7 +1218,8 @@ function addToGoogleCalendarAll(year, month, day, eventsJson, fastType, details)
   const events = JSON.parse(decodeURIComponent(eventsJson));
   let combinedTitle = currentLang === "en" ? "Vaishnava Festivals" : "Festivales Vaisnavas";
   if (fastType && fastType !== 0) {
-    combinedTitle += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+    const fastDesc = getFastDescription(fastType);
+    combinedTitle += ` (${fastDesc.toLowerCase()})`;
   }
   addToGoogleCalendar(year, month, day, combinedTitle, details, 0, selectedCity ? `${selectedCity.city}, ${selectedCity.country}` : "");
 }
@@ -1159,7 +1246,7 @@ function compileDayDetails(d) {
     lines.push(`${t.selectedCity}: ${selectedCity.city}, ${selectedCity.country}`);
   }
   
-  const tithiName = d.ekadashiName ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
+  const tithiName = (d.ekadashiName && d.fast) ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
   lines.push(`${t.tithiLabel}: ${tithiName}`);
   lines.push(`${t.masaLabel}: ${getMasaName(d.astrodata.masa)}`);
   lines.push(`${t.gaurabdaLabel}: ${d.astrodata.gaurabda_year}`);
@@ -1234,18 +1321,21 @@ function exportarICS() {
     if (d.events && d.events.length > 0) {
       title = d.events[0].text;
     }
-    if (d.fast && !d.ekadashiName && d.events && d.events.length > 0) {
-      title = d.events[0].text.replace(", (Fast today)", "").replace("(Fast today)", "").trim();
-    }
     if (d.fast && !d.ekadashiName && (!d.events || d.events.length === 0)) {
       title = "Ayuno Vaisnava";
     }
     if (d.ekadashiName && d.fast) {
-      title += ` — Ekādaśī: ${d.ekadashiName}`;
+      if (!title.includes(d.ekadashiName)) {
+        title += ` — Ekādaśī: ${d.ekadashiName}`;
+      }
     }
 
     if (d.fast && d.fast !== 0) {
-      title += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+      const fastDesc = getFastDescription(d.fast);
+      const lowerTitle = title.toLowerCase();
+      if (!lowerTitle.includes("ayuno") && !lowerTitle.includes("fast")) {
+        title += ` (${fastDesc.toLowerCase()})`;
+      }
     }
 
     const description = compileDayDetails(d);
@@ -1301,7 +1391,7 @@ function exportarICSUnDia(d) {
   const nextDate = new Date(d.date.year, d.date.month - 1, d.date.day + 1);
   const end = `${nextDate.getFullYear()}${String(nextDate.getMonth() + 1).padStart(2, "0")}${String(nextDate.getDate()).padStart(2, "0")}`;
 
-  let title = d.ekadashiName ? `Ekādaśī: ${d.ekadashiName}` : "Evento Vaisnava";
+  let title = (d.ekadashiName && d.fast) ? `Ekādaśī: ${d.ekadashiName}` : "Evento Vaisnava";
   if (d.matching_event) {
     title = d.matching_event;
   } else if (d.events && d.events.length > 0) {
@@ -1309,7 +1399,11 @@ function exportarICSUnDia(d) {
   }
 
   if (d.fast && d.fast !== 0) {
-    title += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+    const fastDesc = getFastDescription(d.fast);
+    const lowerTitle = title.toLowerCase();
+    if (!lowerTitle.includes("ayuno") && !lowerTitle.includes("fast")) {
+      title += ` (${fastDesc.toLowerCase()})`;
+    }
   }
 
   const description = compileDayDetails(d);
@@ -1390,12 +1484,19 @@ function exportarAGoogleCalendar() {
 
     let title = "Evento Vaisnava";
     if (d.events && d.events.length > 0) title = d.events[0].text;
-    if (d.fast && !d.ekadashiName && d.events && d.events.length > 0) {
-      title = d.events[0].text.replace(", (Fast today)", "").replace("(Fast today)", "").trim();
-    }
     if (d.fast && !d.ekadashiName && (!d.events || d.events.length === 0)) title = "Ayuno Vaisnava";
-    if (d.ekadashiName && d.fast) title += ` — Ekādaśī: ${d.ekadashiName}`;
-    if (d.fast && d.fast !== 0) title += currentLang === "en" ? " (Fast)" : " (Ayuno)";
+    if (d.ekadashiName && d.fast) {
+      if (!title.includes(d.ekadashiName)) {
+        title += ` — Ekādaśī: ${d.ekadashiName}`;
+      }
+    }
+    if (d.fast && d.fast !== 0) {
+      const fastDesc = getFastDescription(d.fast);
+      const lowerTitle = title.toLowerCase();
+      if (!lowerTitle.includes("ayuno") && !lowerTitle.includes("fast")) {
+        title += ` (${fastDesc.toLowerCase()})`;
+      }
+    }
 
     const description = compileDayDetails(d);
     const location = selectedCity ? `${selectedCity.city}, ${selectedCity.country}` : "";
@@ -1570,11 +1671,21 @@ function translateEventText(text) {
   let t = text;
 
   t = t.replaceAll("Lord ", "Sri ");
+  t = t.replaceAll("Appearance of ", "Aparición de ");
   t = t.replaceAll("Appearance", "Aparición");
+  t = t.replaceAll("Disappearance of ", "Desaparición de ");
   t = t.replaceAll("Disappearance", "Desaparición");
   t = t.replaceAll("Fasting for ", "Ayuno por ");
   t = t.replaceAll("Break fast", "Romper ayuno");
   t = t.replaceAll("Fast today", "Ayuno hoy");
+  t = t.replaceAll("Fasting till noon, with feast tomorrow", "Ayuno hoy hasta el mediodía, con banquete mañana");
+  t = t.replaceAll("Fasting till noon", "Ayuno hoy hasta el mediodía");
+  t = t.replaceAll("Fast till noon for ", "Ayuno hoy hasta el mediodía por ");
+  t = t.replaceAll("Fast till noon", "Ayuno hoy hasta el mediodía");
+  t = t.replaceAll("Fast till sunset", "Ayuno hoy hasta la puesta del sol");
+  t = t.replaceAll("Fast till moonrise", "Ayuno hoy hasta la salida de la luna");
+  t = t.replaceAll("Fast till dusk", "Ayuno hoy hasta el anochecer");
+  t = t.replaceAll("Fast till midnight", "Ayuno hoy hasta la medianoche");
   t = t.replaceAll("Fasting is done yesterday", "Ayuno realizado ayer");
   t = t.replaceAll("consort of ", "consorte de ");
   t = t.replaceAll("First day of ", "Primer día de ");
