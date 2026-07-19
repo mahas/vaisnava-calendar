@@ -151,3 +151,14 @@ The webpage automatically detects if it is running on `localhost` or `127.0.0.1`
 * **`.calendar-toolbar` hidden on mobile** (`display: none` at `≤640px`). The export buttons it contains are accessible on mobile by opening the `#dateSettingsPanel` (🗓️ button) and expanding the export settings section. Do not add non-export controls to the toolbar.
 * **Fasting filter** (`#soloAyunos`) lives inside `#dateSettingsPanel`, **not** in the toolbar. There is a single checkbox element; do not duplicate it.
 * **Rule**: Never add new always-visible UI rows between `.calendar-nav-bar` and `#calendarOutput` on mobile. Any secondary control must go inside a collapsible panel.
+
+### 6. BhaktiLib Semantic Integration
+The application integrates with the BhaktiLib encyclopedic database (`https://bhaktilib.com`) to cross-reference Vaishnava dates, holy days, and personalities.
+* **Ekadashi Story Linking**: Daily detail cards for Ekadashis render an orange/gold translucent banner (`.bhaktilib-ekadasi-banner`) containing an action button that redirects users directly to the specific chapter inside the Spanish edition of the book *"Ekadasi, el día del Señor Hari"* via Epub.js CFI parameters.
+* **CFI Mapping (`EKADASI_MAPPING`)**: Maps the canonical names of the 26 Ekadashis to their corresponding exact spine indices (e.g. `utpanna` -> `epubcfi(/6/18!/4/2)`, `yogini` -> `epubcfi(/6/46!/4/2)`).
+* **Semantic Entities (`SEMANTIC_ENTITIES`)**: Links keywords inside calendar event descriptions (e.g. `"Prabhupada"`, `"Nityananda"`, `"Caitanya"`) to verified WordPress author permalinks on BhaktiLib (e.g. `/autor/srila-prabhupada/`, `/autor/sri-caitanya-mahaprabhu/`). Matching is case-insensitive and ignores accents.
+* **Customization Skill (`semantic-sync`)**: Future expansions of mapped concepts are automated via a localized agent skill in `.agents/skills/semantic-sync/`.
+  * `SKILL.md`: Instructs agents on normalization rules (mapping core concepts like `"Caturmasya"` instead of long event strings) and multilinguality configurations.
+  * `toAdd.md`: User inbox where new terms or direct reader links (including multilingüe entries: `es`, `en`, `fr`) can be written to trigger automation.
+  * `pending-entities.md`: Clean conceptual checklist of remaining unmapped calendar events to be synchronized.
+

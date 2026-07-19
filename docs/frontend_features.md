@@ -122,3 +122,20 @@ The calendar grid (`#calendarOutput`) must be the **first content element** the 
 ### City Search Button Active State
 * `#toggleCitySearchBtn` toggles `.mini-btn.active` in sync with `#citySearchPanel`.
 * The class is also managed programmatically when a city is selected from autocomplete or loaded from `localStorage`, ensuring the button always reflects actual panel visibility.
+
+---
+
+## BhaktiLib Integration
+
+The calendar integrates natively with the BhaktiLib database to enrich daily details with literature and biographies:
+1. **Ekadashi Story Linking**:
+   - If a day is an Ekadashi, a custom styled, gold-themed banner (`.bhaktilib-ekadasi-banner`) is rendered inside the events section in the day detail modal.
+   - The banner features a **"Leer" / "Read"** button that redirects the user to the exact chapter of the book *"Ekadasi, el día del Señor Hari"* on BhaktiLib using a pre-calculated Epub.js CFI mapped in `EKADASI_MAPPING` for all 26 Ekadashis.
+   - The banner is dynamically positioned below the main events to ensure the primary calendar events are prioritized visually.
+2. **Semantic Biography Linking**:
+   - Event descriptions are scanned for names of prominent acharyas and characters (e.g., *Srila Prabhupada*, *Sri Caitanya Mahaprabhu*, *Sanatana Gosvami*).
+   - If matched, a **"Ver en BhaktiLib" / "View on BhaktiLib"** button (`.bhaktilib-semantic-btn`) is rendered beside the event.
+   - Links target the canonical author permalinks on BhaktiLib (e.g. `https://bhaktilib.com/autor/sri-caitanya-mahaprabhu/`).
+3. **PWA Secure Navigation**:
+   - All BhaktiLib reader and author link clicks use programmatically generated `<a>` elements with `target="_blank"` and `rel="noopener noreferrer"` to guarantee proper external browser launch outside of PWA standalone containers on iOS/Android.
+
