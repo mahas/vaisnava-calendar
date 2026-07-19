@@ -73,7 +73,10 @@ const translations = {
     presetThisYear: "Este Año",
     changeBtn: "Cambiar ciudad",
     datesBtn: "Otros rangos de fechas",
-    exportDesc: "El archivo .ics descargado se puede importar directamente en Google Calendar, Apple Calendar (iOS/macOS), Outlook y otros calendarios."
+    exportDesc: "El archivo .ics descargado se puede importar directamente en Google Calendar, Apple Calendar (iOS/macOS), Outlook y otros calendarios.",
+    readEkadasi: "Leer pasatiempo de {name}",
+    viewBhaktiLib: "Ver en BhaktiLib",
+    noEvents: "No hay eventos en este día."
   },
   en: {
     title: "Vaishnava Calendar",
@@ -138,9 +141,106 @@ const translations = {
     presetThisYear: "This Year",
     changeBtn: "Change city",
     datesBtn: "Other date ranges",
-    exportDesc: "The downloaded .ics file can be imported directly into Google Calendar, Apple Calendar (iOS/macOS), Outlook, and other calendar apps."
+    exportDesc: "The downloaded .ics file can be imported directly into Google Calendar, Apple Calendar (iOS/macOS), Outlook, and other calendar apps.",
+    readEkadasi: "Read {name} story (Spanish)",
+    viewBhaktiLib: "View on BhaktiLib",
+    noEvents: "No events on this day."
   }
 };
+
+// --- Integración con BhaktiLib ---
+const BHAKTILIB_READER_URL = "https://bhaktilib.com/reader/";
+const EKADASI_BOOK_ID = "93";
+const EKADASI_BOOK_PATH = "/epub/ekadasieldiadelsenorhari.epub";
+
+// Mapeo de Ekadasis a sus CFIs en el libro en español "Ekadasi, el día del Señor Hari"
+// Se utiliza el nombre en minúsculas y sin acentos como clave
+const EKADASI_MAPPING = {
+  "utpanna": "epubcfi(/6/18!/4/2)",
+  "moksada": "epubcfi(/6/20!/4/2)",
+  "mokshada": "epubcfi(/6/20!/4/2)",
+  "saphala": "epubcfi(/6/22!/4/2)",
+  "putrada": "epubcfi(/6/24!/4/2)",
+  "sattila": "epubcfi(/6/26!/4/2)",
+  "bhaimi": "epubcfi(/6/28!/4/2)",
+  "jaya": "epubcfi(/6/28!/4/2)",
+  "vijaya": "epubcfi(/6/30!/4/2)",
+  "amalaki": "epubcfi(/6/32!/4/2)",
+  "papamocani": "epubcfi(/6/34!/4/2)",
+  "papavimochani": "epubcfi(/6/34!/4/2)",
+  "kamada": "epubcfi(/6/36!/4/2)",
+  "varuthini": "epubcfi(/6/38!/4/2)",
+  "mohini": "epubcfi(/6/40!/4/2)",
+  "apara": "epubcfi(/6/42!/4/2)",
+  "nirjala": "epubcfi(/6/44!/4/2)",
+  "yogini": "epubcfi(/6/46!/4/2)",
+  "sayana": "epubcfi(/6/48!/4/2)",
+  "devasayana": "epubcfi(/6/48!/4/2)",
+  "kamika": "epubcfi(/6/50!/4/2)",
+  "pavitropana": "epubcfi(/6/52!/4/2)",
+  "aja": "epubcfi(/6/54!/4/2)",
+  "ananda": "epubcfi(/6/54!/4/2)",
+  "annada": "epubcfi(/6/54!/4/2)",
+  "parsva": "epubcfi(/6/56!/4/2)",
+  "parivartini": "epubcfi(/6/56!/4/2)",
+  "indira": "epubcfi(/6/58!/4/2)",
+  "papankusha": "epubcfi(/6/60!/4/2)",
+  "pashankusha": "epubcfi(/6/60!/4/2)",
+  "rama": "epubcfi(/6/62!/4/2)",
+  "utthana": "epubcfi(/6/64!/4/2)",
+  "haribodhini": "epubcfi(/6/64!/4/2)",
+  "devotthana": "epubcfi(/6/64!/4/2)",
+  "padmini": "epubcfi(/6/66!/4/2)",
+  "parama": "epubcfi(/6/68!/4/2)"
+};
+
+// Mapa semántico de entidades (autores/personajes) validadas en BhaktiLib
+const SEMANTIC_ENTITIES = {
+  "prabhupada": { type: "autor", slug: "srila-prabhupada" },
+  "caitanya": { type: "autor", slug: "sri-caitanya-mahaprabhu" },
+  "chaitanya": { type: "autor", slug: "sri-caitanya-mahaprabhu" },
+  "nityananda": { type: "autor", slug: "nityananda-prabhu" },
+  "advaita": { type: "autor", slug: "advaita-acarya" },
+  "rupa gosvami": { type: "autor", slug: "rupa-gosvami" },
+  "sanatana gosvami": { type: "autor", slug: "sanatana-gosvami" },
+  "jiva gosvami": { type: "autor", slug: "jiva-gosvami" },
+  "haridasa thakura": { type: "autor", slug: "haridasa-thakura" },
+  "bhaktivinoda": { type: "autor", slug: "bhaktivinoda-thakura" }
+};
+
+// Función para navegar de forma segura abriendo pestañas externas fuera de la PWA webview en iOS/Android
+function navigateToBhaktiLib(url) {
+  const extLink = document.createElement("a");
+  extLink.href = url;
+  extLink.target = "_blank";
+  extLink.rel = "noopener noreferrer";
+  document.body.appendChild(extLink);
+  extLink.click();
+  document.body.removeChild(extLink);
+}
+
+// Obtener la CFI de un Ekadasi a partir de su nombre
+function getEkadasiCfi(name) {
+  if (!name) return null;
+  const clean = name.toLowerCase()
+    .replace(/ekadasi|ekādaśī/gi, "")
+    .trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quitar acentos/diacríticos
+  return EKADASI_MAPPING[clean] || null;
+}
+
+// Obtener enlace semántico según palabras clave en el texto del evento
+function getSemanticLink(eventText) {
+  if (!eventText) return null;
+  const lowerText = eventText.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  for (const key in SEMANTIC_ENTITIES) {
+    if (lowerText.includes(key)) {
+      return SEMANTIC_ENTITIES[key];
+    }
+  }
+  return null;
+}
 
 let installTimer = null;
 let deferredPrompt = null;
@@ -787,6 +887,36 @@ function openDayDetailModal(d) {
   `;
   document.getElementById("modalAstroGrid").innerHTML = astroBody;
 
+  // Construir el banner de Ekadasi si aplica
+  let ekadasiBannerHtml = "";
+  if (d.ekadashiName) {
+    const cleanEkadasiName = d.ekadashiName.replace(/ekadasi|ekādaśī/gi, "").trim();
+    const cfiVal = getEkadasiCfi(cleanEkadasiName);
+    
+    let targetUrl = `${BHAKTILIB_READER_URL}?id=${EKADASI_BOOK_ID}&book=${encodeURIComponent(EKADASI_BOOK_PATH)}&title=${encodeURIComponent("Ekadasi, El Día del Señor Hari")}&author=${encodeURIComponent("Krishna Balarama Swami")}`;
+    if (cfiVal) {
+      targetUrl += `&cfi=${encodeURIComponent(cfiVal)}`;
+    }
+    
+    const bannerText = t.readEkadasi.replace("{name}", d.ekadashiName);
+    const bookTitleText = currentLang === "es" ? "Libro: Ekadasi, el día del Señor Hari" : "Book: Ekadashi, the day of Lord Hari (Spanish)";
+    const readBtnLabel = currentLang === "es" ? "Leer" : "Read";
+    
+    const bannerStyle = (d.events && d.events.length > 0) ? "margin-top: 16px;" : "";
+    ekadasiBannerHtml = `
+      <div class="bhaktilib-ekadasi-banner" style="${bannerStyle}">
+        <div class="bhaktilib-banner-icon">📖</div>
+        <div class="bhaktilib-banner-info">
+          <div class="bhaktilib-banner-title">${bannerText}</div>
+          <div class="bhaktilib-banner-subtitle">${bookTitleText}</div>
+        </div>
+        <button class="bhaktilib-banner-btn" onclick="navigateToBhaktiLib('${targetUrl.replace(/'/g, "\\'")}')">
+          ${readBtnLabel}
+        </button>
+      </div>
+    `;
+  }
+
   // Populate events/festivals
   let eventsHtml = "";
   if (d.events && d.events.length > 0) {
@@ -802,10 +932,23 @@ function openDayDetailModal(d) {
     }
     d.events.forEach(e => {
       const isFast = e.text.toLowerCase().includes("fast");
+      const semanticLink = getSemanticLink(e.text);
+      let semanticHtml = "";
+      
+      if (semanticLink) {
+        const targetUrl = `https://bhaktilib.com/${semanticLink.type}/${semanticLink.slug}/`;
+        semanticHtml = `
+          <button class="bhaktilib-semantic-btn" onclick="navigateToBhaktiLib('${targetUrl.replace(/'/g, "\\'")}')" style="margin-right: 8px; padding: 4px 8px; font-size: 11px; border-radius: 8px;">
+            📖 ${t.viewBhaktiLib}
+          </button>
+        `;
+      }
+      
       eventsHtml += `
         <div class="modal-event-item ${isFast ? "fast-item" : ""}">
           <div>${translateEventText(e.text)}</div>
-          <div style="margin-top: 4px; display: flex; justify-content: flex-end;">
+          <div style="margin-top: 4px; display: flex; justify-content: flex-end; align-items: center;">
+            ${semanticHtml}
             <button class="secondary" onclick="addToGoogleCalendar('${d.date.year}', '${d.date.month}', '${d.date.day}', '${e.text.replace(/'/g, "\\'")}', compileDayDetails(${JSON.stringify(d).replace(/"/g, '&quot;')}), ${d.fast}, '${selectedCity ? selectedCity.city + ", " + selectedCity.country : ""}')" style="padding: 4px 8px; font-size: 11px; border-radius: 8px;">
               ➕ Google Calendar
             </button>
@@ -814,7 +957,17 @@ function openDayDetailModal(d) {
       `;
     });
   } else {
-    eventsHtml = `<div style="color: var(--color-text-muted); font-style: italic;">No events on this day.</div>`;
+    eventsHtml = `<div style="color: var(--color-text-muted); font-style: italic;">${t.noEvents}</div>`;
+  }
+
+  // Si hay banner de Ekadasi, colocarlo debajo de los eventos
+  if (ekadasiBannerHtml) {
+    if (!d.events || d.events.length === 0) {
+      // Reemplaza el texto "noEvents" directamente para evitar ruido visual si es solo Ekadasi
+      eventsHtml = ekadasiBannerHtml;
+    } else {
+      eventsHtml += ekadasiBannerHtml;
+    }
   }
   document.getElementById("modalEventsList").innerHTML = eventsHtml;
 

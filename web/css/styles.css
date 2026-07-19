@@ -1413,3 +1413,116 @@ dialog::backdrop {
   gap: 8px;
   flex-wrap: wrap;
 }
+
+/* --- Estilos de Integración con BhaktiLib --- */
+.bhaktilib-ekadasi-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.03));
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(245, 158, 11, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all var(--transition-speed) ease;
+}
+
+.bhaktilib-ekadasi-banner:hover {
+  border-color: var(--color-gold);
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.1), inset 0 0 15px rgba(245, 158, 11, 0.1);
+}
+
+.bhaktilib-banner-icon {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-gold);
+  text-shadow: 0 0 8px var(--color-gold-glow);
+}
+
+.bhaktilib-banner-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bhaktilib-banner-title {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--color-gold);
+  text-shadow: 0 0 8px var(--color-gold-glow);
+  line-height: 1.3;
+}
+
+.bhaktilib-banner-subtitle {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  line-height: 1.2;
+}
+
+.bhaktilib-banner-btn {
+  padding: 6px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.25));
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(5px);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.bhaktilib-banner-btn:hover {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.45), rgba(217, 119, 6, 0.45));
+  border-color: var(--color-gold);
+  box-shadow: 0 0 10px var(--color-gold-glow);
+  transform: translateY(-1px);
+}
+
+.bhaktilib-banner-btn:active {
+  transform: translateY(0);
+}
+
+.bhaktilib-semantic-btn {
+  background: rgba(245, 158, 11, 0.08) !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+  color: #fde68a !important;
+  transition: all var(--transition-speed) ease;
+}
+
+.bhaktilib-semantic-btn:hover {
+  background: rgba(245, 158, 11, 0.18) !important;
+  border-color: var(--color-gold) !important;
+  box-shadow: 0 0 8px var(--color-gold-glow) !important;
+  transform: translateY(-1px);
+}
+
+.bhaktilib-semantic-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .bhaktilib-ekadasi-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    text-align: center;
+  }
+  .bhaktilib-banner-icon {
+    display: none;
+  }
+  .bhaktilib-banner-btn {
+    align-self: center;
+    width: 100%;
+    padding: 8px 16px;
+  }
+}
+/* ------------------------------------------- */
