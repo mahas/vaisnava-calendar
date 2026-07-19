@@ -178,4 +178,7 @@ The application integrates with the BhaktiLib encyclopedic database (`https://bh
 * **Instant Placeholder**: Typing inside the city input immediately renders a loading item (`"Buscando..."` / `"Searching (waking server if needed)..."`) inside the autocomplete dropdown before the fetch request is sent.
 * **Purpose**: Provides instant feedback to the user, managing expectation during Render free-tier cold starts (up to 50 seconds delay).
 
+### 11. Overlapping Ekadashi Fasting Merging
+* **Rule**: When Vamanadeva or Varahadeva appearance overlaps with an Ekadashi fasting day, the conflicting noon-fast note (e.g. `(Fast till noon for Vamanadeva, with feast tomorrow)`) is removed, and the subject name is appended directly to the Ekadashi title (e.g., `Ayuno por Parsva Ekadasi y Vamanadeva`). This resolves the contradiction between full-day Ekadashi fasting and a partial noon fast.
+
 

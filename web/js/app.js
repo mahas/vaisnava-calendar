@@ -230,36 +230,63 @@ function navigateToBhaktiLib(url) {
 function preprocessDayEvents(events) {
   if (!events || events.length === 0) return events;
   
+  // Detectar casos especiales como Vamanadeva/Varahadeva coincidiendo con Ekadasi
+  const overlapRegex = /^\((Fast|Fasting)\s+till\s+noon\s+for\s+(.*?),\s*with\s+feast\s+tomorrow\)$/i;
+  let overlapSubject = null;
+  let overlapIdx = -1;
+
+  for (let i = 0; i < events.length; i++) {
+    const match = events[i].text.trim().match(overlapRegex);
+    if (match) {
+      overlapSubject = match[2];
+      overlapIdx = i;
+      break;
+    }
+  }
+
+  let finalEvents = [...events];
+
+  // Si encontramos el solapamiento y la lista tiene un evento de ayuno de Ekadasi (disp: 17)
+  if (overlapSubject && overlapIdx >= 0) {
+    const ekadashiEvent = finalEvents.find(e => e.disp === 17);
+    if (ekadashiEvent) {
+      // Modificar el texto del evento de Ekadasi para incluir el personaje
+      ekadashiEvent.text = `${ekadashiEvent.text} y ${overlapSubject}`;
+      // Eliminar la nota de ayuno contradictoria
+      finalEvents.splice(overlapIdx, 1);
+    }
+  }
+
   // Expresión regular para detectar descripciones de ayuno separadas
   const fastingRegex = /^\((Fast|Fasting)\s+.*?\)$/i;
   
   const fastingIndices = [];
-  for (let i = 0; i < events.length; i++) {
-    if (fastingRegex.test(events[i].text.trim())) {
+  for (let i = 0; i < finalEvents.length; i++) {
+    if (fastingRegex.test(finalEvents[i].text.trim())) {
       fastingIndices.push(i);
     }
   }
   
-  if (fastingIndices.length === 0) return events;
+  if (fastingIndices.length === 0) return finalEvents;
   
   const newEvents = [];
   const processedFastingIndices = new Set();
   
-  for (let i = 0; i < events.length; i++) {
+  for (let i = 0; i < finalEvents.length; i++) {
     if (fastingIndices.includes(i)) {
       continue;
     }
     
-    let mergedText = events[i].text;
+    let mergedText = finalEvents[i].text;
     const nextIndex = i + 1;
     // Combinar el ayuno si el siguiente evento es una nota de ayuno
-    if (nextIndex < events.length && fastingIndices.includes(nextIndex) && !processedFastingIndices.has(nextIndex)) {
-      mergedText = `${events[i].text} ${events[nextIndex].text}`;
+    if (nextIndex < finalEvents.length && fastingIndices.includes(nextIndex) && !processedFastingIndices.has(nextIndex)) {
+      mergedText = `${finalEvents[i].text} ${finalEvents[nextIndex].text}`;
       processedFastingIndices.add(nextIndex);
     }
     
     newEvents.push({
-      ...events[i],
+      ...finalEvents[i],
       text: mergedText
     });
   }
@@ -267,7 +294,7 @@ function preprocessDayEvents(events) {
   // Agregar cualquier nota de ayuno que no se pudo combinar
   for (const idx of fastingIndices) {
     if (!processedFastingIndices.has(idx)) {
-      newEvents.push(events[idx]);
+      newEvents.push(finalEvents[idx]);
     }
   }
   
@@ -327,7 +354,7 @@ function showInstallButton() {
 // DOM Content Loaded initialization
 window.addEventListener("DOMContentLoaded", () => {
   // Purge old calendar cache if cache version changes
-  const GCAL_CACHE_VERSION = "v8";
+  const GCAL_CACHE_VERSION = "v9";
   if (localStorage.getItem("gcal_cache_version") !== GCAL_CACHE_VERSION) {
     localStorage.removeItem("gcal_last_calendar");
     localStorage.setItem("gcal_cache_version", GCAL_CACHE_VERSION);

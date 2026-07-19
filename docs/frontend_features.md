@@ -144,4 +144,7 @@ The calendar integrates natively with the BhaktiLib database to enrich daily det
 4. **Clickable Search Results & Detail Modal Triggers**:
    - Each search result card (`.search-match-card`) in the event search tab is fully clickable. Clicking anywhere on the card (outside of download/action buttons) triggers `openDayDetailModal(day)`, launching the details dialog.
    - Pointer hover states and soft shadow elevations are styled using CSS transitions.
+5. **Overlapping Ekadashi Fasting Merging**:
+   - Conflicting noon-fast notes (e.g. `(Fast till noon for Vamanadeva, with feast tomorrow)`) on days that also contain an Ekadashi full-day fast (`disp: 17`) are intercepted and removed during client-side preprocessing.
+   - The subject name is merged directly into the Ekadashi title (e.g. `Ayuno por Parsva Ekadasi y Vamanadeva`), avoiding contradictory fasting messages.
 
