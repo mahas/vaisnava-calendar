@@ -1,4 +1,5 @@
 import json
+import os
 from . import GCUT as GCUT
 
 gss_default = [
@@ -103,6 +104,7 @@ def setValue(i,val):
     gss[i][1] = val
 
 def readFile(fileName):
+    global gss
     default = True
     try:
         if os.path.exists(fileName):
