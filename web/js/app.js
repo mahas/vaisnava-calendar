@@ -821,7 +821,7 @@ function renderListView(days, container) {
         <span class="day-title">${titleText}</span>
         <div class="badges-container">
           ${badgeHtml}
-          <span class="day-moon-phase" title="Tithi: ${d.astrodata.tithi}">${moonIcon}</span>
+          <span class="day-moon-phase" title="Tithi: ${getTithiDisplay(d.astrodata.tithi)}">${moonIcon}</span>
         </div>
       </div>
       ${eventsText ? `<div class="day-events-text">${eventsText}</div>` : ""}
@@ -947,6 +947,25 @@ function getMoonPhaseIcon(tithi) {
   return "🌘";
 }
 
+// Return human-readable tithi name and 1-based index (e.g. Pratipat (1))
+const TITHI_NAMES = [
+  "Pratipat (1)", "Dvitiya (2)", "Tritiya (3)", "Caturthi (4)", "Pancami (5)",
+  "Sasti (6)", "Saptami (7)", "Astami (8)", "Navami (9)", "Dasami (10)",
+  "Ekadasi (11)", "Dvadasi (12)", "Trayodasi (13)", "Caturdasi (14)", "Purnima (15)",
+  "Pratipat (1)", "Dvitiya (2)", "Tritiya (3)", "Caturthi (4)", "Pancami (5)",
+  "Sasti (6)", "Saptami (7)", "Astami (8)", "Navami (9)", "Dasami (10)",
+  "Ekadasi (11)", "Dvadasi (12)", "Trayodasi (13)", "Caturdasi (14)", "Amavasya (15)"
+];
+
+function getTithiDisplay(tithiIndex) {
+  const idx = parseInt(tithiIndex);
+  if (isNaN(idx)) return `Tithi ${tithiIndex}`;
+  if (idx >= 0 && idx < TITHI_NAMES.length) {
+    return TITHI_NAMES[idx];
+  }
+  return `Tithi ${idx + 1}`;
+}
+
 // Alternate calendar view layout
 function setCalendarView(view) {
   currentView = view;
@@ -972,7 +991,7 @@ function openDayDetailModal(d) {
   document.getElementById("modalTitle").innerText = fullDateStr;
   
   // Populate astronomical details
-  const tithiName = (d.ekadashiName && d.fast) ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
+  const tithiName = (d.ekadashiName && d.fast) ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `${getTithiDisplay(d.astrodata.tithi)} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
   const gaurabdaYear = d.astrodata.gaurabda_year;
   const masaName = getMasaName(d.astrodata.masa);
   const sunrise = d.astrodata.sun.rise.substring(0, 5);
@@ -1295,7 +1314,7 @@ function compileDayDetails(d) {
     lines.push(`${t.selectedCity}: ${selectedCity.city}, ${selectedCity.country}`);
   }
   
-  const tithiName = (d.ekadashiName && d.fast) ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
+  const tithiName = (d.ekadashiName && d.fast) ? `${d.ekadashiName} (${getMoonPhaseIcon(d.astrodata.tithi)})` : `${getTithiDisplay(d.astrodata.tithi)} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
   lines.push(`${t.tithiLabel}: ${tithiName}`);
   lines.push(`${t.masaLabel}: ${getMasaName(d.astrodata.masa)}`);
   lines.push(`${t.gaurabdaLabel}: ${d.astrodata.gaurabda_year}`);
@@ -1365,7 +1384,7 @@ function exportarICS() {
     const nextDate = new Date(d.date.year, d.date.month - 1, d.date.day + 1);
     const end = `${nextDate.getFullYear()}${String(nextDate.getMonth() + 1).padStart(2, "0")}${String(nextDate.getDate()).padStart(2, "0")}`;
 
-    let title = `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
+    let title = `${getTithiDisplay(d.astrodata.tithi)} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
     if (d.events && d.events.length > 0) {
       title = d.events[0].text;
     } else if (d.fast && !d.ekadashiName) {
@@ -1531,7 +1550,7 @@ function exportarAGoogleCalendar() {
     const nextDate = new Date(d.date.year, d.date.month - 1, d.date.day + 1);
     const end = `${nextDate.getFullYear()}${String(nextDate.getMonth() + 1).padStart(2, "0")}${String(nextDate.getDate()).padStart(2, "0")}`;
 
-    let title = `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
+    let title = `${getTithiDisplay(d.astrodata.tithi)} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
     if (d.events && d.events.length > 0) {
       title = d.events[0].text;
     } else if (d.fast && !d.ekadashiName) {
