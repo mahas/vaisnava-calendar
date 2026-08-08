@@ -27,9 +27,16 @@ def ParseDegreesFromString(str,bNorth):
     return lon,lat
 
 class GCLocation:
-    def __init__(self,data=None):
+    def __init__(self, data=None, **kwargs):
         self.Empty()
+        if data is None:
+            data = kwargs
+        elif isinstance(data, dict):
+            data = dict(data)
+            data.update(kwargs)
         if data:
+            if 'timezone' in data and 'tzname' not in data:
+                data['tzname'] = data['timezone']
             if 'name' in data:
                 self.m_strName = data['name']
             elif 'city' in data and 'country' in data:

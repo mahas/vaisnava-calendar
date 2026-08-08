@@ -25,10 +25,23 @@ def GetTimeZone(id=None,index=None,name=None):
         for tidx,t in enumerate(gzone):
             if t['name']==name:
                 index = tidx
+                break
+        if index==None:
+            norm = name.replace("Asia/Kolkata", "Asia/Calcutta")
+            for tidx,t in enumerate(gzone):
+                if norm in t['name'] or t['name'].endswith(norm):
+                    index = tidx
+                    break
+        if index==None:
+            target = name.split('/')[-1] if '/' in name else name
+            for tidx,t in enumerate(gzone):
+                if target in t['name']:
+                    index = tidx
+                    break
     if id!=None:
         index=ID2INDEX(id)
     if index==None:
-        raise
+        raise ValueError(f"Timezone not found for id={id}, index={index}, name={name}")
     return gzone[index]
 
 def GetTimeZones():

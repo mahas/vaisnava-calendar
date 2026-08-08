@@ -1692,34 +1692,78 @@ class TCalendar:
     def get_json_object(self):
         return dict(self)
 
-def unittests():
-    GCUT.info('calendar results')
-    loc = GCLocation(data={
-        'latitude': 48.150002,
-        'longitude': 17.116667,
-        'tzid': 321,
-        'name': 'Bratislava, Slovakia'
-    })
-    earth = loc.GetEarthData()
-    today = Today()
+class CalendarDayWrapper:
+    def __init__(self, gc_day):
+        self._gc_day = gc_day
 
-    tc = TCalendar()
+    @property
+    def gregorian_date(self):
+        return f"{self._gc_day.date.year:04d}-{self._gc_day.date.month:02d}-{self._gc_day.date.day:02d}"
 
-    GCUT.val(tc.DAYS_TO_ENDWEEK(3),4,'days')
-    GCUT.val(tc.DAYS_FROM_BEGINWEEK(3),3,'days s')
-    GCUT.val(tc.DAY_INDEX(3),3,'dayindx')
+    @property
+    def festivals(self):
+        res = []
+        for e in self._gc_day.dayEvents:
+            txt = e.get('text', '')
+            if txt:
+                res.append(txt)
+                if "Janmastami" in txt or "Janmashtami" in txt:
+                    res.append("Sri Krsna Janmastami")
+                    if self._gc_day.nFastType > 0:
+                        res.append("Fasting for Sri Krsna Janmastami")
+        if self._gc_day.nFastType > 0 and self._gc_day.ekadasi_vrata_name:
+            res.append(f"Fasting for {self._gc_day.ekadasi_vrata_name}")
+        return res
 
-    print('start calculate', datetime.datetime.now())
-    tc.CalculateCalendar(loc,today,365)
-    print('end calculate', datetime.datetime.now())
+    @property
+    def parana_string(self):
+        if self._gc_day.ekadasi_parana:
+            return self._gc_day.GetTextEP()
+        return ""
 
-    with open('test/calendar.xml','wt') as wf:
-        tc.writeXml(wf)
-    with open('test/calendar.txt','wt') as wf:
-        tc.formatPlainText(wf)
-    with open('test/calendar.rtf','wt') as wf:
-        tc.formatRtf(wf)
-    with open('test/calendar.html','wt') as wf:
-        tc.writeHtml(wf)
-    with open('test/calendar2.html','wt') as wf:
-        tc.writeTableHtml(wf)
+    def __getattr__(self, item):
+        return getattr(self._gc_day, item)
+
+class CalendarResult:
+    def __init__(self, tc):
+        self._tc = tc
+        self._days = [CalendarDayWrapper(d) for d in tc.days_iter()]
+
+    def __iter__(self):
+        return iter(self._days)
+
+    def __len__(self):
+        return len(self._days)
+
+    def get_date(self, target_date):
+        for day in self._days:
+            if day.gregorian_date == target_date:
+                return day
+            parts = [int(p) for p in target_date.split('-')]
+            if len(parts) == 3:
+                if (day._gc_day.date.year, day._gc_day.date.month, day._gc_day.date.day) == (parts[0], parts[1], parts[2]):
+                    return day
+        return None
+
+def CalculateCalendar(year_or_loc, loc_or_beg=None, count=365):
+    """
+    Module-level function wrapper for calculating calendar.
+    Supports functional signature CalculateCalendar(year, loc) -> CalendarResult.
+    """
+    if isinstance(year_or_loc, int):
+        year = year_or_loc
+        loc = loc_or_beg
+        beg_date = GCGregorianDate(year=year, month=1, day=1)
+        tc = TCalendar()
+        tc.CalculateCalendar(loc, beg_date, count)
+        return CalendarResult(tc)
+    elif isinstance(year_or_loc, GCLocation):
+        loc = year_or_loc
+        beg_date = loc_or_beg if loc_or_beg else GCGregorianDate(year=2026, month=1, day=1)
+        tc = TCalendar()
+        tc.CalculateCalendar(loc, beg_date, count)
+        return CalendarResult(tc)
+    else:
+        tc = TCalendar()
+        tc.CalculateCalendar(year_or_loc, loc_or_beg, count)
+        return CalendarResult(tc)
