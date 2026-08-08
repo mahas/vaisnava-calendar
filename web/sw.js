@@ -1,4 +1,4 @@
-const CACHE_NAME = "vaisnava-calendar-v9";
+const CACHE_NAME = "vaisnava-calendar-v11";
 const ASSETS = [
   "./",
   "./index.html",
@@ -37,7 +37,7 @@ self.addEventListener("activate", e => {
 // Fetch network request: Cache-first for static assets, network-only/fallback for API
 self.addEventListener("fetch", e => {
   const url = e.request.url;
-  
+
   // Skip caching API requests
   if (url.includes("/calendar") || url.includes("/find-location") || url.includes("/search-event") || url.includes("/ping") || url.includes("/countries")) {
     e.respondWith(
@@ -51,7 +51,7 @@ self.addEventListener("fetch", e => {
     );
     return;
   }
-  
+
   // Cache-first for static local files
   e.respondWith(
     caches.match(e.request).then(cachedResponse => {
@@ -62,7 +62,7 @@ self.addEventListener("fetch", e => {
         if (!networkResponse || networkResponse.status !== 200) {
           return networkResponse;
         }
-        
+
         // Cache the cloned response
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then(cache => {

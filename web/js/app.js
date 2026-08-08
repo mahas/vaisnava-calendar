@@ -354,7 +354,7 @@ function showInstallButton() {
 // DOM Content Loaded initialization
 window.addEventListener("DOMContentLoaded", () => {
   // Purge old calendar cache if cache version changes
-  const GCAL_CACHE_VERSION = "v9";
+  const GCAL_CACHE_VERSION = "v11";
   if (localStorage.getItem("gcal_cache_version") !== GCAL_CACHE_VERSION) {
     localStorage.removeItem("gcal_last_calendar");
     localStorage.setItem("gcal_cache_version", GCAL_CACHE_VERSION);
@@ -937,14 +937,20 @@ function checkIsToday(dateObj) {
          dateObj.year === today.getFullYear();
 }
 
-// Return moon phase emojis based on lunar tithi
+// Return moon phase emojis based on lunar tithi (0..29)
+// Gaura Paksa (0..14): Waxing -> 14 is Purnima (Full Moon 🌕)
+// Krsna Paksa (15..29): Waning -> 29 is Amavasya (New Moon 🌑)
 function getMoonPhaseIcon(tithi) {
-  if (tithi === 0 || tithi === 30) return "🌑"; // Amavasya (New Moon)
-  if (tithi === 15) return "🌕"; // Purnima (Full Moon)
-  if (tithi > 0 && tithi < 8) return "🌒";
-  if (tithi >= 8 && tithi < 15) return "🌔";
-  if (tithi > 15 && tithi < 23) return "🌖";
-  return "🌘";
+  const t = parseInt(tithi) % 30;
+  if (t === 14) return "🌕"; // Purnima (Full Moon)
+  if (t === 29) return "🌑"; // Amavasya (New Moon)
+  if (t >= 0 && t < 7) return "🌒"; // Waxing Crescent
+  if (t >= 7 && t < 9) return "🌓"; // First Quarter
+  if (t >= 9 && t < 14) return "🌔"; // Waxing Gibbous
+  if (t >= 15 && t < 21) return "🌖"; // Waning Gibbous
+  if (t >= 21 && t < 23) return "🌗"; // Third Quarter
+  if (t >= 23 && t < 29) return "🌘"; // Waning Crescent
+  return "🌑";
 }
 
 // Return human-readable tithi name and 1-based index (e.g. Pratipat (1))
