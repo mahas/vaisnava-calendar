@@ -1711,6 +1711,14 @@ class CalendarDayWrapper:
                     res.append("Sri Krsna Janmastami")
                     if self._gc_day.nFastType > 0:
                         res.append("Fasting for Sri Krsna Janmastami")
+                if "Gaura Purnima" in txt:
+                    res.append("Gaura Purnima")
+                    if self._gc_day.nFastType > 0:
+                        res.append("Fasting for Gaura Purnima")
+                if "Radhastami" in txt:
+                    res.append("Sri Radhastami")
+                    if self._gc_day.nFastType > 0:
+                        res.append("Fasting for Sri Radhastami")
         if self._gc_day.nFastType > 0 and self._gc_day.ekadasi_vrata_name:
             res.append(f"Fasting for {self._gc_day.ekadasi_vrata_name}")
         return res
