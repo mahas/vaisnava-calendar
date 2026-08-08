@@ -369,6 +369,18 @@ class TCalendar:
                 #print(str4, str4.encode('utf-8'))
                 self.m_data[i].AddEvent(PRIO_KSAYA, CAL_KSAYA, str4)
 
+        # Injection of Kartik (Damodara Masa) boundary events
+        for i in range(BEFORE_DAYS, self.m_PureCount + BEFORE_DAYS):
+            # Kartik Start Marker: transition from Padmanabha Masa to Damodara Masa
+            if self.m_data[i-1].astrodata.nMasa == PADMANABHA_MASA and self.m_data[i].astrodata.nMasa == DAMODARA_MASA:
+                if not any(e.get('text') == "Kartik Masa Begins (Urjja-vrata / Damodara Vrata First Day)" for e in self.m_data[i].dayEvents):
+                    self.m_data[i].AddEvent(PRIO_FESTIVALS_0, DISP_ALWAYS, "Kartik Masa Begins (Urjja-vrata / Damodara Vrata First Day)")
+
+            # Kartik End Marker: transition from Damodara Masa to Kesava Masa
+            if self.m_data[i].astrodata.nMasa == DAMODARA_MASA and self.m_data[i+1].astrodata.nMasa == KESAVA_MASA:
+                if not any(e.get('text') == "Last Day of Kartik Masa (Urjja-vrata / Damodara Vrata Concludes)" for e in self.m_data[i].dayEvents):
+                    self.m_data[i].AddEvent(PRIO_FESTIVALS_0, DISP_ALWAYS, "Last Day of Kartik Masa (Urjja-vrata / Damodara Vrata Concludes)")
+
         for i in range(BEFORE_DAYS,self.m_PureCount + BEFORE_DAYS):
            self.m_data[i].dayEvents = sorted(self.m_data[i].dayEvents, key=lambda k: k["prio"])
 

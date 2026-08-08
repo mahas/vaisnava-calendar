@@ -7,7 +7,7 @@ from . import GCPancangaDate as GCPancangaDate
 from . import GCDisplaySettings as GCDisplaySettings
 from . import GCStrings as GCStrings
 from . import GCCountry as GCCountry
-from . import GCGregorianDate as GCGregorianDate
+from .GCGregorianDate import unittests as GCGregorianDate_unittests
 from . import GCTimeZone as GCTimeZone
 from . import GCEarthData as GCEarthData
 from . import GCStringBuilder as GCStringBuilder
@@ -22,14 +22,15 @@ from . import GCYoga as GCYoga
 from . import GCLocationList as GCLocationList
 from . import GCEventList as GCEventList
 from . import GCCalendar as GCCalendar
-import TMasaList
-import TCalendar
-import TAppDay
-import TCoreEvents
-import TToday
+from . import TMasaList
+from . import TCalendar
+from . import TAppDay
+from . import TCoreEvents
+from . import TToday
 import os
 
-os.mkdir('test')
+if not os.path.exists('test'):
+    os.mkdir('test')
 
 GCMath.unittests()
 GCTime.unittests()
@@ -41,7 +42,7 @@ GCPancangaDate.unittests()
 GCDisplaySettings.unittests()
 GCStrings.unittests()
 GCCountry.unittests()
-GCGregorianDate.unittests()
+GCGregorianDate_unittests()
 GCTimeZone.unittests()
 GCEarthData.unittests()
 GCStringBuilder.unittests()

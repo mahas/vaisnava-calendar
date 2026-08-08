@@ -181,4 +181,13 @@ The application integrates with the BhaktiLib encyclopedic database (`https://bh
 ### 11. Overlapping Ekadashi Fasting Merging
 * **Rule**: When Vamanadeva or Varahadeva appearance overlaps with an Ekadashi fasting day, the conflicting noon-fast note (e.g. `(Fast till noon for Vamanadeva, with feast tomorrow)`) is removed, and the subject name is appended directly to the Ekadashi title (e.g., `Ayuno por Parsva Ekadasi y Vamanadeva`). This resolves the contradiction between full-day Ekadashi fasting and a partial noon fast.
 
+### 12. Strict Calendar Day Anchoring, Kartik Boundaries & Ekadasi Guard
+* **Continuous Gregorian Calendar Day Anchoring**: The calculation engine loops strictly over continuous Gregorian Calendar Days (`date += 1 day`), calculating astronomical attributes (`nTithi` at sunrise and `nTithiArunodaya` at Brahma-Muhurta) for every single day. Even when a Ksaya Tithi (a Tithi that starts and ends between two consecutive sunrises) occurs, no Gregorian calendar date is omitted.
+* **Continuous ICS & Google Calendar Export**: In `web/js/app.js`, `exportarICS()` and `exportarAGoogleCalendar()` iterate through all calendar days without skipping dates when `soloAyunosExport` is `false`. Days without explicit festival events or fasts generate a `BEGIN:VEVENT` block with title defaulted to the day's active Tithi and moon phase (e.g. `Tithi <N> 🌒`).
+* **Kartik (Damodara Masa) Boundary Markers**: Dedicated boundary event markers are automatically injected in `TCalendar.py`:
+  * **Kartik Start Marker**: `Kartik Masa Begins (Urjja-vrata / Damodara Vrata First Day)` on transition from Padmanabha Masa to Damodara Masa.
+  * **Kartik End Marker**: `Last Day of Kartik Masa (Urjja-vrata / Damodara Vrata Concludes)` on transition from Damodara Masa to Kesava Masa.
+  * Spanish translations are handled in `translateEventText()` in `web/js/app.js`.
+* **Ekadasi Suddha/Viddha Guard & Maha-dvadasi Labeling**: When *Dasami* overlaps into Arunodaya / Brahma-Muhurta of sunrise Ekadasi date (`nTithiArunodaya` < Ekadasi), Ekadasi is marked Viddha (`FAST_NULL`). Fasting (`FAST_EKADASI`) is shifted to the subsequent *Dvadasi* calendar date, labeled explicitly as `"Maha-dvadasi"`, and precise `Parana` window calculations are assigned for the following Trayodasi date.
+
 

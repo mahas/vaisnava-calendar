@@ -98,8 +98,10 @@ def GetMasaName(i):
     return getString(str_start + i%13)
 
 def GetMahadvadasiName(i):
-    if i==MahadvadasiType.EV_NULL or i==MahadvadasiType.EV_SUDDHA:
+    if i==MahadvadasiType.EV_NULL:
         return None
+    elif i==MahadvadasiType.EV_SUDDHA:
+        return "Maha-dvadasi"
     elif i==MahadvadasiType.EV_UNMILANI:
         return getString(733)
     elif i==MahadvadasiType.EV_TRISPRSA or i==MahadvadasiType.EV_UNMILANI_TRISPRSA:

@@ -1357,20 +1357,18 @@ function exportarICS() {
   const ahora = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 
   lastCalendarData.days.forEach((d, index) => {
-    // filter export list
+    // filter export list if only fasts requested
     if (soloAyunosExport && !d.fast) return;
-    if (!(d.fast || (d.events && d.events.length > 0))) return;
 
     const start = `${d.date.year}${String(d.date.month).padStart(2, "0")}${String(d.date.day).padStart(2, "0")}`;
     
     const nextDate = new Date(d.date.year, d.date.month - 1, d.date.day + 1);
     const end = `${nextDate.getFullYear()}${String(nextDate.getMonth() + 1).padStart(2, "0")}${String(nextDate.getDate()).padStart(2, "0")}`;
 
-    let title = "Evento Vaisnava";
+    let title = `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
     if (d.events && d.events.length > 0) {
       title = d.events[0].text;
-    }
-    if (d.fast && !d.ekadashiName && (!d.events || d.events.length === 0)) {
+    } else if (d.fast && !d.ekadashiName) {
       title = "Ayuno Vaisnava";
     }
     if (d.ekadashiName && d.fast) {
@@ -1528,15 +1526,17 @@ function exportarAGoogleCalendar() {
 
   lastCalendarData.days.forEach((d, index) => {
     if (soloAyunosExport && !d.fast) return;
-    if (!(d.fast || (d.events && d.events.length > 0))) return;
 
     const start = `${d.date.year}${String(d.date.month).padStart(2, "0")}${String(d.date.day).padStart(2, "0")}`;
     const nextDate = new Date(d.date.year, d.date.month - 1, d.date.day + 1);
     const end = `${nextDate.getFullYear()}${String(nextDate.getMonth() + 1).padStart(2, "0")}${String(nextDate.getDate()).padStart(2, "0")}`;
 
-    let title = "Evento Vaisnava";
-    if (d.events && d.events.length > 0) title = d.events[0].text;
-    if (d.fast && !d.ekadashiName && (!d.events || d.events.length === 0)) title = "Ayuno Vaisnava";
+    let title = `Tithi ${d.astrodata.tithi} ${getMoonPhaseIcon(d.astrodata.tithi)}`;
+    if (d.events && d.events.length > 0) {
+      title = d.events[0].text;
+    } else if (d.fast && !d.ekadashiName) {
+      title = "Ayuno Vaisnava";
+    }
     if (d.ekadashiName && d.fast) {
       if (!title.includes(d.ekadashiName)) {
         title += ` — Ekādaśī: ${d.ekadashiName}`;
@@ -1748,6 +1748,8 @@ function translateEventText(text) {
   t = t.replaceAll("begins", "comienza");
   t = t.replaceAll("ends", "termina");
   t = t.replaceAll("fast for one month", "ayuno por un mes");
+  t = t.replaceAll("Kartik Masa Begins (Urjja-vrata / Damodara Vrata First Day)", "Comienzo de Kartik Masa (Urjja-vrata / Primer día de Damodara Vrata)");
+  t = t.replaceAll("Last Day of Kartik Masa (Urjja-vrata / Damodara Vrata Concludes)", "Último día de Kartik Masa (Urjja-vrata / Conclusión de Damodara Vrata)");
   t = t.replaceAll("green leafy vegetable", "vegetales de hoja verde");
   t = t.replaceAll("yogurt", "yogur");
   t = t.replaceAll("milk", "leche");

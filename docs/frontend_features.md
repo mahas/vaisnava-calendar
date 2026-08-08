@@ -38,6 +38,8 @@ This document explains the modern client-side features, caching, layouts, and PW
   - Compiles full day details (astrological coordinates, fasting rules, break fast hours) into the event description.
   - Applies coordinates location values matching the selected city.
   - Includes custom alarm offsets in the VEVENT header, or exports fasting dates exclusively.
+  - **Continuous Calendar Day Anchoring**: Ensures every single Gregorian calendar day in the range produces a `BEGIN:VEVENT` block when the "Only fasts" filter is disabled. Days without explicit festival events use a fallback title based on active Tithi and moon phase (`Tithi <N> 🌒`).
+  - **Kartik Masa Boundary Translation**: Translates dedicated Kartik start (`Kartik Masa Begins...`) and end (`Last Day of Kartik Masa...`) boundary events into Spanish when active language is set to `es`.
 
 ---
 
