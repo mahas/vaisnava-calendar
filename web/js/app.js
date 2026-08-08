@@ -354,7 +354,7 @@ function showInstallButton() {
 // DOM Content Loaded initialization
 window.addEventListener("DOMContentLoaded", () => {
   // Purge old calendar cache if cache version changes
-  const GCAL_CACHE_VERSION = "v11";
+  const GCAL_CACHE_VERSION = "v12";
   if (localStorage.getItem("gcal_cache_version") !== GCAL_CACHE_VERSION) {
     localStorage.removeItem("gcal_last_calendar");
     localStorage.setItem("gcal_cache_version", GCAL_CACHE_VERSION);
@@ -937,30 +937,30 @@ function checkIsToday(dateObj) {
          dateObj.year === today.getFullYear();
 }
 
-// Return moon phase emojis based on lunar tithi (0..29)
-// Gaura Paksa (0..14): Waxing -> 14 is Purnima (Full Moon 🌕)
-// Krsna Paksa (15..29): Waning -> 29 is Amavasya (New Moon 🌑)
+// Return moon phase emojis based on lunar tithi (0..29) in GCal indexing:
+// GCal Tithi 0..13: Krsna Paksa (Waning) -> Tithi 14 is Amavasya (New Moon 🌑)
+// GCal Tithi 15..28: Gaura Paksa (Waxing) -> Tithi 29 is Purnima (Full Moon 🌕)
 function getMoonPhaseIcon(tithi) {
   const t = parseInt(tithi) % 30;
-  if (t === 14) return "🌕"; // Purnima (Full Moon)
-  if (t === 29) return "🌑"; // Amavasya (New Moon)
-  if (t >= 0 && t < 7) return "🌒"; // Waxing Crescent
-  if (t >= 7 && t < 9) return "🌓"; // First Quarter
-  if (t >= 9 && t < 14) return "🌔"; // Waxing Gibbous
-  if (t >= 15 && t < 21) return "🌖"; // Waning Gibbous
-  if (t >= 21 && t < 23) return "🌗"; // Third Quarter
-  if (t >= 23 && t < 29) return "🌘"; // Waning Crescent
+  if (t === 29) return "🌕"; // Purnima (Full Moon)
+  if (t === 14) return "🌑"; // Amavasya (New Moon)
+  if (t >= 0 && t < 7) return "🌖"; // Waning Gibbous
+  if (t >= 7 && t < 9) return "🌗"; // Third Quarter
+  if (t >= 9 && t < 14) return "🌘"; // Waning Crescent
+  if (t >= 15 && t < 22) return "🌒"; // Waxing Crescent
+  if (t >= 22 && t < 24) return "🌓"; // First Quarter
+  if (t >= 24 && t < 29) return "🌔"; // Waxing Gibbous
   return "🌑";
 }
 
-// Return human-readable tithi name and 1-based index (e.g. Pratipat (1))
+// Return human-readable tithi name and 1-based index based on GCal tithi index (0..29)
 const TITHI_NAMES = [
   "Pratipat (1)", "Dvitiya (2)", "Tritiya (3)", "Caturthi (4)", "Pancami (5)",
   "Sasti (6)", "Saptami (7)", "Astami (8)", "Navami (9)", "Dasami (10)",
-  "Ekadasi (11)", "Dvadasi (12)", "Trayodasi (13)", "Caturdasi (14)", "Purnima (15)",
+  "Ekadasi (11)", "Dvadasi (12)", "Trayodasi (13)", "Caturdasi (14)", "Amavasya (15)",
   "Pratipat (1)", "Dvitiya (2)", "Tritiya (3)", "Caturthi (4)", "Pancami (5)",
   "Sasti (6)", "Saptami (7)", "Astami (8)", "Navami (9)", "Dasami (10)",
-  "Ekadasi (11)", "Dvadasi (12)", "Trayodasi (13)", "Caturdasi (14)", "Amavasya (15)"
+  "Ekadasi (11)", "Dvadasi (12)", "Trayodasi (13)", "Caturdasi (14)", "Purnima (15)"
 ];
 
 function getTithiDisplay(tithiIndex) {
