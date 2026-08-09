@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "$HOME/Documents/Proyectos Web/gcal-moderno/gaurabda-calendar"
+cd "$HOME/Documents/Proyectos Web/API/vaisnava-calendar"
 
 lsof -ti :8047 | xargs kill -9 2>/dev/null
 lsof -ti :3000 | xargs kill -9 2>/dev/null
