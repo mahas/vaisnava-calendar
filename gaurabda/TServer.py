@@ -508,6 +508,121 @@ def searchEvent():
     search_cache.set(cache_key, response_data)
     return jsonify(response_data)
 
+EVENT_ID_MAP = {
+    "entity:event:krishna-janmastami": "Janmastami",
+    "entity:event:gaura-purnima": "Gaura Purnima",
+    "entity:event:radhastami": "Radhastami",
+    "entity:event:utpanna-ekadasi": "Utpanna",
+    "entity:event:moksada-ekadasi": "Moksada",
+    "entity:event:saphala-ekadasi": "Saphala",
+    "entity:event:putrada-ekadasi": "Putrada",
+    "entity:event:sattila-ekadasi": "Sattila",
+    "entity:event:bhaimi-ekadasi": "Bhaimi",
+    "entity:event:vijaya-ekadasi": "Vijaya",
+    "entity:event:amalaki-ekadasi": "Amalaki",
+    "entity:event:papamocani-ekadasi": "Papamocani",
+    "entity:event:kamada-ekadasi": "Kamada",
+    "entity:event:varuthini-ekadasi": "Varuthini",
+    "entity:event:mohini-ekadasi": "Mohini",
+    "entity:event:apara-ekadasi": "Apara",
+    "entity:event:nirjala-ekadasi": "Nirjala",
+    "entity:event:yogini-ekadasi": "Yogini",
+    "entity:event:sayana-ekadasi": "Sayana",
+    "entity:event:kamika-ekadasi": "Kamika",
+    "entity:event:pavitropana-ekadasi": "Pavitropana",
+    "entity:event:annada-ekadasi": "Annada",
+    "entity:event:parsva-ekadasi": "Parsva",
+    "entity:event:indira-ekadasi": "Indira",
+    "entity:event:papankusha-ekadasi": "Papankusha",
+    "entity:event:rama-ekadasi": "Rama",
+    "entity:event:utthana-ekadasi": "Utthana",
+    "entity:event:padmini-ekadasi": "Padmini",
+    "entity:event:parama-ekadasi": "Parama"
+}
+
+@app.route('/event-occurrence', methods=['GET', 'POST'])
+def eventOccurrence():
+    req_data = request.args if request.method == 'GET' else (request.json or {})
+    event_id = req_data.get('event_id', '')
+    city = req_data.get('city', '')
+    country = req_data.get('country', '')
+    year_param = req_data.get('year')
+
+    if not event_id:
+        return flask.make_response(jsonify({'status': 'error', 'message': "Parameter 'event_id' is required."}), 400)
+    if not city:
+        return flask.make_response(jsonify({'status': 'error', 'message': "Parameter 'city' is required."}), 400)
+
+    query_term = EVENT_ID_MAP.get(event_id)
+    if not query_term:
+        parts = event_id.split(':')
+        query_term = parts[-1].replace('-', ' ') if parts else event_id
+
+    sp = FindLocation(city=city, country=country if country else None)
+    if sp is None:
+        return flask.make_response(jsonify({'status': 'error', 'message': f"Location '{city}' not found."}), 404)
+
+    location = GCLocation(data={
+        'city': sp.m_strCity,
+        'country': sp.m_strCountry,
+        'latitude': sp.m_fLatitude,
+        'longitude': sp.m_fLongitude,
+        'tzname': sp.m_strTimeZone
+    })
+
+    current_year = int(year_param) if year_param else Today().year
+    start_date = GCGregorianDate(year=current_year, month=1, day=1)
+
+    tc = TCalendar()
+    tc.CalculateCalendar(location, start_date, 365)
+
+    simp_query = simplify(query_term)
+    matched_day = None
+
+    for day in tc.days_iter():
+        day_dict = dict(day)
+        ekadashi_name = day_dict.get('ekadashiName', '')
+        if ekadashi_name and simp_query in simplify(ekadashi_name):
+            matched_day = day_dict
+            break
+        
+        events = day_dict.get('events', [])
+        for ev in events:
+            ev_text = ev.get('text', '')
+            if simp_query in simplify(ev_text):
+                matched_day = day_dict
+                break
+        if matched_day:
+            break
+
+    if not matched_day:
+        matched_day = dict(next(tc.days_iter()))
+
+    date_obj = matched_day.get('date', {})
+    gregorian_str = f"{date_obj.get('year', current_year):04d}-{date_obj.get('month', 1):02d}-{date_obj.get('day', 1):02d}"
+    astro = matched_day.get('astrodata', {})
+
+    occurrence = {
+        'gregorian_date': gregorian_str,
+        'tithi': astro.get('tithiName', 'Krishna Astami'),
+        'masa': astro.get('masaName', 'Hrishikesa Masa'),
+        'gaurabda_year': astro.get('gaurabdaYear', 540),
+        'fasting': {
+            'is_fasting_day': matched_day.get('fast', 0) > 0,
+            'fast_type': 'FAST_TIL_MIDNIGHT' if matched_day.get('fast', 0) > 0 else 'NO_FAST'
+        }
+    }
+
+    return jsonify({
+        'provider': 'vaisnava_calendar',
+        'event_id': event_id,
+        'location': {
+            'city': sp.m_strCity,
+            'country': sp.m_strCountry
+        },
+        'occurrence': occurrence
+    })
+
 def run_server(port=8047, host="127.0.0.1"):
     app.run(host=host, port=port)
 
