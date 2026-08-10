@@ -143,9 +143,25 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     return response
 
+@app.route('/', methods=['GET'])
+def serve_index():
+    web_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'web')
+    return flask.send_from_directory(web_dir, 'index.html')
+
+@app.route('/<path:path>', methods=['GET'])
+def serve_static_assets(path):
+    if path in ['ping', 'countries', 'find-location', 'calendar', 'search-event', 'event-occurrence']:
+        return flask.make_response("Not found", 404)
+    web_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'web')
+    target_path = os.path.join(web_dir, path)
+    if os.path.exists(target_path) and os.path.isfile(target_path):
+        return flask.send_from_directory(web_dir, path)
+    return flask.make_response(f"Resource '{path}' not found.", 404)
+
 @app.route('/ping', methods=['GET'])
 def ping():
     return jsonify({"status": "ok"})
+
 
 @app.route('/countries', methods=['GET'])
 def getListCountries():

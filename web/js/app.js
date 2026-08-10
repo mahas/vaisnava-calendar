@@ -1113,7 +1113,19 @@ function openDayDetailModal(d) {
       eventsHtml += ekadasiBannerHtml;
     }
   }
+
+  eventsHtml += `<div id="modalEcosystemCrossDiscovery" style="margin-top: 16px;"></div>`;
   document.getElementById("modalEventsList").innerHTML = eventsHtml;
+
+  // Trigger Ecosystem Cross-Discovery async resolution for events/ekadasi
+  const eventQueries = [];
+  if (d.ekadashiName) eventQueries.push(d.ekadashiName);
+  if (d.events && d.events.length > 0) {
+    d.events.forEach(ev => eventQueries.push(ev.text));
+  }
+  if (eventQueries.length > 0) {
+    loadEcosystemCrossDiscovery(eventQueries.join(" "), document.getElementById("modalEcosystemCrossDiscovery"));
+  }
 
   // Add event handlers to buttons in footer
   const footerContainer = document.getElementById("modalFooter");
@@ -1123,6 +1135,88 @@ function openDayDetailModal(d) {
   `;
 
   modal.showModal();
+}
+
+async function loadEcosystemCrossDiscovery(queryText, containerEl) {
+  if (!containerEl || !queryText) return;
+  try {
+    const cleanQ = queryText.replace(/fasting|fast|for|disappearance|appearance|jayanti|vrat/gi, "").trim();
+    if (!cleanQ) return;
+
+    const apiBase = "https://api.bhaktilib.com";
+    const res = await fetch(`${apiBase}/v1/entities?q=${encodeURIComponent(cleanQ)}`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const entities = data.data?.entities || [];
+    if (!entities.length) return;
+
+    const entityId = entities[0].id;
+    const resLookup = await fetch(`${apiBase}/v1/entities/${encodeURIComponent(entityId)}/resources`);
+    if (!resLookup.ok) return;
+    const resData = await resLookup.json();
+
+    const resources = resData.data?.resources || [];
+    if (!resources.length) return;
+
+    const categorized = {
+      reading: [],
+      music: [],
+      podcast: [],
+      playlist: []
+    };
+
+    resources.forEach(r => {
+      const type = (r.resource_type || "").toLowerCase();
+      if (type === 'track' || type === 'album' || type === 'music') {
+        categorized.music.push(r);
+      } else if (type === 'podcast_series' || type === 'podcast_episode' || type === 'podcast') {
+        categorized.podcast.push(r);
+      } else if (type === 'playlist') {
+        categorized.playlist.push(r);
+      } else {
+        categorized.reading.push(r);
+      }
+    });
+
+    let html = `<div style="background: rgba(244, 197, 66, 0.08); border: 1px solid rgba(244, 197, 66, 0.25); border-radius: 12px; padding: 12px 14px; margin-top: 10px;">`;
+    html += `<div style="font-weight: bold; color: #F4C542; font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">🌐 Recursos del Ecosistema Vaiṣṇava</div>`;
+
+    if (categorized.reading.length > 0) {
+      html += `<div style="margin-bottom: 8px;"><div style="font-size: 11px; text-transform: uppercase; color: #bbb; margin-bottom: 4px;">📖 Lectura BhaktiLib</div>`;
+      categorized.reading.forEach(r => {
+        html += `<a href="${r.public_url}" target="_blank" rel="noopener" style="display: block; font-size: 12.5px; color: #fff; text-decoration: underline; margin-bottom: 3px;">${r.title}</a>`;
+      });
+      html += `</div>`;
+    }
+
+    if (categorized.music.length > 0) {
+      html += `<div style="margin-bottom: 8px;"><div style="font-size: 11px; text-transform: uppercase; color: #bbb; margin-bottom: 4px;">🎵 Música Devotify</div>`;
+      categorized.music.forEach(r => {
+        html += `<a href="${r.public_url}" target="_blank" rel="noopener" style="display: block; font-size: 12.5px; color: #fff; text-decoration: underline; margin-bottom: 3px;">${r.title}</a>`;
+      });
+      html += `</div>`;
+    }
+
+    if (categorized.podcast.length > 0) {
+      html += `<div style="margin-bottom: 8px;"><div style="font-size: 11px; text-transform: uppercase; color: #bbb; margin-bottom: 4px;">🎙️ Podcasts y Conferencias Devotify</div>`;
+      categorized.podcast.forEach(r => {
+        html += `<a href="${r.public_url}" target="_blank" rel="noopener" style="display: block; font-size: 12.5px; color: #fff; text-decoration: underline; margin-bottom: 3px;">${r.title}</a>`;
+      });
+      html += `</div>`;
+    }
+
+    if (categorized.playlist.length > 0) {
+      html += `<div style="margin-bottom: 4px;"><div style="font-size: 11px; text-transform: uppercase; color: #bbb; margin-bottom: 4px;">📜 Playlists Devotify</div>`;
+      categorized.playlist.forEach(r => {
+        html += `<a href="${r.public_url}" target="_blank" rel="noopener" style="display: block; font-size: 12.5px; color: #fff; text-decoration: underline; margin-bottom: 3px;">${r.title}</a>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `</div>`;
+    containerEl.innerHTML = html;
+  } catch (e) {}
 }
 
 // Convert masa ID to human-readable names
