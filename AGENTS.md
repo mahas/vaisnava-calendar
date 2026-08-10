@@ -192,4 +192,11 @@ The application integrates with the BhaktiLib encyclopedic database (`https://bh
   * Spanish translations are handled in `translateEventText()` in `web/js/app.js`.
 * **Ekadasi Suddha/Viddha Guard & Maha-dvadasi Labeling**: When *Dasami* overlaps into Arunodaya / Brahma-Muhurta of sunrise Ekadasi date (`nTithiArunodaya` < Ekadasi), Ekadasi is marked Viddha (`FAST_NULL`). Fasting (`FAST_EKADASI`) is shifted to the subsequent *Dvadasi* calendar date, labeled explicitly as `"Maha-dvadasi"`, and precise `Parana` window calculations are assigned for the following Trayodasi date.
 
+### 13. Resilient API Fallback & Service Worker Management
+* **Resilient API Fetch (`fetchCalendarApi`)**: Wraps backend API requests (`/find-location`, `/calendar`, `/search-event`) to automatically attempt `BASE_URL` (`http://127.0.0.1:8047` if local) and seamlessly fall back to `https://vaisnava-calendar.onrender.com` if local services are unreachable or offline.
+* **Pre-warming Ping**: Dispatches background `/ping` calls upon page initialization and city panel opening to wake up Render free-tier cold-starts before user input completes.
+* **Network-First Service Worker Strategy**: In `web/sw.js`, core JS (`web/js/app.js`) and HTML files employ a Network-First strategy to ensure client devices immediately receive updated application logic and semantic mapping definitions without serving stale cached scripts.
+* **URL Normalization in Ecosystem Cross-Discovery**: `loadEcosystemCrossDiscovery` cleans event search terms by stripping colons and subtitles (`queryText.split(":")[0]`) to ensure accurate entity lookup queries on `api.bhaktilib.com`, and normalizes Devotify podcast episode URLs to include canonical series slugs (`/podcast-series/1-el-libro-de-krishna/?episode=14`).
+
+
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "vaisnava-calendar-v13";
+const CACHE_NAME = "vaisnava-calendar-v18";
 const ASSETS = [
   "./",
   "./index.html",
@@ -34,7 +34,7 @@ self.addEventListener("activate", e => {
   self.clients.claim();
 });
 
-// Fetch network request: Cache-first for static assets, network-only/fallback for API
+// Fetch network request: Network-first for code/HTML, network-only/fallback for API, cache-first for assets
 self.addEventListener("fetch", e => {
   const url = e.request.url;
 
@@ -52,7 +52,21 @@ self.addEventListener("fetch", e => {
     return;
   }
 
-  // Cache-first for static local files
+  // Network-first for core JS and HTML files to ensure instant updates
+  if (url.includes("js/app.js") || url.endsWith("/index.html") || url.endsWith("/vaisnavacalendar/")) {
+    e.respondWith(
+      fetch(e.request).then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, responseToCache));
+        }
+        return networkResponse;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Cache-first for other static assets (styles, icons, manifest)
   e.respondWith(
     caches.match(e.request).then(cachedResponse => {
       if (cachedResponse) {
@@ -63,7 +77,6 @@ self.addEventListener("fetch", e => {
           return networkResponse;
         }
 
-        // Cache the cloned response
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then(cache => {
           cache.put(e.request, responseToCache);

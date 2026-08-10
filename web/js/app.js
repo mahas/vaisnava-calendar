@@ -6,7 +6,25 @@ let currentView = "grid"; // 'list' or 'grid'
 const clientCache = {}; // Cache key -> calendar data
 
 const IS_LOCAL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost" || window.location.protocol === "file:";
-const BASE_URL = IS_LOCAL ? "http://127.0.0.1:8047" : "https://vaisnava-calendar.onrender.com";
+const PROD_BASE_URL = "https://vaisnava-calendar.onrender.com";
+const BASE_URL = IS_LOCAL ? "http://127.0.0.1:8047" : PROD_BASE_URL;
+
+async function fetchCalendarApi(pathAndQuery) {
+  const primaryUrl = `${BASE_URL}${pathAndQuery}`;
+  try {
+    const res = await fetch(primaryUrl);
+    if (res.ok) return res;
+  } catch (err) {
+    console.warn(`Primary fetch failed for ${primaryUrl}, attempting production fallback...`, err);
+  }
+
+  if (BASE_URL !== PROD_BASE_URL) {
+    const fallbackUrl = `${PROD_BASE_URL}${pathAndQuery}`;
+    return await fetch(fallbackUrl);
+  }
+
+  throw new Error(`Failed to fetch ${primaryUrl}`);
+}
 
 // translation catalog
 const translations = {
@@ -196,6 +214,9 @@ const EKADASI_MAPPING = {
 
 // Mapa semántico de entidades (autores/personajes) validadas en BhaktiLib
 const SEMANTIC_ENTITIES = {
+  "janmastami": { type: "tema", slug: "janma%e1%b9%a3%e1%b9%adami" },
+  "janmashtami": { type: "tema", slug: "janma%e1%b9%a3%e1%b9%adami" },
+  "janmaṣṭami": { type: "tema", slug: "janma%e1%b9%a3%e1%b9%adami" },
   "radharani": { type: "autor", slug: "srimati-radharani" },
   "krishna": { type: "autor", slug: "krishna" },
   "krsna": { type: "autor", slug: "krishna" },
@@ -323,7 +344,10 @@ function getSemanticLink(eventText) {
   if (!eventText) return null;
   const lowerText = eventText.toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  for (const key in SEMANTIC_ENTITIES) {
+
+  // Priorizar palabras clave más específicas (más largas)
+  const keys = Object.keys(SEMANTIC_ENTITIES).sort((a, b) => b.length - a.length);
+  for (const key of keys) {
     if (lowerText.includes(key)) {
       return SEMANTIC_ENTITIES[key];
     }
@@ -362,6 +386,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   initDates();
   initLanguage();
+  initEventListeners();
   cargarCiudadPorDefecto();
   initInstallSystem();
 
@@ -464,13 +489,17 @@ function initEventListeners() {
       updateAutocompleteHighlight(items, prevIdx);
     } else if (e.key === "Enter") {
       e.preventDefault();
-      if (highlightedIndex >= 0) {
-        items[highlightedIndex].click();
+      const targetIdx = highlightedIndex >= 0 ? highlightedIndex : 0;
+      if (items[targetIdx]) {
+        items[targetIdx].click();
       }
     } else if (e.key === "Escape") {
       hideAutocomplete();
     }
   });
+
+  // Pre-warm backend service to reduce cold-start latency
+  fetchCalendarApi("/ping").catch(() => {});
 
   // Hide autocomplete when clicking outside
   document.addEventListener("click", (e) => {
@@ -520,18 +549,21 @@ async function fetchCitySuggestions(query) {
   dropdown.appendChild(loadingItem);
   dropdown.classList.add("active");
 
-  const url = `${BASE_URL}/find-location?name=${encodeURIComponent(query)}`;
+  const path = `/find-location?name=${encodeURIComponent(query)}`;
   try {
-    const response = await fetch(url);
+    const response = await fetchCalendarApi(path);
     if (!response.ok) {
-      dropdown.innerHTML = "";
+      hideAutocomplete();
       return;
     }
     const data = await response.json();
-    
     dropdown.innerHTML = "";
     
-    const cities = data.EQUALS.concat(data.STARTS, data.CONTAINS);
+    const equals = Array.isArray(data.EQUALS) ? data.EQUALS : [];
+    const starts = Array.isArray(data.STARTS) ? data.STARTS : [];
+    const contains = Array.isArray(data.CONTAINS) ? data.CONTAINS : [];
+    const cities = equals.concat(starts, contains);
+
     if (!cities.length) {
       hideAutocomplete();
       return;
@@ -550,6 +582,7 @@ async function fetchCitySuggestions(query) {
     dropdown.classList.add("active");
   } catch (err) {
     console.error("Error fetching city autocompletes", err);
+    hideAutocomplete();
   }
 }
 
@@ -749,10 +782,10 @@ async function generarCalendario() {
   }
 
   showLoader("loadingCalendar");
-  const url = `${BASE_URL}/calendar?city=${encodeURIComponent(selectedCity.city)}&country=${encodeURIComponent(selectedCity.country)}&year=${year}&month=${month}&day=${day}&period=${period}`;
+  const path = `/calendar?city=${encodeURIComponent(selectedCity.city)}&country=${encodeURIComponent(selectedCity.country)}&year=${year}&month=${month}&day=${day}&period=${period}`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetchCalendarApi(path);
     if (!response.ok) throw new Error("Network response error");
     const data = await response.json();
     
@@ -1163,15 +1196,34 @@ function openDayDetailModal(d) {
 async function loadEcosystemCrossDiscovery(queryText, containerEl) {
   if (!containerEl || !queryText) return;
   try {
-    const cleanQ = queryText.replace(/fasting|fast|for|disappearance|appearance|jayanti|vrat/gi, "").trim();
+    // Extract primary event name before subtitle/colon
+    let primaryTerm = queryText.split(":")[0];
+    let cleanQ = primaryTerm.replace(/fasting|fast|for|disappearance|appearance|jayanti|vrat/gi, " ")
+      .replace(/[:;]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
     if (!cleanQ) return;
 
     const apiBase = "https://api.bhaktilib.com";
-    const res = await fetch(`${apiBase}/v1/entities?q=${encodeURIComponent(cleanQ)}`);
-    if (!res.ok) return;
-    const data = await res.json();
+    let res = await fetch(`${apiBase}/v1/entities?q=${encodeURIComponent(cleanQ)}`);
+    let data = res.ok ? await res.json() : null;
+    let entities = data?.data?.entities || [];
 
-    const entities = data.data?.entities || [];
+    // Fallback: If full string returned no match, try extracted core concept (e.g. "Janmastami" from "Sri Krsna Janmastami")
+    if (!entities.length) {
+      const coreQ = cleanQ.replace(/sri|śrī|krsna|krishna|lord/gi, " ").replace(/\s+/g, " ").trim();
+      if (coreQ && coreQ.length >= 3) {
+        const altRes = await fetch(`${apiBase}/v1/entities?q=${encodeURIComponent(coreQ)}`);
+        if (altRes.ok) {
+          const altData = await altRes.json();
+          if (altData.data?.entities?.length) {
+            entities = altData.data.entities;
+          }
+        }
+      }
+    }
+
     if (!entities.length) return;
 
     const entityId = entities[0].id;
@@ -1224,7 +1276,11 @@ async function loadEcosystemCrossDiscovery(queryText, containerEl) {
     if (categorized.podcast.length > 0) {
       html += `<div style="margin-bottom: 8px;"><div style="font-size: 11px; text-transform: uppercase; color: #bbb; margin-bottom: 4px;">🎙️ Podcasts y Conferencias Devotify</div>`;
       categorized.podcast.forEach(r => {
-        html += `<a href="${r.public_url}" target="_blank" rel="noopener" style="display: block; font-size: 12.5px; color: #fff; text-decoration: underline; margin-bottom: 3px;">${r.title}</a>`;
+        let podcastUrl = r.public_url || "";
+        if (podcastUrl.includes("/podcast-series/1/?episode=")) {
+          podcastUrl = podcastUrl.replace("/podcast-series/1/?episode=", "/podcast-series/1-el-libro-de-krishna/?episode=");
+        }
+        html += `<a href="${podcastUrl}" target="_blank" rel="noopener" style="display: block; font-size: 12.5px; color: #fff; text-decoration: underline; margin-bottom: 3px;">${r.title}</a>`;
       });
       html += `</div>`;
     }
@@ -1277,10 +1333,10 @@ async function buscarEventoSiguiente() {
   
   showLoader("loadingSearch");
   
-  const url = `${BASE_URL}/search-event?city=${encodeURIComponent(selectedCity.city)}&country=${encodeURIComponent(selectedCity.country)}&query=${encodeURIComponent(query)}&count=${count}&year=${now.getFullYear()}&month=${now.getMonth() + 1}&day=${now.getDate()}`;
+  const path = `/search-event?city=${encodeURIComponent(selectedCity.city)}&country=${encodeURIComponent(selectedCity.country)}&query=${encodeURIComponent(query)}&count=${count}&year=${now.getFullYear()}&month=${now.getMonth() + 1}&day=${now.getDate()}`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetchCalendarApi(path);
     if (!response.ok) throw new Error("Search API error");
     const data = await response.json();
     
