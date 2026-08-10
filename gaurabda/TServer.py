@@ -673,6 +673,34 @@ def eventOccurrence():
     fast_type = matched_day.get('fast_type', 'NO_FAST')
     is_fasting = bool(matched_day.get('fast', 0) or fast_notes)
 
+    for ev in matched_day.get('events', []):
+        ev_text = ev.get('text', '')
+        if 'fasttype' in ev and ev['fasttype'] > 0:
+            ft = ev['fasttype']
+            if ft == 1:
+                fast_type = 'FAST_TIL_NOON'
+                if not fast_notes: fast_notes = 'Fast till noon'
+            elif ft == 2:
+                fast_type = 'FAST_TIL_SUNSET'
+                if not fast_notes: fast_notes = 'Fast till sunset'
+            elif ft == 3:
+                fast_type = 'FAST_TIL_MOONRISE'
+                if not fast_notes: fast_notes = 'Fast till moonrise'
+            elif ft == 4:
+                fast_type = 'FAST_TIL_MIDNIGHT'
+                if not fast_notes: fast_notes = 'Fast till midnight'
+            elif ft >= 5:
+                fast_type = 'FAST_TIL_NEXT_DAY'
+                if not fast_notes: fast_notes = 'Fast till next day'
+            is_fasting = True
+
+        if ev_text.startswith('(Fast') or (('fast' in ev_text.lower()) and not fast_notes):
+            fast_notes = ev_text.strip('()')
+            is_fasting = True
+            if 'noon' in ev_text.lower(): fast_type = 'FAST_TIL_NOON'
+            elif 'midnight' in ev_text.lower(): fast_type = 'FAST_TIL_MIDNIGHT'
+            elif 'sunset' in ev_text.lower(): fast_type = 'FAST_TIL_SUNSET'
+
     occurrence = {
         'gregorian_date': gregorian_str,
         'date': date_obj,
@@ -686,6 +714,7 @@ def eventOccurrence():
             'fast_notes': fast_notes
         }
     }
+
 
     return jsonify({
         'status': 'success',
