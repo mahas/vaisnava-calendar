@@ -525,9 +525,43 @@ def searchEvent():
     return jsonify(response_data)
 
 EVENT_ID_MAP = {
-    "entity:event:krishna-janmastami": "Janmastami",
+    "janmastami": "Janmashtami",
+    "krishna_janmastami": "Janmashtami",
+    "entity:concept:janmastami": "Janmashtami",
+    "entity:event:krishna-janmastami": "Janmashtami",
+    "urn:bhaktilib:concept:janmastami": "Janmashtami",
+    "urn:bhaktilib:event:janmastami": "Janmashtami",
+
+    "gaura_purnima": "Gaura Purnima",
+    "entity:concept:gaura-purnima": "Gaura Purnima",
     "entity:event:gaura-purnima": "Gaura Purnima",
+
+    "radhastami": "Radhastami",
+    "entity:concept:radhastami": "Radhastami",
     "entity:event:radhastami": "Radhastami",
+
+    "srila_prabhupada": "Prabhupada",
+    "prabhupada": "Prabhupada",
+    "entity:person:srila-prabhupada": "Prabhupada",
+    "urn:bhaktilib:person:srila_prabhupada": "Prabhupada",
+    "entity:event:prabhupada-appearance": "Prabhupada -- Appearance",
+    "entity:event:prabhupada-disappearance": "Prabhupada -- Disappearance",
+
+    "rama_navami": "Rama Navami",
+    "entity:concept:rama-navami": "Rama Navami",
+    "entity:event:rama-navami": "Rama Navami",
+
+    "ekadasi": "Ekadashi",
+    "entity:concept:ekadasi": "Ekadashi",
+    "entity:event:ekadasi": "Ekadashi",
+
+    "kartik": "Damodara",
+    "entity:concept:kartik": "Damodara",
+    "entity:event:kartik": "Damodara",
+
+    "gita_jayanti": "Gita Jayanti",
+    "entity:event:gita-jayanti": "Gita Jayanti",
+
     "entity:event:utpanna-ekadasi": "Utpanna",
     "entity:event:moksada-ekadasi": "Moksada",
     "entity:event:saphala-ekadasi": "Saphala",
@@ -586,20 +620,27 @@ def eventOccurrence():
         'tzname': sp.m_strTimeZone
     })
 
-    current_year = int(year_param) if year_param else Today().year
-    start_date = GCGregorianDate(year=current_year, month=1, day=1)
+    today = Today()
+    if year_param:
+        current_year = int(year_param)
+        start_date = GCGregorianDate(year=current_year, month=1, day=1)
+    else:
+        current_year = today.year
+        start_date = GCGregorianDate(year=today.year, month=today.month, day=today.day)
 
     tc = TCalendar()
     tc.CalculateCalendar(location, start_date, 365)
 
     simp_query = simplify(query_term)
     matched_day = None
+    matching_event_text = ""
 
     for day in tc.days_iter():
         day_dict = dict(day)
         ekadashi_name = day_dict.get('ekadashiName', '')
         if ekadashi_name and simp_query in simplify(ekadashi_name):
             matched_day = day_dict
+            matching_event_text = f"{ekadashi_name} Ekadashi"
             break
         
         events = day_dict.get('events', [])
@@ -607,36 +648,60 @@ def eventOccurrence():
             ev_text = ev.get('text', '')
             if simp_query in simplify(ev_text):
                 matched_day = day_dict
+                matching_event_text = ev_text
                 break
         if matched_day:
             break
 
     if not matched_day:
-        matched_day = dict(next(tc.days_iter()))
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'event_id': event_id,
+                'provider': 'vaisnava_calendar',
+                'is_event_eligible': False,
+                'location': {'city': city, 'country': country},
+                'occurrence': None
+            }
+        })
 
     date_obj = matched_day.get('date', {})
     gregorian_str = f"{date_obj.get('year', current_year):04d}-{date_obj.get('month', 1):02d}-{date_obj.get('day', 1):02d}"
     astro = matched_day.get('astrodata', {})
 
+    fast_notes = matched_day.get('fast_notes', '')
+    fast_type = matched_day.get('fast_type', 'NO_FAST')
+    is_fasting = bool(matched_day.get('fast', 0) or fast_notes)
+
     occurrence = {
         'gregorian_date': gregorian_str,
-        'tithi': astro.get('tithiName', 'Krishna Astami'),
-        'masa': astro.get('masaName', 'Hrishikesa Masa'),
+        'date': date_obj,
+        'matching_event': matching_event_text or query_term,
+        'tithi': astro.get('tithiName', ''),
+        'masa': astro.get('masaName', ''),
         'gaurabda_year': astro.get('gaurabdaYear', 540),
         'fasting': {
-            'is_fasting_day': matched_day.get('fast', 0) > 0,
-            'fast_type': 'FAST_TIL_MIDNIGHT' if matched_day.get('fast', 0) > 0 else 'NO_FAST'
+            'is_fasting_day': is_fasting,
+            'fast_type': fast_type,
+            'fast_notes': fast_notes
         }
     }
 
     return jsonify({
-        'provider': 'vaisnava_calendar',
-        'event_id': event_id,
-        'location': {
-            'city': sp.m_strCity,
-            'country': sp.m_strCountry
-        },
-        'occurrence': occurrence
+        'status': 'success',
+        'data': {
+            'event_id': event_id,
+            'provider': 'vaisnava_calendar',
+            'location': {
+                'city': location.m_strCity,
+                'country': location.m_strCountry,
+                'latitude': location.m_fLatitude,
+                'longitude': location.m_fLongitude,
+                'tzname': location.m_strTimeZone
+            },
+            'occurrence': occurrence,
+            'is_event_eligible': True
+        }
     })
 
 def run_server(port=8047, host="127.0.0.1"):

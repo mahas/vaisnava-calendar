@@ -362,11 +362,34 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   initDates();
   initLanguage();
-  initEventListeners();
-  initPWA();
   cargarCiudadPorDefecto();
   initInstallSystem();
+
+  // Handle URL deep-linking from Ecosystem (e.g. ?q=Janmashtami&city=Paris)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const qParam = urlParams.get('q') || urlParams.get('event') || urlParams.get('event_id');
+    const cityParam = urlParams.get('city');
+
+    if (cityParam) {
+      localStorage.setItem("gcal_default_city", cityParam);
+      const cityInput = document.getElementById("citySearchInput");
+      if (cityInput) cityInput.value = cityParam;
+    }
+
+    if (qParam) {
+      const searchTabBtn = document.getElementById("tabSearchEvents");
+      if (searchTabBtn) searchTabBtn.click();
+      const eventInput = document.getElementById("eventSearchInput");
+      if (eventInput) {
+        eventInput.value = qParam;
+        const searchEvBtn = document.getElementById("searchEventBtn");
+        if (searchEvBtn) setTimeout(() => searchEvBtn.click(), 400);
+      }
+    }
+  } catch (e) {}
 });
+
 
 // Set default input date range to current month
 function initDates() {
