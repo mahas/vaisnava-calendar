@@ -198,5 +198,14 @@ The application integrates with the BhaktiLib encyclopedic database (`https://bh
 * **Network-First Service Worker Strategy**: In `web/sw.js`, core JS (`web/js/app.js`) and HTML files employ a Network-First strategy to ensure client devices immediately receive updated application logic and semantic mapping definitions without serving stale cached scripts.
 * **URL Normalization in Ecosystem Cross-Discovery**: `loadEcosystemCrossDiscovery` cleans event search terms by stripping colons and subtitles (`queryText.split(":")[0]`) to ensure accurate entity lookup queries on `api.bhaktilib.com`, and normalizes Devotify podcast episode URLs to include canonical series slugs (`/podcast-series/1-el-libro-de-krishna/?episode=14`).
 
+### 14. Mahā-dvādaśī Sentinel Comparison & Vyañjulī Determination
+* **Sentinel Contract (`EV_NULL = 0x100`)**: The internal function `IsMhd58(nIndex)` evaluates Nakṣatra Mahā-dvādaśīs (Jaya, Jayantī, Pāpanāśinī, Vijayā) and returns constants from `MahadvadasiType`. When no Nakṣatra Mahā-dvādaśī is present, it returns the canonical sentinel `EV_NULL` (`0x100` = 256 in decimal), never returning `0`.
+* **Sentinel Guard in `MahadvadasiCalc`**: In `TCalendar.py:754`, the Nakṣatra branch condition is strictly checked against `nMahaType != EV_NULL` (resolving the previous `SENTINEL_MISMATCH` where `nMahaType != 0` evaluated to `True` on `EV_NULL`).
+* **Vyañjulī Resolution (`EV_VYANJULI`)**: When *Dvādaśī-vṛddhi* occurs (Dvādaśī is present at sunrise on two consecutive days following a Śuddha Ekādaśī, e.g., Delhi August 24–25, 2026), the engine correctly enters the Vyañjulī branch, assigns `FAST_EKADASI` and `EV_VYANJULI` to the Dvādaśī date, leaves the preceding Ekādaśī as `FAST_NULL`, and schedules Pāraṇa on the subsequent day.
+* **Negative Control Validation**: Locations where Dvādaśī does not experience vṛddhi (e.g., Paris August 2026 where sunrise on the second day is Trayodaśī) correctly retain standard Śuddha Ekādaśī fasting on the Ekādaśī calendar date.
+* **Comprehensive Test Suite**: Regression protection is maintained via `tests/test_mahadvadasi_comprehensive.py`, covering contract invariants, sentinel non-hijacking, and verified historical cases across all 8 Mahā-dvādaśī classes (Jaya, Jayantī, Pāpanāśinī, Vijayā, Tri-spṛśā, Unmīlanī, Pakṣa-vardhinī, Vyañjulī).
+
+
+
 
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "vaisnava-calendar-v18";
+const CACHE_NAME = "vaisnava-calendar-v19";
 const ASSETS = [
   "./",
   "./index.html",
