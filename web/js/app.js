@@ -94,7 +94,8 @@ const translations = {
     exportDesc: "El archivo .ics descargado se puede importar directamente en Google Calendar, Apple Calendar (iOS/macOS), Outlook y otros calendarios.",
     readEkadasi: "Leer pasatiempo de {name}",
     viewBhaktiLib: "Ver en BhaktiLib",
-    noEvents: "No hay eventos en este día."
+    noEvents: "No hay eventos en este día.",
+    aboutCalendarTab: "¿Qué calendario usamos?"
   },
   en: {
     title: "Vaishnava Calendar",
@@ -107,6 +108,7 @@ const translations = {
     noCitySelected: "No city selected",
     generate: "Calendar",
     searchEventsTab: "Search Event",
+    aboutCalendarTab: "What calendar do we use?",
     fastFilter: "Show fasting days only",
     startDate: "Start Date",
     endDate: "End Date",
@@ -1809,6 +1811,479 @@ function limpiarTexto(texto) {
     .replace(/;/g, "\\;");
 }
 
+const ABOUT_CALENDAR_HTML_ES = `
+<p>Usamos un calendario Gauḍīya Vaiṣṇava, perteneciente a la tradición de Śrī Caitanya Mahāprabhu, originada históricamente en Bengala y Odisha, en el este de la India. Está basado en GCAL/Gaurabda y aplica las reglas tradicionales de Ekādaśī y Mahā-dvādaśī, calculando cada observancia según la ubicación geográfica del usuario, su zona horaria y los datos astronómicos locales.</p>
+
+<p>En términos sencillos, esto significa que <strong>no nos limitamos a mirar una fecha escrita en un calendario</strong>, sino que calculamos la posición del Sol y de la Luna para cada lugar del mundo y aplicamos las reglas tradicionales seguidas por los vaiṣṇavas de la tradición de Śrī Caitanya Mahāprabhu.</p>
+
+<p>Nuestro sistema está basado en <strong>GCAL / Gaurabda Calendar</strong>, un calendario desarrollado específicamente para calcular las celebraciones vaiṣṇavas.</p>
+
+<p>Nuestro objetivo es que el calendario sea:</p>
+<ul>
+  <li>fiel a las reglas Gauḍīya Vaiṣṇava;</li>
+  <li>correcto desde el punto de vista astronómico;</li>
+  <li>adaptado a la ubicación real del usuario;</li>
+  <li>verificable mediante fuentes tradicionales y pruebas automatizadas.</li>
+</ul>
+
+<hr class="about-divider" />
+
+<h2>¿Qué es un tithi?</h2>
+<p>Para entender por qué el Ekādaśī puede caer en fechas diferentes según la ciudad, primero debemos comprender una palabra importante:</p>
+<p><strong>Tithi</strong> es un “día lunar”.</p>
+<p>Pero no es exactamente igual a un día de nuestro calendario civil.</p>
+<p>Un día normal comienza a medianoche y termina a la medianoche siguiente. Un <em>tithi</em>, en cambio, depende de la posición relativa del Sol y de la Luna.</p>
+<p>Por eso puede comenzar, por ejemplo:</p>
+<ul>
+  <li>a las 2:00 de la madrugada;</li>
+  <li>a las 10:30 de la noche;</li>
+  <li>o a cualquier otra hora.</li>
+</ul>
+<p>También puede terminar en cualquier momento del día.</p>
+<p>Ekādaśī significa literalmente el <strong>undécimo tithi</strong> de cada mitad del ciclo lunar.</p>
+<p>Por eso, cuando decimos <strong>“el Ekādaśī”</strong>, no estamos hablando simplemente de una fecha del calendario, sino de un período astronómico concreto.</p>
+
+<hr class="about-divider" />
+
+<h2>¿Por qué el Ekādaśī puede celebrarse en días diferentes según la ciudad?</h2>
+<p>Porque el Ekādaśī se relaciona con el <strong>amanecer local</strong>.</p>
+<p>El Sol no sale a la misma hora en París, Delhi, Bogotá, Nueva York o Sídney.</p>
+<p>Por esta razón, un mismo <em>tithi</em> puede estar presente durante el amanecer de una ciudad, pero haber terminado antes del amanecer en otra.</p>
+<p>Esto significa que:</p>
+<blockquote class="about-quote">
+  <strong>el mismo Ekādaśī puede observarse en fechas civiles diferentes en distintos lugares del mundo.</strong>
+</blockquote>
+<p>No se trata de una contradicción ni de que uno de los calendarios necesariamente esté equivocado.</p>
+<p>La ubicación geográfica forma parte del cálculo.</p>
+
+<hr class="about-divider" />
+
+<h2>¿Qué es Aruṇodaya?</h2>
+<p>Otra palabra importante es <strong>Aruṇodaya</strong>.</p>
+<p>Aruṇodaya es el período que comienza <strong>96 minutos antes del amanecer local</strong>.</p>
+<p>En la tradición Gauḍīya Vaiṣṇava, no basta con mirar qué <em>tithi</em> existe exactamente cuando sale el Sol.</p>
+<p>También debemos mirar qué <em>tithi</em> estaba presente durante el Aruṇodaya.</p>
+<p>¿Por qué?</p>
+<p>Porque esto ayuda a determinar si el Ekādaśī es puro o si está mezclado con el <em>tithi</em> anterior.</p>
+
+<hr class="about-divider" />
+
+<h2>¿Qué significa Śuddha Ekādaśī?</h2>
+<p><strong>Śuddha</strong> significa “puro”.</p>
+<p>Un <strong>Śuddha Ekādaśī</strong> es un Ekādaśī que cumple las condiciones tradicionales para ser observado normalmente.</p>
+<p>Una de las comprobaciones más importantes consiste en verificar que <strong>Daśamī</strong>, el décimo <em>tithi</em>, no continúe presente durante el Aruṇodaya.</p>
+<p>Si Daśamī todavía está presente en ese período, se dice que el Ekādaśī está <strong>viddha</strong>, es decir, “mezclado” o “contaminado” por el <em>tithi</em> anterior.</p>
+<p>En esos casos, las reglas vaiṣṇavas pueden indicar que el ayuno debe observarse al día siguiente.</p>
+
+<hr class="about-divider" />
+
+<h2>Pero un Śuddha Ekādaśī no siempre significa que se ayune ese mismo día</h2>
+<p>Aquí aparece una de las partes más interesantes del calendario vaiṣṇava.</p>
+<p>Incluso cuando el Ekādaśī es completamente válido y puro, todavía pueden existir circunstancias especiales que hagan que el ayuno se observe en <strong>Dvādaśī</strong>, el duodécimo <em>tithi</em>.</p>
+<p>Estas circunstancias especiales reciben el nombre de <strong>Mahā-dvādaśī</strong>.</p>
+<p>Podríamos traducir libremente este término como:</p>
+<blockquote class="about-quote">
+  <strong>“un Dvādaśī especialmente importante en el que se observa el ayuno de Ekādaśī”.</strong>
+</blockquote>
+<p>Por eso nuestro calendario no puede detener el cálculo simplemente al encontrar un Śuddha Ekādaśī.</p>
+<p>Debe continuar examinando lo que ocurre durante los amaneceres siguientes.</p>
+
+<hr class="about-divider" />
+
+<h2>¿Qué es tithi-vṛddhi?</h2>
+<p><strong>Vṛddhi</strong> significa “crecimiento”, “aumento” o “extensión”.</p>
+<p>Hablamos de <em>tithi-vṛddhi</em> cuando un mismo <em>tithi</em> está presente durante <strong>dos amaneceres consecutivos</strong>.</p>
+<p>Esto es importante porque algunas formas de Mahā-dvādaśī dependen precisamente de esta situación.</p>
+
+<hr class="about-divider" />
+
+<h2>¿Qué es tithi-kṣaya?</h2>
+<p><strong>Kṣaya</strong> significa “disminución”, “desaparición” o “pérdida”.</p>
+<p>Un <em>tithi-kṣaya</em> ocurre cuando un <em>tithi</em> comienza después de un amanecer y termina antes del siguiente.</p>
+<p>En ese caso, ningún amanecer ocurre dentro de ese <em>tithi</em>.</p>
+<p>Estas situaciones son poco frecuentes, pero forman parte de las reglas que un calendario vaiṣṇava completo debe saber reconocer.</p>
+
+<hr class="about-divider" />
+
+<h2>Mahā-dvādaśī</h2>
+<p>Nuestro sistema contempla las principales clases de Mahā-dvādaśī descritas en la tradición Gauḍīya Vaiṣṇava.</p>
+<p>Entre ellas se encuentran:</p>
+<ul>
+  <li><strong>Unmīlanī Mahā-dvādaśī</strong></li>
+  <li><strong>Vyañjulī Mahā-dvādaśī</strong></li>
+  <li><strong>Tri-spṛśā Mahā-dvādaśī</strong></li>
+  <li><strong>Pakṣa-vardhinī Mahā-dvādaśī</strong></li>
+  <li><strong>Jaya Mahā-dvādaśī</strong></li>
+  <li><strong>Vijayā Mahā-dvādaśī</strong></li>
+  <li><strong>Jayantī Mahā-dvādaśī</strong></li>
+  <li><strong>Pāpanāśinī Mahā-dvādaśī</strong></li>
+</ul>
+<p>Algunas dependen de la duración de los <em>tithis</em> y de los amaneceres.</p>
+<p>Otras dependen también del <strong>nakṣatra</strong>, es decir, de la región del cielo o “mansión lunar” en la que se encuentra la Luna.</p>
+<p>No es necesario que el usuario conozca todos estos cálculos para utilizar el calendario. El sistema los realiza automáticamente según la ubicación seleccionada.</p>
+
+<hr class="about-divider" />
+
+<h2>Un ejemplo real: París y Delhi en agosto de 2026</h2>
+<p>Este caso muestra muy bien por qué estas reglas son importantes.</p>
+
+<h3>París</h3>
+<p>El 23 de agosto de 2026:</p>
+<ul>
+  <li>el Ekādaśī estaba presente durante el Aruṇodaya;</li>
+  <li>también estaba presente durante el amanecer;</li>
+  <li>por tanto, era un <strong>Śuddha Ekādaśī</strong>.</li>
+</ul>
+<p>El 24 de agosto, Dvādaśī estaba presente durante el amanecer.</p>
+<p>Pero el 25 de agosto, cuando salió el Sol, Dvādaśī ya había terminado y había comenzado Trayodaśī, el decimotercer <em>tithi</em>.</p>
+<p>Por tanto, Dvādaśī solamente estuvo presente durante <strong>un amanecer</strong>.</p>
+<p>No existía <em>Dvādaśī-vṛddhi</em>.</p>
+<p>Resultado:</p>
+<blockquote class="about-quote">
+  <strong>En París, el ayuno correspondía correctamente al 23 de agosto.</strong>
+</blockquote>
+
+<h3>Delhi</h3>
+<p>En Delhi ocurrió algo diferente.</p>
+<p>El 23 de agosto:</p>
+<ul>
+  <li>el Ekādaśī estaba presente durante el amanecer;</li>
+  <li>y cumplía las condiciones de Śuddha Ekādaśī.</li>
+</ul>
+<p>Pero después ocurrió algo especial:</p>
+<ul>
+  <li>Dvādaśī estaba presente durante el amanecer del 24;</li>
+  <li>y Dvādaśī continuaba presente todavía durante el amanecer del 25.</li>
+</ul>
+<p>Es decir, Dvādaśī estuvo presente durante <strong>dos amaneceres consecutivos</strong>.</p>
+<p>Eso es un caso de <strong>Dvādaśī-vṛddhi</strong>.</p>
+<p>Esta condición activa una regla llamada: <strong>Vyañjulī Mahā-dvādaśī</strong>.</p>
+<p>Por esta razón:</p>
+<blockquote class="about-quote">
+  <strong>En Delhi, el ayuno correspondía al 24 de agosto, no al 23.</strong>
+</blockquote>
+<p>Y el <em>pāraṇa</em> —el momento en el que se rompe formalmente el ayuno— correspondía al día 25.</p>
+<p>Así, París y Delhi tenían resultados diferentes, pero ambos eran perfectamente coherentes con las mismas reglas vaiṣṇavas.</p>
+
+<hr class="about-divider" />
+
+<h2>Un error que descubrimos durante nuestras verificaciones</h2>
+<p>Mientras estudiábamos precisamente este caso de Delhi, descubrimos un problema en la implementación de GCAL/Gaurabda utilizada por nuestro calendario.</p>
+<p>La regla tradicional de Vyañjulī ya estaba programada.</p>
+<p>El problema no estaba en la regla.</p>
+<p>Estaba en una condición del código que impedía que esa regla llegara a evaluarse en determinadas circunstancias.</p>
+<p>El programa utiliza una constante llamada: <code>EV_NULL</code></p>
+<p>Esta constante significa, en términos sencillos:</p>
+<blockquote class="about-quote">
+  <strong>“no se ha detectado aquí ninguna Mahā-dvādaśī de este tipo”.</strong>
+</blockquote>
+<p>Su valor interno es: <code>0x100</code>, equivalente a <code>256</code>.</p>
+<p>Sin embargo, una condición del programa comparaba ese resultado con: <code>0</code> en lugar de compararlo con <code>EV_NULL</code>.</p>
+<p>Esto hacía que, en determinadas circunstancias, el programa creyera erróneamente que ya había encontrado una Mahā-dvādaśī especial y dejara de comprobar las reglas siguientes.</p>
+<p>Una de las reglas que podía quedar bloqueada era precisamente <strong>Vyañjulī Mahā-dvādaśī</strong>.</p>
+
+<h3>¿Cómo lo corregimos?</h3>
+<p>La condición original comprobaba: <code>nMahaType != 0</code></p>
+<p>Después de verificar el significado real de todos los valores que puede devolver esa función, la comparación correcta resultó ser: <code>nMahaType != EV_NULL</code></p>
+<p>La modificación fue mínima: <strong>una sola comparación lógica</strong>.</p>
+<p>No modificamos las reglas tradicionales.</p>
+<p>No añadimos una excepción para Delhi.</p>
+<p>No cambiamos los cálculos astronómicos.</p>
+<p>Simplemente corregimos el programa para que pudiera aplicar una regla que ya existía.</p>
+
+<hr class="about-divider" />
+
+<h2>¿Cómo sabemos que la corrección no rompió otros casos?</h2>
+<p>Este punto es especialmente importante.</p>
+<p>No consideramos suficiente comprobar simplemente que “Delhi ahora funciona”.</p>
+<p>Antes y después de la corrección creamos pruebas automatizadas para diferentes tipos de situaciones. Entre ellas:</p>
+<ul>
+  <li>Vyañjulī Mahā-dvādaśī en Delhi;</li>
+  <li>París durante las mismas fechas como caso de control;</li>
+  <li>Jaya Mahā-dvādaśī;</li>
+  <li>Vijayā Mahā-dvādaśī;</li>
+  <li>Jayantī Mahā-dvādaśī;</li>
+  <li>Pāpanāśinī Mahā-dvādaśī;</li>
+  <li>Unmīlanī Mahā-dvādaśī;</li>
+  <li>Tri-spṛśā Mahā-dvādaśī;</li>
+  <li>Pakṣa-vardhinī Mahā-dvādaśī;</li>
+  <li>otros casos históricos de Vyañjulī.</li>
+</ul>
+<p>Después de la corrección:</p>
+<blockquote class="about-quote">
+  <strong>Delhi pasó correctamente al 24 de agosto, mientras París continuó correctamente en el 23.</strong>
+</blockquote>
+<p>Las demás pruebas también continuaron funcionando correctamente.</p>
+<p>Esto nos permite tener una confianza mucho mayor en que la corrección solucionó el problema concreto sin alterar las demás reglas.</p>
+
+<hr class="about-divider" />
+
+<h2>¿Qué fuentes seguimos?</h2>
+<p>Nuestro calendario utiliza principalmente:</p>
+<ul>
+  <li>el <strong>Hari-bhakti-vilāsa</strong>, una de las fuentes fundamentales para las reglas de conducta y observancias de la tradición Gauḍīya Vaiṣṇava;</li>
+  <li>la documentación técnica de <strong>GCAL / Gaurabda Calendar</strong>;</li>
+  <li>implementaciones históricas de GCAL;</li>
+  <li>calendarios de referencia Gauḍīya Vaiṣṇava e ISKCON;</li>
+  <li>cálculos astronómicos locales;</li>
+  <li>pruebas automatizadas basadas en casos reales.</li>
+</ul>
+<p>Cuando existe una diferencia entre un calendario <strong>Smārta</strong> y un calendario <strong>Vaiṣṇava</strong>, nuestro sistema sigue las reglas <strong>Gauḍīya Vaiṣṇava</strong>.</p>
+<p>Un calendario Smārta sigue otro conjunto de criterios tradicionales y puede, por tanto, mostrar en ciertas ocasiones una fecha diferente.</p>
+<p>Esto no significa necesariamente que exista un error: significa que se están siguiendo sistemas diferentes.</p>
+
+<hr class="about-divider" />
+
+<h2>Nuestro compromiso</h2>
+<p>Un calendario tradicional no debería ser una “caja negra” en la que el usuario simplemente recibe una fecha sin saber de dónde proviene.</p>
+<p>Por eso buscamos que nuestro calendario sea:</p>
+<p><strong>Tradicional</strong>, porque sigue las reglas Gauḍīya Vaiṣṇava.</p>
+<p><strong>Astronómico</strong>, porque los cálculos dependen de la posición real del Sol y de la Luna.</p>
+<p><strong>Local</strong>, porque tiene en cuenta la ubicación geográfica del usuario.</p>
+<p><strong>Verificable</strong>, porque contrastamos las reglas y los resultados con fuentes independientes.</p>
+<p><strong>Transparente</strong>, porque documentamos también las correcciones realizadas cuando encontramos un problema.</p>
+<p>Nuestro objetivo no es afirmar que un programa nunca puede equivocarse.</p>
+<p>Nuestro objetivo es algo más útil:</p>
+<blockquote class="about-quote">
+  <strong>que sus reglas puedan ser entendidas, verificadas, probadas y corregidas cuando sea necesario.</strong>
+</blockquote>
+`;
+
+const ABOUT_CALENDAR_HTML_EN = `
+<p>We use a Gauḍīya Vaiṣṇava calendar, belonging to the tradition of Śrī Caitanya Mahāprabhu, historically rooted in Bengal and Odisha in eastern India. It is based on GCAL/Gaurabda and follows the traditional rules of Ekādaśī and Mahā-dvādaśī, calculating each observance according to the user’s geographical location, time zone, and local astronomical data.</p>
+
+<p>In simple terms, this means that <strong>we do not merely copy a date from another calendar</strong>. We calculate the astronomical relationship between the Sun and the Moon for each location and apply the traditional rules followed by Vaiṣṇavas in the tradition of Śrī Caitanya Mahāprabhu.</p>
+
+<p>Our system is based on <strong>GCAL / Gaurabda Calendar</strong>, a calendar specifically developed for Vaiṣṇava observances.</p>
+
+<p>Our goal is to provide a calendar that is:</p>
+<ul>
+  <li>faithful to Gauḍīya Vaiṣṇava rules;</li>
+  <li>astronomically accurate;</li>
+  <li>adapted to the user's geographical location;</li>
+  <li>verifiable through traditional sources and automated testing.</li>
+</ul>
+
+<hr class="about-divider" />
+
+<h2>What is a tithi?</h2>
+<p>To understand why Ekādaśī may fall on different dates in different cities, we first need to understand an important term:</p>
+<p>A <strong>tithi</strong> is a “lunar day.”</p>
+<p>It is not exactly the same as a civil calendar day.</p>
+<p>A normal civil day begins at midnight and ends at the following midnight. A <em>tithi</em>, however, is determined by the relative positions of the Sun and the Moon.</p>
+<p>For this reason, a tithi may begin:</p>
+<ul>
+  <li>at 2:00 a.m.;</li>
+  <li>at 10:30 p.m.;</li>
+  <li>or at any other time.</li>
+</ul>
+<p>It can also end at any time of day.</p>
+<p>Ekādaśī literally means the <strong>eleventh tithi</strong> of each half of the lunar cycle.</p>
+<p>Therefore, when we speak about Ekādaśī, we are referring not merely to a date on a calendar, but to a specific astronomical period.</p>
+
+<hr class="about-divider" />
+
+<h2>Why can Ekādaśī be observed on different dates in different cities?</h2>
+<p>Because the observance of Ekādaśī is related to <strong>local sunrise</strong>.</p>
+<p>The Sun does not rise at the same time in Paris, Delhi, Bogotá, New York or Sydney.</p>
+<p>As a result, the same tithi may be present at sunrise in one city but may already have ended before sunrise in another.</p>
+<p>Therefore:</p>
+<blockquote class="about-quote">
+  <strong>the same Ekādaśī may be observed on different civil dates in different parts of the world.</strong>
+</blockquote>
+<p>This is not necessarily a contradiction or an error.</p>
+<p>Geographical location is part of the calculation.</p>
+
+<hr class="about-divider" />
+
+<h2>What is Aruṇodaya?</h2>
+<p>Another important term is <strong>Aruṇodaya</strong>.</p>
+<p>Aruṇodaya is the period beginning <strong>96 minutes before local sunrise</strong>.</p>
+<p>In the Gauḍīya Vaiṣṇava tradition, it is not enough simply to determine which tithi is present when the Sun rises.</p>
+<p>We must also determine which tithi was present during Aruṇodaya.</p>
+<p>This helps establish whether Ekādaśī is pure or mixed with the preceding tithi.</p>
+
+<hr class="about-divider" />
+
+<h2>What does Śuddha Ekādaśī mean?</h2>
+<p><strong>Śuddha</strong> means “pure.”</p>
+<p>A <strong>Śuddha Ekādaśī</strong> is an Ekādaśī that meets the traditional conditions for normal observance.</p>
+<p>One important test is whether <strong>Daśamī</strong>, the tenth tithi, is still present during Aruṇodaya.</p>
+<p>If Daśamī remains present during that period, Ekādaśī is considered <em>viddha</em> —mixed with the preceding tithi.</p>
+<p>Under Vaiṣṇava rules, this may cause the fast to be observed on the following day.</p>
+
+<hr class="about-divider" />
+
+<h2>A Śuddha Ekādaśī does not always mean that the fast occurs that same day</h2>
+<p>This is one of the most interesting aspects of the Vaiṣṇava calendar.</p>
+<p>Even when Ekādaśī is perfectly valid and pure, special circumstances may require the fast to be observed during <strong>Dvādaśī</strong>, the twelfth tithi.</p>
+<p>These special circumstances are known as <strong>Mahā-dvādaśī</strong>.</p>
+<p>A simple way of understanding the term is:</p>
+<blockquote class="about-quote">
+  <strong>a special Dvādaśī on which the Ekādaśī fast is observed.</strong>
+</blockquote>
+<p>This is why our calendar cannot stop calculating as soon as it finds a Śuddha Ekādaśī.</p>
+<p>It must also examine what happens during the following sunrises.</p>
+
+<hr class="about-divider" />
+
+<h2>What are tithi-vṛddhi and tithi-kṣaya?</h2>
+<p><strong>Vṛddhi</strong> means “increase” or “extension.”</p>
+<p>A <em>tithi-vṛddhi</em> occurs when the same tithi is present at <strong>two consecutive sunrises</strong>.</p>
+<p>Some Mahā-dvādaśī rules depend on precisely this situation.</p>
+<p><strong>Kṣaya</strong> means “loss” or “disappearance.”</p>
+<p>A <em>tithi-kṣaya</em> occurs when a tithi begins after one sunrise and ends before the next one.</p>
+<p>In other words, no sunrise takes place during that tithi.</p>
+<p>These situations are unusual, but a complete Vaiṣṇava calendar must be able to recognize them.</p>
+
+<hr class="about-divider" />
+
+<h2>Mahā-dvādaśī</h2>
+<p>Our system accounts for the principal varieties of Mahā-dvādaśī described in the Gauḍīya Vaiṣṇava tradition, including:</p>
+<ul>
+  <li><strong>Unmīlanī</strong></li>
+  <li><strong>Vyañjulī</strong></li>
+  <li><strong>Tri-spṛśā</strong></li>
+  <li><strong>Pakṣa-vardhinī</strong></li>
+  <li><strong>Jaya</strong></li>
+  <li><strong>Vijayā</strong></li>
+  <li><strong>Jayantī</strong></li>
+  <li><strong>Pāpanāśinī</strong></li>
+</ul>
+<p>Some depend on tithi duration and successive sunrises.</p>
+<p>Others also depend on the <strong>nakṣatra</strong>, the traditional lunar division of the sky in which the Moon is located.</p>
+<p>Users do not need to understand all these calculations in order to use the calendar. The system performs them automatically according to the selected location.</p>
+
+<hr class="about-divider" />
+
+<h2>A real example: Paris and Delhi in August 2026</h2>
+<p>This case clearly illustrates why these rules matter.</p>
+
+<h3>Paris</h3>
+<p>On August 23, 2026:</p>
+<ul>
+  <li>Ekādaśī was present during Aruṇodaya;</li>
+  <li>Ekādaśī was also present at sunrise;</li>
+  <li>therefore it was a <strong>Śuddha Ekādaśī</strong>.</li>
+</ul>
+<p>Dvādaśī was present at sunrise on August 24.</p>
+<p>However, by sunrise on August 25, Dvādaśī had ended and Trayodaśī —the thirteenth tithi— had begun.</p>
+<p>Therefore Dvādaśī was present at only <strong>one sunrise</strong>.</p>
+<p>There was no Dvādaśī-vṛddhi.</p>
+<p>Result:</p>
+<blockquote class="about-quote">
+  <strong>In Paris, the fast correctly remained on August 23.</strong>
+</blockquote>
+
+<h3>Delhi</h3>
+<p>Delhi was different.</p>
+<p>On August 23:</p>
+<ul>
+  <li>Ekādaśī was present at sunrise;</li>
+  <li>and it met the conditions of a Śuddha Ekādaśī.</li>
+</ul>
+<p>But then something special occurred:</p>
+<ul>
+  <li>Dvādaśī was present at sunrise on August 24;</li>
+  <li>Dvādaśī was still present at sunrise on August 25.</li>
+</ul>
+<p>Dvādaśī therefore extended across <strong>two consecutive sunrises</strong>.</p>
+<p>This is <strong>Dvādaśī-vṛddhi</strong>.</p>
+<p>That condition activates the rule known as: <strong>Vyañjulī Mahā-dvādaśī</strong>.</p>
+<p>Therefore:</p>
+<blockquote class="about-quote">
+  <strong>In Delhi, the fast belonged on August 24 rather than August 23.</strong>
+</blockquote>
+<p>The <em>pāraṇa</em> —the prescribed breaking of the fast— then occurred on August 25.</p>
+<p>Paris and Delhi therefore produced different dates while following exactly the same Vaiṣṇava rules.</p>
+
+<hr class="about-divider" />
+
+<h2>A software issue discovered during our verification</h2>
+<p>While investigating this Delhi case, we discovered a problem in the GCAL/Gaurabda implementation used by our calendar.</p>
+<p>The traditional Vyañjulī rule was already present in the software.</p>
+<p>The problem was not the rule itself.</p>
+<p>A condition in the code prevented that rule from being evaluated under certain circumstances.</p>
+<p>The program uses a special constant called: <code>EV_NULL</code></p>
+<p>In simple terms, it means:</p>
+<blockquote class="about-quote">
+  <strong>“no Mahā-dvādaśī of this category has been detected.”</strong>
+</blockquote>
+<p>Its internal value is: <code>0x100</code>, or <code>256</code> in decimal.</p>
+<p>However, one condition was comparing the result against: <code>0</code> instead of <code>EV_NULL</code>.</p>
+<p>Under certain astronomical configurations, this caused the program to incorrectly assume that another Mahā-dvādaśī condition had already been found, preventing the later Vyañjulī rule from being evaluated.</p>
+
+<h3>How did we correct it?</h3>
+<p>The original comparison was: <code>nMahaType != 0</code></p>
+<p>After verifying the actual meaning of every possible value returned by that function, the correct comparison was found to be: <code>nMahaType != EV_NULL</code></p>
+<p>This was a very small change: <strong>one logical comparison</strong>.</p>
+<p>We did not change the traditional rules.</p>
+<p>We did not create a special exception for Delhi.</p>
+<p>We did not change the astronomical calculations.</p>
+<p>We simply corrected the software so that an already existing rule could be applied properly.</p>
+
+<hr class="about-divider" />
+
+<h2>How do we know that the correction did not break other cases?</h2>
+<p>We did not consider it sufficient to check only that “Delhi now works.”</p>
+<p>Automated regression tests were created for several different situations, including:</p>
+<ul>
+  <li>the Delhi Vyañjulī case;</li>
+  <li>Paris during the same dates as a negative control;</li>
+  <li>Jaya;</li>
+  <li>Vijayā;</li>
+  <li>Jayantī;</li>
+  <li>Pāpanāśinī;</li>
+  <li>Unmīlanī;</li>
+  <li>Tri-spṛśā;</li>
+  <li>Pakṣa-vardhinī;</li>
+  <li>additional historical Vyañjulī cases.</li>
+</ul>
+<p>After the correction:</p>
+<blockquote class="about-quote">
+  <strong>Delhi correctly moved to August 24, while Paris correctly remained on August 23.</strong>
+</blockquote>
+<p>The other tested Mahā-dvādaśī cases also continued to work correctly.</p>
+
+<hr class="about-divider" />
+
+<h2>Our sources</h2>
+<p>Our calendar primarily relies on:</p>
+<ul>
+  <li>the <strong>Hari-bhakti-vilāsa</strong>, an important traditional source for Gauḍīya Vaiṣṇava observances;</li>
+  <li>the technical methodology of <strong>GCAL / Gaurabda Calendar</strong>;</li>
+  <li>historical GCAL implementations;</li>
+  <li>Gauḍīya Vaiṣṇava and ISKCON reference calendars;</li>
+  <li>local astronomical calculations;</li>
+  <li>automated regression tests based on real calendrical cases.</li>
+</ul>
+<p>When Smārta and Vaiṣṇava calendars differ, this calendar follows <strong>Gauḍīya Vaiṣṇava rules</strong>.</p>
+<p>A Smārta calendar follows a different set of traditional criteria and may therefore occasionally display another date.</p>
+<p>This does not automatically mean that one side has made a mistake. In many cases, the two calendars are simply following different systems.</p>
+
+<hr class="about-divider" />
+
+<h2>Our commitment</h2>
+<p>A traditional calendar should not be a “black box” that simply provides a date without explaining where it came from.</p>
+<p>We therefore aim for our calendar to be:</p>
+<p><strong>Traditional</strong>, because it follows Gauḍīya Vaiṣṇava rules.</p>
+<p><strong>Astronomical</strong>, because its calculations depend on the actual positions of the Sun and Moon.</p>
+<p><strong>Local</strong>, because it takes the user's geographical location into account.</p>
+<p><strong>Verifiable</strong>, because important rules and results can be checked against independent sources.</p>
+<p><strong>Transparent</strong>, because we also document corrections when a technical problem is discovered.</p>
+<p>Our goal is not to claim that software can never make a mistake.</p>
+<p>Our goal is more useful than that:</p>
+<blockquote class="about-quote">
+  <strong>to make the rules understandable, verifiable, testable and correctable whenever necessary.</strong>
+</blockquote>
+`;
+
+function renderAboutCalendarContent() {
+  const container = document.getElementById("aboutCalendarTextContainer");
+  if (!container) return;
+  container.innerHTML = currentLang === "en" ? ABOUT_CALENDAR_HTML_EN : ABOUT_CALENDAR_HTML_ES;
+}
+
 // Translations string switcher
 function applyTranslations() {
   const t = translations[currentLang];
@@ -1836,6 +2311,13 @@ function applyTranslations() {
   // Tab translations
   document.getElementById("tabCalendar").innerText = t.generate;
   document.getElementById("tabSearchEvents").innerText = t.searchEventsTab;
+  const tabAboutBtn = document.getElementById("tabAboutCalendar");
+  if (tabAboutBtn) {
+    tabAboutBtn.innerText = t.aboutCalendarTab;
+  }
+
+  // Render About Calendar text in active language
+  renderAboutCalendarContent();
 
   // Search Event elements
   document.getElementById("searchQueryLabel").innerText = t.searchQueryLabel;

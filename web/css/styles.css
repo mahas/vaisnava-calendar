@@ -1552,4 +1552,116 @@ dialog::backdrop {
     padding: 8px 16px;
   }
 }
+
 /* ------------------------------------------- */
+/* About Calendar Tab Styles                   */
+/* ------------------------------------------- */
+.about-calendar-wrapper {
+  padding: 4px 0;
+}
+
+.about-calendar-article {
+  background: linear-gradient(135deg, rgba(13, 23, 40, 0.75), rgba(17, 30, 52, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px 28px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--color-text);
+  line-height: 1.75;
+  font-size: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.about-calendar-article h2 {
+  color: #f6e05e;
+  font-size: 1.25rem;
+  margin-top: 28px;
+  margin-bottom: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(246, 224, 94, 0.2);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.about-calendar-article h2:first-of-type {
+  margin-top: 10px;
+}
+
+.about-calendar-article h3 {
+  color: var(--color-cyan);
+  font-size: 1.1rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.about-calendar-article p {
+  margin-bottom: 14px;
+  color: #e2e8f0;
+}
+
+.about-calendar-article ul {
+  margin: 10px 0 16px 20px;
+  padding-left: 10px;
+}
+
+.about-calendar-article li {
+  margin-bottom: 6px;
+  color: #cbd5e1;
+}
+
+.about-calendar-article strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.about-calendar-article em {
+  color: #93c5fd;
+  font-style: italic;
+}
+
+.about-calendar-article code {
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--color-cyan);
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  border: 1px solid rgba(0, 240, 255, 0.25);
+}
+
+.about-quote {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.03));
+  border-left: 3px solid var(--color-gold);
+  border-radius: 0 12px 12px 0;
+  padding: 12px 18px;
+  margin: 16px 0;
+  color: #fef08a;
+  box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.05);
+}
+
+.about-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  margin: 28px 0;
+}
+
+@media (max-width: 640px) {
+  .about-calendar-article {
+    padding: 16px 18px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .about-calendar-article h2 {
+    font-size: 1.12rem;
+    margin-top: 22px;
+  }
+  .about-calendar-article h3 {
+    font-size: 1rem;
+  }
+}
+
