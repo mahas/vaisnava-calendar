@@ -399,9 +399,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const cityParam = urlParams.get('city');
 
     if (cityParam) {
-      localStorage.setItem("gcal_default_city", cityParam);
-      const cityInput = document.getElementById("citySearchInput");
-      if (cityInput) cityInput.value = cityParam;
+      if (!selectedCity || (selectedCity.city && selectedCity.city.toLowerCase() !== cityParam.toLowerCase())) {
+        resolverCiudadPorNombre(cityParam);
+      }
     }
 
     if (qParam) {
@@ -411,7 +411,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (eventInput) {
         eventInput.value = qParam;
         const searchEvBtn = document.getElementById("searchEventBtn");
-        if (searchEvBtn) setTimeout(() => searchEvBtn.click(), 400);
+        if (searchEvBtn) setTimeout(() => searchEvBtn.click(), 500);
       }
     }
   } catch (e) {}
@@ -618,6 +618,21 @@ function seleccionarCiudadAutocomplete(city) {
   generarCalendario();
 }
 
+async function resolverCiudadPorNombre(cityName) {
+  if (!cityName || typeof cityName !== "string") return;
+  try {
+    const res = await fetchCalendarApi(`/find-location?name=${encodeURIComponent(cityName.trim())}`);
+    const data = await res.json();
+    const matches = (data.EQUALS && data.EQUALS.length ? data.EQUALS :
+                    (data.STARTS && data.STARTS.length ? data.STARTS : data.CONTAINS)) || [];
+    if (matches.length) {
+      seleccionarCiudadAutocomplete(matches[0]);
+    }
+  } catch (e) {
+    console.warn("Could not auto-resolve city name:", cityName, e);
+  }
+}
+
 // Load default city from localStorage
 function cargarCiudadPorDefecto() {
   const saved = localStorage.getItem("gcal_default_city");
@@ -629,7 +644,24 @@ function cargarCiudadPorDefecto() {
     return;
   }
   
-  selectedCity = JSON.parse(saved);
+  try {
+    const parsed = JSON.parse(saved);
+    if (parsed && typeof parsed === "object" && parsed.city) {
+      selectedCity = parsed;
+    } else if (typeof parsed === "string" || typeof saved === "string") {
+      localStorage.removeItem("gcal_default_city");
+      const name = typeof parsed === "string" ? parsed : saved;
+      resolverCiudadPorNombre(name);
+      return;
+    }
+  } catch (e) {
+    localStorage.removeItem("gcal_default_city");
+    if (saved && typeof saved === "string") {
+      resolverCiudadPorNombre(saved);
+      return;
+    }
+  }
+
   actualizarDisplayCiudad();
   document.getElementById("saveDefaultBtn").style.display = "none";
   document.getElementById("citySearchPanel").classList.remove("active");

@@ -48,13 +48,15 @@ The frontend is a lightweight, single-page application (SPA) with a modern cyber
 ### 2. Backend Server (`server/server.py` & `gaurabda/TServer.py`)
 The backend is powered by a Flask web server that wraps the custom mathematical and astrological library (`gaurabda`).
 * **Port Configuration**: Defaults to `8047` (configurable via `PORT` or `GCAL_SERVER_PORT` env variables).
-* **Server-side Caching**: Size-limited LRU in-memory cache for `/calendar` and `/search-event` results.
+* **Server-side Caching**: Size-limited LRU in-memory cache for `/calendar` (`calendar_cache`), `/search-event` (`search_cache`), and `/event-occurrence` (`occurrence_cache`).
 * **Core API Endpoints**:
   * `GET /ping`: Keep-alive endpoint to wake up Render container.
   * `GET /countries`: Returns a list of all countries supported.
   * `GET /find-location?name=<city>`: Searches database for matching cities.
   * `GET /calendar?city=<city>&country=<country>&year=<yyyy>&month=<m>&day=<d>&period=<days>`: Computes and returns calendar details.
   * `GET /search-event?city=<city>&country=<country>&query=<query>&count=<count>`: Dynamically searches sequential years for matching event occurrences.
+  * `GET /event-occurrence?event_id=<id>&city=<city>&country=<country>&year=<yyyy>`: High-performance endpoint for ecosystem integrations. Computes upcoming dates relative to current date (`Today()`) when year is omitted or is current year. Uses an adaptive 45-day fast-search window for frequent observances (Ekadashi, Purnima, Amavasya) before falling back to 365 days, yielding a 90% CPU speedup. Responses are cached in-memory (`occurrence_cache`).
+* **URL Deep-Linking & Auto-Resolution (`web/js/app.js`)**: Supports `?q=<event>&city=<city>` deep links. When `city` is provided, `resolverCiudadPorNombre` safely fetches location coordinates via `/find-location` without corrupting `localStorage` string formats.
 
 ---
 

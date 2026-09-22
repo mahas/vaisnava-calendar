@@ -43,6 +43,7 @@ class SimpleCache:
 
 calendar_cache = SimpleCache(maxsize=100)
 search_cache = SimpleCache(maxsize=100)
+occurrence_cache = SimpleCache(maxsize=500)
 
 EKADASHI_SYNONYMS = {
     "varuthini": ["varuthini", "vaisakhakrishna", "caitrakrishna"],
@@ -559,8 +560,12 @@ EVENT_ID_MAP = {
     "entity:concept:kartik": "Damodara",
     "entity:event:kartik": "Damodara",
 
-    "gita_jayanti": "Gita Jayanti",
-    "entity:event:gita-jayanti": "Gita Jayanti",
+    "gita_jayanti": "Bhagavad-gita",
+    "entity:event:gita-jayanti": "Bhagavad-gita",
+    "entity:concept:bhagavad-gita": "Bhagavad-gita",
+    "entity:book:bg-as-it-is": "Bhagavad-gita",
+    "entity:book:bhagavad-gita-tal-como-es": "Bhagavad-gita",
+    "entity:book:ekadasi-el-dia-del-senor-hari": "Ekadashi",
 
     "entity:event:utpanna-ekadasi": "Utpanna",
     "entity:event:moksada-ekadasi": "Moksada",
@@ -623,15 +628,26 @@ def eventOccurrence():
     today = Today()
     if year_param:
         current_year = int(year_param)
-        start_date = GCGregorianDate(year=current_year, month=1, day=1)
+        if current_year == today.year:
+            start_date = GCGregorianDate(year=today.year, month=today.month, day=today.day)
+        else:
+            start_date = GCGregorianDate(year=current_year, month=1, day=1)
     else:
         current_year = today.year
         start_date = GCGregorianDate(year=today.year, month=today.month, day=today.day)
 
-    tc = TCalendar()
-    tc.CalculateCalendar(location, start_date, 365)
+    cache_key = (event_id.lower(), city.lower(), (country or '').lower(), start_date.year, start_date.month, start_date.day)
+    cached_val = occurrence_cache.get(cache_key)
+    if cached_val is not None:
+        return jsonify(cached_val)
 
     simp_query = simplify(query_term)
+    is_frequent = any(k in simp_query for k in ['ekadasi', 'purnima', 'amavasya', 'dvadasi', 'caturdasi'])
+    initial_days = 45 if is_frequent else 365
+
+    tc = TCalendar()
+    tc.CalculateCalendar(location, start_date, initial_days)
+
     matched_day = None
     matching_event_text = ""
 
@@ -640,7 +656,10 @@ def eventOccurrence():
         ekadashi_name = day_dict.get('ekadashiName', '')
         if ekadashi_name and simp_query in simplify(ekadashi_name):
             matched_day = day_dict
-            matching_event_text = f"{ekadashi_name} Ekadashi"
+            if ekadashi_name.lower().endswith(('ekadasi', 'ekadashi')):
+                matching_event_text = ekadashi_name
+            else:
+                matching_event_text = f"{ekadashi_name} Ekadashi"
             break
         
         events = day_dict.get('events', [])
@@ -653,8 +672,33 @@ def eventOccurrence():
         if matched_day:
             break
 
+    # Fallback to 365 days if not found in initial 45 days
+    if not matched_day and initial_days < 365:
+        tc = TCalendar()
+        tc.CalculateCalendar(location, start_date, 365)
+        for day in tc.days_iter():
+            day_dict = dict(day)
+            ekadashi_name = day_dict.get('ekadashiName', '')
+            if ekadashi_name and simp_query in simplify(ekadashi_name):
+                matched_day = day_dict
+                if ekadashi_name.lower().endswith(('ekadasi', 'ekadashi')):
+                    matching_event_text = ekadashi_name
+                else:
+                    matching_event_text = f"{ekadashi_name} Ekadashi"
+                break
+            
+            events = day_dict.get('events', [])
+            for ev in events:
+                ev_text = ev.get('text', '')
+                if simp_query in simplify(ev_text):
+                    matched_day = day_dict
+                    matching_event_text = ev_text
+                    break
+            if matched_day:
+                break
+
     if not matched_day:
-        return jsonify({
+        response_data = {
             'status': 'success',
             'data': {
                 'event_id': event_id,
@@ -663,19 +707,22 @@ def eventOccurrence():
                 'location': {'city': city, 'country': country},
                 'occurrence': None
             }
-        })
+        }
+        occurrence_cache.set(cache_key, response_data)
+        return jsonify(response_data)
 
     date_obj = matched_day.get('date', {})
     gregorian_str = f"{date_obj.get('year', current_year):04d}-{date_obj.get('month', 1):02d}-{date_obj.get('day', 1):02d}"
     astro = matched_day.get('astrodata', {})
 
+    is_ekadasi_day = bool(matched_day.get('ekadashiName')) or (matched_day.get('fast', 0) in [518, 513, 0x200]) or ('ekadasi' in query_term.lower())
     fast_notes = matched_day.get('fast_notes', '')
-    fast_type = matched_day.get('fast_type', 'NO_FAST')
-    is_fasting = bool(matched_day.get('fast', 0) or fast_notes)
+    fast_type = 'FAST_EKADASI' if is_ekadasi_day else matched_day.get('fast_type', 'NO_FAST')
+    is_fasting = bool(matched_day.get('fast', 0) or fast_notes or is_ekadasi_day)
 
     for ev in matched_day.get('events', []):
         ev_text = ev.get('text', '')
-        if 'fasttype' in ev and ev['fasttype'] > 0:
+        if 'fasttype' in ev and ev['fasttype'] > 0 and not is_ekadasi_day:
             ft = ev['fasttype']
             if ft == 1:
                 fast_type = 'FAST_TIL_NOON'
@@ -695,11 +742,27 @@ def eventOccurrence():
             is_fasting = True
 
         if ev_text.startswith('(Fast') or (('fast' in ev_text.lower()) and not fast_notes):
-            fast_notes = ev_text.strip('()')
-            is_fasting = True
-            if 'noon' in ev_text.lower(): fast_type = 'FAST_TIL_NOON'
-            elif 'midnight' in ev_text.lower(): fast_type = 'FAST_TIL_MIDNIGHT'
-            elif 'sunset' in ev_text.lower(): fast_type = 'FAST_TIL_SUNSET'
+            if is_ekadasi_day:
+                if 'vamana' in ev_text.lower():
+                    fast_notes = 'Ekadashi Fast (no grains or beans) & Sri Vamanadeva festival'
+                    if 'vamana' not in matching_event_text.lower():
+                        matching_event_text = f"{matching_event_text} & Sri Vamanadeva"
+                elif 'varaha' in ev_text.lower():
+                    fast_notes = 'Ekadashi Fast (no grains or beans) & Sri Varahadeva festival'
+                    if 'varaha' not in matching_event_text.lower():
+                        matching_event_text = f"{matching_event_text} & Sri Varahadeva"
+                else:
+                    if not fast_notes:
+                        fast_notes = 'Ekadashi Fast (no grains or beans)'
+            else:
+                fast_notes = ev_text.strip('()')
+                is_fasting = True
+                if 'noon' in ev_text.lower(): fast_type = 'FAST_TIL_NOON'
+                elif 'midnight' in ev_text.lower(): fast_type = 'FAST_TIL_MIDNIGHT'
+                elif 'sunset' in ev_text.lower(): fast_type = 'FAST_TIL_SUNSET'
+
+    if is_ekadasi_day and not fast_notes:
+        fast_notes = 'Ekadashi Fast (no grains or beans)'
 
     occurrence = {
         'gregorian_date': gregorian_str,
@@ -715,8 +778,7 @@ def eventOccurrence():
         }
     }
 
-
-    return jsonify({
+    response_data = {
         'status': 'success',
         'data': {
             'event_id': event_id,
@@ -731,7 +793,10 @@ def eventOccurrence():
             'occurrence': occurrence,
             'is_event_eligible': True
         }
-    })
+    }
+
+    occurrence_cache.set(cache_key, response_data)
+    return jsonify(response_data)
 
 def run_server(port=8047, host="127.0.0.1"):
     app.run(host=host, port=port)
