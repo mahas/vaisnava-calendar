@@ -229,6 +229,32 @@ class TestEkadasiIntegration(unittest.TestCase):
         self.assertEqual(d_vyan.nMhdType, EV_VYANJULI, "2024-11-27 debe ser EV_VYANJULI")
         self.assertEqual(d_vyan.nFastType, FAST_EKADASI)
 
+    def test_suddha_ekadasi_not_labeled_mahadvadasi_and_parana_window(self):
+        """Verifica que un Śuddha Ekādaśī puro (Rama Ekadasi en Delhi 2026-11-05) NO tenga evento Maha-dvadasi
+        y que su Parana en Dvādaśī (2026-11-06) sea matutino (06:36 - 10:15) y NUNCA hasta el atardecer (17:32)."""
+        from gaurabda.GCLocationList import FindLocation
+        loc = FindLocation(city='Delhi', country='India')
+        cal = TCalendar()
+        start = GCGregorianDate(year=2026, month=11, day=1)
+        cal.CalculateCalendar(loc, start, 10)
+
+        d5 = [d for d in cal.days_iter() if d.date.month == 11 and d.date.day == 5][0]
+        d6 = [d for d in cal.days_iter() if d.date.month == 11 and d.date.day == 6][0]
+
+        # Día 5 de nov: Ayuno de Rama Ekadasi puro
+        self.assertEqual(d5.nFastType, FAST_EKADASI)
+        event_names_d5 = [e['text'] for e in d5.dayEvents]
+        self.assertIn("Fasting for Rama Ekadasi", event_names_d5)
+        self.assertNotIn("Maha-dvadasi", event_names_d5, "Un Śuddha Ekādaśī puro en día de Ekādaśī NO debe llevar 'Maha-dvadasi'")
+
+        # Día 6 de nov: Día de Parana
+        self.assertTrue(d6.ekadasi_parana)
+        self.assertAlmostEqual(d6.eparana_time1, 6.61, places=1) # ~06:36 AM
+        self.assertAlmostEqual(d6.eparana_time2, 10.25, places=1) # ~10:15 AM
+        self.assertLess(d6.eparana_time2, 12.0, "Parana DEBE terminar por la mañana, no al atardecer")
+        event_names_d6 = [e['text'] for e in d6.dayEvents]
+        self.assertTrue(any("Break fast 06:36 - 10:15" in t for t in event_names_d6))
+
 
 if __name__ == '__main__':
     unittest.main()

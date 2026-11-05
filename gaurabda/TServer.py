@@ -456,8 +456,8 @@ def searchEvent():
         tc = TCalendar()
         tc.CalculateCalendar(location, current_date, 366)
         
-        for day in tc.days_iter():
-            day_dict = dict(day)
+        days_list = [dict(day) for day in tc.days_iter()]
+        for i, day_dict in enumerate(days_list):
             ekadashi_name = day_dict.get('ekadashiName', '')
             matched_text = None
             
@@ -496,13 +496,18 @@ def searchEvent():
                         break
                 
                 if not already_matched:
+                    parana_info = day_dict.get('ekadashiParana')
+                    if not parana_info and day_dict.get('fast') and (day_dict.get('ekadashiName') or 'ekadasi' in matched_text.lower()):
+                        if i + 1 < len(days_list):
+                            parana_info = days_list[i + 1].get('ekadashiParana')
+
                     matches.append({
                         'date': date_val,
                         'astrodata': day_dict.get('astrodata'),
                         'ekadashiName': ekadashi_name,
                         'fast': day_dict.get('fast', 0),
                         'events': day_dict.get('events', []),
-                        'ekadashiParana': day_dict.get('ekadashiParana'),
+                        'ekadashiParana': parana_info,
                         'matching_event': matched_text
                     })
                     if len(matches) >= count:
@@ -651,11 +656,14 @@ def eventOccurrence():
     matched_day = None
     matching_event_text = ""
 
-    for day in tc.days_iter():
-        day_dict = dict(day)
+    days_list = [dict(day) for day in tc.days_iter()]
+    matched_idx = -1
+
+    for i, day_dict in enumerate(days_list):
         ekadashi_name = day_dict.get('ekadashiName', '')
         if ekadashi_name and simp_query in simplify(ekadashi_name):
             matched_day = day_dict
+            matched_idx = i
             if ekadashi_name.lower().endswith(('ekadasi', 'ekadashi')):
                 matching_event_text = ekadashi_name
             else:
@@ -667,6 +675,7 @@ def eventOccurrence():
             ev_text = ev.get('text', '')
             if simp_query in simplify(ev_text):
                 matched_day = day_dict
+                matched_idx = i
                 matching_event_text = ev_text
                 break
         if matched_day:
@@ -676,11 +685,12 @@ def eventOccurrence():
     if not matched_day and initial_days < 365:
         tc = TCalendar()
         tc.CalculateCalendar(location, start_date, 365)
-        for day in tc.days_iter():
-            day_dict = dict(day)
+        days_list = [dict(day) for day in tc.days_iter()]
+        for i, day_dict in enumerate(days_list):
             ekadashi_name = day_dict.get('ekadashiName', '')
             if ekadashi_name and simp_query in simplify(ekadashi_name):
                 matched_day = day_dict
+                matched_idx = i
                 if ekadashi_name.lower().endswith(('ekadasi', 'ekadashi')):
                     matching_event_text = ekadashi_name
                 else:
@@ -692,6 +702,7 @@ def eventOccurrence():
                 ev_text = ev.get('text', '')
                 if simp_query in simplify(ev_text):
                     matched_day = day_dict
+                    matched_idx = i
                     matching_event_text = ev_text
                     break
             if matched_day:
@@ -764,6 +775,31 @@ def eventOccurrence():
     if is_ekadasi_day and not fast_notes:
         fast_notes = 'Ekadashi Fast (no grains or beans)'
 
+    parana_data = None
+    if is_ekadasi_day and matched_idx >= 0 and matched_idx + 1 < len(days_list):
+        next_d = days_list[matched_idx + 1]
+        ep = next_d.get('ekadashiParana')
+        if ep:
+            ep_text = ""
+            for ev in next_d.get('events', []):
+                if 'Break fast' in ev.get('text', ''):
+                    ep_text = ev['text']
+                    break
+            parana_data = {
+                'date': next_d.get('date'),
+                'startTime': ep.get('startTime'),
+                'endTime': ep.get('endTime'),
+                'text': ep_text
+            }
+
+    fasting_dict = {
+        'is_fasting_day': is_fasting,
+        'fast_type': fast_type,
+        'fast_notes': fast_notes
+    }
+    if parana_data:
+        fasting_dict['parana'] = parana_data
+
     occurrence = {
         'gregorian_date': gregorian_str,
         'date': date_obj,
@@ -771,11 +807,7 @@ def eventOccurrence():
         'tithi': astro.get('tithiName', ''),
         'masa': astro.get('masaName', ''),
         'gaurabda_year': astro.get('gaurabdaYear', 540),
-        'fasting': {
-            'is_fasting_day': is_fasting,
-            'fast_type': fast_type,
-            'fast_notes': fast_notes
-        }
+        'fasting': fasting_dict
     }
 
     response_data = {

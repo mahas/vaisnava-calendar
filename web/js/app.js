@@ -83,6 +83,10 @@ const translations = {
     yogaLabel: "Yoga",
     sunriseLabel: "Salida del Sol",
     sunsetLabel: "Puesta del Sol",
+    daylightHoursLabel: "Luz solar (Salida / Puesta)",
+    paranaLabel: "Horario de Pāraṇa (Romper ayuno)",
+    paranaTomorrow: "Horario de Pāraṇa (Romper ayuno mañana):",
+    paranaToday: "Horario de Pāraṇa (Romper ayuno hoy):",
     noonLabel: "Mediodía solar",
     fastingBadge: "Ayuno",
     ekadashiBadge: "Ekadasi",
@@ -153,6 +157,10 @@ const translations = {
     yogaLabel: "Yoga",
     sunriseLabel: "Sunrise",
     sunsetLabel: "Sunset",
+    daylightHoursLabel: "Daylight (Sunrise / Sunset)",
+    paranaLabel: "Pāraṇa window (Break Fast)",
+    paranaTomorrow: "Pāraṇa window (Break fast tomorrow):",
+    paranaToday: "Pāraṇa window (Break fast today):",
     noonLabel: "Solar Noon",
     fastingBadge: "Fast",
     ekadashiBadge: "Ekadasi",
@@ -380,7 +388,7 @@ function showInstallButton() {
 // DOM Content Loaded initialization
 window.addEventListener("DOMContentLoaded", () => {
   // Purge old calendar cache if cache version changes
-  const GCAL_CACHE_VERSION = "v13";
+  const GCAL_CACHE_VERSION = "v14";
   if (localStorage.getItem("gcal_cache_version") !== GCAL_CACHE_VERSION) {
     localStorage.removeItem("gcal_last_calendar");
     localStorage.setItem("gcal_cache_version", GCAL_CACHE_VERSION);
@@ -1070,6 +1078,55 @@ function setCalendarView(view) {
   renderCalendar();
 }
 
+// Helper to retrieve and format Parana details (today or next day)
+function getParanaDetails(d) {
+  let paranaObj = d.ekadashiParana || null;
+  let isTomorrow = false;
+  let paranaDate = null;
+
+  if (paranaObj) {
+    paranaDate = d.date;
+    isTomorrow = false;
+  } else if ((d.ekadashiName && d.fast) || d.fast === 518) {
+    if (typeof lastCalendarData !== "undefined" && lastCalendarData && lastCalendarData.days) {
+      const idx = lastCalendarData.days.findIndex(day => 
+        day.date && day.date.year === d.date.year && day.date.month === d.date.month && day.date.day === d.date.day
+      );
+      if (idx !== -1 && idx + 1 < lastCalendarData.days.length) {
+        const nextDay = lastCalendarData.days[idx + 1];
+        if (nextDay.ekadashiParana) {
+          paranaObj = nextDay.ekadashiParana;
+          isTomorrow = true;
+          paranaDate = nextDay.date;
+        }
+      }
+    }
+  }
+
+  if (!paranaObj) return null;
+
+  const startH = Math.floor(paranaObj.startTime);
+  const startM = Math.floor((paranaObj.startTime % 1) * 60);
+  const startTimeStr = `${String(startH).padStart(2, "0")}:${String(startM).padStart(2, "0")}`;
+
+  let paranaStr = "";
+  if (paranaObj.endTime >= 0) {
+    const endH = Math.floor(paranaObj.endTime);
+    const endM = Math.floor((paranaObj.endTime % 1) * 60);
+    const endTimeStr = `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
+    paranaStr = `${startTimeStr} - ${endTimeStr}`;
+  } else {
+    paranaStr = currentLang === "es" ? `después de las ${startTimeStr}` : `after ${startTimeStr}`;
+  }
+
+  return {
+    paranaStr,
+    isTomorrow,
+    paranaDate,
+    startTimeStr
+  };
+}
+
 // Detailed day modal dialog populator
 function openDayDetailModal(d) {
   const modal = document.getElementById("dayDetailModal");
@@ -1111,7 +1168,7 @@ function openDayDetailModal(d) {
       <strong>${gaurabdaYear}</strong>
     </div>
     <div class="modal-astro-item">
-      <span>${t.sunriseLabel} / ${t.sunsetLabel}</span>
+      <span>${t.daylightHoursLabel || t.sunriseLabel + " / " + t.sunsetLabel}</span>
       <strong>☀️ ${sunrise} / 🌙 ${sunset}</strong>
     </div>
     <div class="modal-astro-item">
@@ -1120,6 +1177,37 @@ function openDayDetailModal(d) {
     </div>
   `;
   document.getElementById("modalAstroGrid").innerHTML = astroBody;
+
+  // Build Parana card if available
+  const paranaInfo = getParanaDetails(d);
+  let paranaBannerHtml = "";
+  if (paranaInfo) {
+    const headerTitle = paranaInfo.isTomorrow ? t.paranaTomorrow : t.paranaToday;
+    const explanation = paranaInfo.isTomorrow
+      ? (currentLang === "es"
+          ? `El ayuno debe romperse dentro de esta ventana en la mañana de mañana. No confundir con la puesta del sol de hoy (${sunset}).`
+          : `Break fast within this morning window tomorrow. Do not confuse with today's sunset (${sunset}).`)
+      : (currentLang === "es"
+          ? `Romper el ayuno dentro de esta ventana matutina. La puesta del sol (${sunset}) no es la hora de romper el ayuno.`
+          : `Break fast within this morning window. Sunset (${sunset}) is not the fast-breaking time.`);
+
+    paranaBannerHtml = `
+      <div class="modal-parana-card">
+        <div class="parana-header">
+          <span class="parana-icon">⏰</span>
+          <span class="parana-title">${headerTitle}</span>
+        </div>
+        <div class="parana-time-highlight">
+          ${paranaInfo.paranaStr} <span class="parana-tz">(LT)</span>
+        </div>
+        <div class="parana-explanation">${explanation}</div>
+      </div>
+    `;
+  }
+  const paranaContainer = document.getElementById("modalParanaContainer");
+  if (paranaContainer) {
+    paranaContainer.innerHTML = paranaBannerHtml;
+  }
 
   // Construir el banner de Ekadasi si aplica
   let ekadasiBannerHtml = "";
@@ -1534,27 +1622,18 @@ function compileDayDetails(d) {
   
   const sunrise = d.astrodata.sun.rise.substring(0, 5);
   const sunset = d.astrodata.sun.set.substring(0, 5);
-  lines.push(`${t.sunriseLabel}: ${sunrise} | ${t.sunsetLabel}: ${sunset}`);
+  lines.push(`${currentLang === "es" ? "Luz solar (Salida / Puesta)" : "Daylight (Sunrise / Sunset)"}: ☀️ ${sunrise} | 🌙 ${sunset}`);
   
   if (d.fast && d.fast !== 0) {
     lines.push(`⚠️ ${getFastDescription(d.fast)}`);
   }
   
-  if (d.ekadashiParana) {
-    const startH = Math.floor(d.ekadashiParana.startTime);
-    const startM = Math.floor((d.ekadashiParana.startTime % 1) * 60);
-    const startTimeStr = `${String(startH).padStart(2, "0")}:${String(startM).padStart(2, "0")}`;
-    
-    let paranaStr = "";
-    if (d.ekadashiParana.endTime >= 0) {
-      const endH = Math.floor(d.ekadashiParana.endTime);
-      const endM = Math.floor((d.ekadashiParana.endTime % 1) * 60);
-      const endTimeStr = `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
-      paranaStr = `${startTimeStr} - ${endTimeStr}`;
-    } else {
-      paranaStr = `after ${startTimeStr}`;
-    }
-    lines.push(`⏰ Parana (Break fast): ${paranaStr}`);
+  const paranaInfo = getParanaDetails(d);
+  if (paranaInfo) {
+    const paranaLabel = paranaInfo.isTomorrow
+      ? (currentLang === "es" ? "⏰ Pāraṇa (Romper ayuno mañana)" : "⏰ Parana (Break fast tomorrow)")
+      : (currentLang === "es" ? "⏰ Pāraṇa (Romper ayuno hoy)" : "⏰ Parana (Break fast today)");
+    lines.push(`${paranaLabel}: ${paranaInfo.paranaStr} (LT)`);
   }
   
   if (d.events && d.events.length > 0) {

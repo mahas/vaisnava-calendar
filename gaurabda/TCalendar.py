@@ -1087,7 +1087,8 @@ class TCalendar:
 
         ch = GCStrings.GetMahadvadasiName(t.nMhdType)
         if ch:
-            t.AddEvent(PRIO_MAHADVADASI, CAL_EKADASI_PARANA, ch)
+            if t.nMhdType != EV_SUDDHA or GCTithi.TITHI_DVADASI(t.astrodata.nTithi):
+                t.AddEvent(PRIO_MAHADVADASI, CAL_EKADASI_PARANA, ch)
 
         if (t.ekadasi_parana):
             t.AddEvent(PRIO_EKADASI_PARANA, CAL_EKADASI_PARANA, t.GetTextEP())
