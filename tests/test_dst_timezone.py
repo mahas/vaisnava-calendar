@@ -160,6 +160,68 @@ class TestDSTTimezone(unittest.TestCase):
                 self.assertEqual(GCTimeZone.GetDaylightBias(vc_summer, tz), 1,
                                  f"Year {year}, Month {m} must have DST")
 
+    def test_north_america_multi_year_dst_transitions(self):
+        """Verify that DST transitions in North America (New York) work dynamically:
+        - DST begins on the 2nd Sunday of March (bias = 1).
+        - DST continues throughout all of October (unlike Europe which ends in Oct).
+        - DST ends on the 1st Sunday of November (reverts to bias = 0).
+        - December, January, February always have bias = 0 in every year."""
+        tz = GCTimeZone.GetTimeZone(name='America/New_York')
+
+        for year in range(2024, 2036):
+            # 1. March: 2nd Sunday of March
+            sundays_mar = []
+            for d in range(1, 15):
+                vc = GCGregorianDate(year=year, month=3, day=d)
+                vc.InitWeekDay()
+                if vc.dayOfWeek == 0:
+                    sundays_mar.append(d)
+            second_sun_mar = sundays_mar[1]
+
+            vc_mar_pre = GCGregorianDate(year=year, month=3, day=second_sun_mar - 1)
+            vc_mar_pre.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc_mar_pre, tz), 0,
+                             f"Year {year}: Day before 2nd Sun Mar should be Standard Time")
+
+            vc_mar_post = GCGregorianDate(year=year, month=3, day=second_sun_mar)
+            vc_mar_post.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc_mar_post, tz), 1,
+                             f"Year {year}: 2nd Sun Mar should switch to Summer Time")
+
+            # 2. October: MUST have DST throughout the entire month in North America!
+            vc_oct_end = GCGregorianDate(year=year, month=10, day=31)
+            vc_oct_end.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc_oct_end, tz), 1,
+                             f"Year {year}: 31 Oct in New York MUST still be in Summer Time")
+
+            # 3. November: 1st Sunday of November
+            first_sun_nov = None
+            for d in range(1, 8):
+                vc = GCGregorianDate(year=year, month=11, day=d)
+                vc.InitWeekDay()
+                if vc.dayOfWeek == 0:
+                    first_sun_nov = d
+                    break
+
+            if first_sun_nov > 1:
+                vc_nov_pre = GCGregorianDate(year=year, month=11, day=first_sun_nov - 1)
+                vc_nov_pre.InitWeekDay()
+                self.assertEqual(GCTimeZone.GetDaylightBias(vc_nov_pre, tz), 1,
+                                 f"Year {year}: Day before 1st Sun Nov should still be Summer Time")
+
+            vc_nov_post = GCGregorianDate(year=year, month=11, day=first_sun_nov)
+            vc_nov_post.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc_nov_post, tz), 0,
+                             f"Year {year}: 1st Sun Nov must revert to Standard Time")
+
+            # 4. Deep Winter: December, January, February always bias = 0
+            for m in [12, 1, 2]:
+                vc_winter = GCGregorianDate(year=year, month=m, day=15)
+                vc_winter.InitWeekDay()
+                self.assertEqual(GCTimeZone.GetDaylightBias(vc_winter, tz), 0,
+                                 f"Year {year}, Month {m} in New York must NOT have DST")
+
 
 if __name__ == '__main__':
     unittest.main()
+
