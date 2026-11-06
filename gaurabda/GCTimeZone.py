@@ -220,7 +220,7 @@ def GetDaylightBias(vc,tz):
         else:
             # zaciatocny mesiac ma nizsie cislo nez koncovy
             # usa, europa, asia
-            if (vc.month > tz['startMonth']) or (vc.month < tz['endMonth']):
+            if (vc.month > tz['startMonth']) and (vc.month < tz['endMonth']):
                 return bias
 
         return 0

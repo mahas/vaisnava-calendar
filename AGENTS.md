@@ -205,9 +205,7 @@ The application integrates with the BhaktiLib encyclopedic database (`https://bh
 * **Sentinel Guard in `MahadvadasiCalc`**: In `TCalendar.py:754`, the Nakṣatra branch condition is strictly checked against `nMahaType != EV_NULL` (resolving the previous `SENTINEL_MISMATCH` where `nMahaType != 0` evaluated to `True` on `EV_NULL`).
 * **Vyañjulī Resolution (`EV_VYANJULI`)**: When *Dvādaśī-vṛddhi* occurs (Dvādaśī is present at sunrise on two consecutive days following a Śuddha Ekādaśī, e.g., Delhi August 24–25, 2026), the engine correctly enters the Vyañjulī branch, assigns `FAST_EKADASI` and `EV_VYANJULI` to the Dvādaśī date, leaves the preceding Ekādaśī as `FAST_NULL`, and schedules Pāraṇa on the subsequent day.
 * **Negative Control Validation**: Locations where Dvādaśī does not experience vṛddhi (e.g., Paris August 2026 where sunrise on the second day is Trayodaśī) correctly retain standard Śuddha Ekādaśī fasting on the Ekādaśī calendar date.
-* **Comprehensive Test Suite**: Regression protection is maintained via `tests/test_mahadvadasi_comprehensive.py`, covering contract invariants, sentinel non-hijacking, and verified historical cases across all 8 Mahā-dvādaśī classes (Jaya, Jayantī, Pāpanāśinī, Vijayā, Tri-spṛśā, Unmīlanī, Pakṣa-vardhinī, Vyañjulī).
-
-
-
-
-
+### 15. Daylight Saving Time (DST) Evaluation & Northern Hemisphere Guard
+* **Conjunction Guard in `GCTimeZone.py:223`**: In `GetDaylightBias(vc, tz)`, when `startMonth < endMonth` (Northern Hemisphere, e.g., Europe, North America where DST begins in March/April and concludes in October/November), the active month condition is strictly evaluated using logical conjunction `and`: `if (vc.month > tz['startMonth']) and (vc.month < tz['endMonth']):`.
+* **Resolution of False Positive DST**: Resolves the bug where the previous disjunction `or` caused all winter months (November, December, January, February) to evaluate to `True` for Europe and the US, adding an erroneous `+1` hour bias (`hasDST = 1`) to winter sunrises and Pāraṇa windows.
+* **Regression Protection**: Maintained via `tests/test_dst_timezone.py`, verifying spring and autumn transition dates across Europe (e.g. Paris Oct 25 reverting to standard time), the United States, and Southern Hemisphere summer regimes (e.g. Sydney).
