@@ -221,7 +221,53 @@ class TestDSTTimezone(unittest.TestCase):
                 self.assertEqual(GCTimeZone.GetDaylightBias(vc_winter, tz), 0,
                                  f"Year {year}, Month {m} in New York must NOT have DST")
 
+    def test_abolished_dst_countries(self):
+        """Verify that countries that abolished DST (Mexico, Argentina, Brazil, Turkey, Russia)
+        have bias = 0 all year round and accurate permanent UTC offsets."""
+        # 1. Mexico City: permanent UTC-6, bias = 0 all year
+        mexico_tz = GCTimeZone.GetTimeZone(name='-6:00 America/Mexico_City')
+        self.assertEqual(mexico_tz['offset'], -360)
+        self.assertEqual(mexico_tz['bias'], 0)
+        for m in range(1, 13):
+            vc = GCGregorianDate(year=2026, month=m, day=15)
+            vc.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc, mexico_tz), 0)
+
+        # 2. Cancun: permanent UTC-5 (Southeastern zone)
+        cancun_tz = GCTimeZone.GetTimeZone(name='-5:00 America/Cancun')
+        self.assertEqual(cancun_tz['offset'], -300)
+        self.assertEqual(cancun_tz['bias'], 0)
+
+        # 3. Argentina (Buenos Aires): permanent UTC-3, bias = 0
+        arg_tz = GCTimeZone.GetTimeZone(name='-3:00 America/Argentina/Buenos_Aires')
+        self.assertEqual(arg_tz['offset'], -180)
+        self.assertEqual(arg_tz['bias'], 0)
+        for m in range(1, 13):
+            vc = GCGregorianDate(year=2026, month=m, day=15)
+            vc.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc, arg_tz), 0)
+
+        # 4. Brazil (Sao Paulo): permanent UTC-3, bias = 0
+        brazil_tz = GCTimeZone.GetTimeZone(name='-3:00 America/Sao_Paulo')
+        self.assertEqual(brazil_tz['offset'], -180)
+        self.assertEqual(brazil_tz['bias'], 0)
+        for m in range(1, 13):
+            vc = GCGregorianDate(year=2026, month=m, day=15)
+            vc.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc, brazil_tz), 0)
+
+        # 5. Turkey (Istanbul): permanent UTC+3, bias = 0
+        turkey_tz = GCTimeZone.GetTimeZone(name='+3:00 Europe/Istanbul')
+        self.assertEqual(turkey_tz['offset'], 180)
+        self.assertEqual(turkey_tz['bias'], 0)
+
+        # 6. Russia (Moscow): permanent UTC+3, bias = 0
+        moscow_tz = GCTimeZone.GetTimeZone(name='+3:00 Europe/Moscow')
+        self.assertEqual(moscow_tz['offset'], 180)
+        self.assertEqual(moscow_tz['bias'], 0)
+
 
 if __name__ == '__main__':
     unittest.main()
+
 

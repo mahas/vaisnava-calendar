@@ -388,7 +388,7 @@ function showInstallButton() {
 // DOM Content Loaded initialization
 window.addEventListener("DOMContentLoaded", () => {
   // Purge old calendar cache if cache version changes
-  const GCAL_CACHE_VERSION = "v15";
+  const GCAL_CACHE_VERSION = "v16";
   if (localStorage.getItem("gcal_cache_version") !== GCAL_CACHE_VERSION) {
     localStorage.removeItem("gcal_last_calendar");
     localStorage.setItem("gcal_cache_version", GCAL_CACHE_VERSION);
