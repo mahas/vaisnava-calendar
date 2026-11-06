@@ -115,5 +115,51 @@ class TestDSTTimezone(unittest.TestCase):
                         f"Expected parana string with (LT), got: {day6_events}")
 
 
+    def test_multi_year_european_dst_transitions(self):
+        """Verify that DST transitions in Europe (Paris) work dynamically for all future years (2024 to 2035):
+        - Last Sunday of March switches to Summer Time (bias = 1).
+        - Last Sunday of October switches back to Winter / Standard Time (bias = 0).
+        - November, December, January, February always have bias = 0 in every year."""
+        tz = GCTimeZone.GetTimeZone(name='Europe/Paris')
+
+        from gaurabda.GCGregorianDate import GetMonthMaxDays
+        for year in range(2024, 2036):
+            # 1. October transition: find last Sunday of October
+            last_oct_day = GetMonthMaxDays(year, 10)
+            last_sun_oct = None
+            for d in range(last_oct_day, 20, -1):
+                vc = GCGregorianDate(year=year, month=10, day=d)
+                vc.InitWeekDay()
+                if vc.dayOfWeek == 0:
+                    last_sun_oct = d
+                    break
+
+            # Day before last Sunday of Oct: Summer Time
+            vc_oct_pre = GCGregorianDate(year=year, month=10, day=last_sun_oct - 1)
+            vc_oct_pre.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc_oct_pre, tz), 1,
+                             f"Year {year}: {last_sun_oct-1} Oct should be summer time")
+
+            # Last Sunday of Oct: reverts to Standard/Winter Time
+            vc_oct_post = GCGregorianDate(year=year, month=10, day=last_sun_oct)
+            vc_oct_post.InitWeekDay()
+            self.assertEqual(GCTimeZone.GetDaylightBias(vc_oct_post, tz), 0,
+                             f"Year {year}: {last_sun_oct} Oct should revert to winter time")
+
+            # 2. Winter months (Nov, Dec, Jan, Feb): strictly Standard Time in all years
+            for m in [11, 12, 1, 2]:
+                vc_winter = GCGregorianDate(year=year, month=m, day=15)
+                vc_winter.InitWeekDay()
+                self.assertEqual(GCTimeZone.GetDaylightBias(vc_winter, tz), 0,
+                                 f"Year {year}, Month {m} must NOT have DST")
+
+            # 3. Summer months (Apr, May, Jun, Jul, Aug, Sep): strictly Summer Time
+            for m in range(4, 10):
+                vc_summer = GCGregorianDate(year=year, month=m, day=15)
+                vc_summer.InitWeekDay()
+                self.assertEqual(GCTimeZone.GetDaylightBias(vc_summer, tz), 1,
+                                 f"Year {year}, Month {m} must have DST")
+
+
 if __name__ == '__main__':
     unittest.main()
